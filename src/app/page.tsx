@@ -270,7 +270,7 @@ export default function Home() {
                 Explore the diverse range of artistic services we offer, each with its unique charm and tradition.
               </p>
             </div>
-            <div className="space-y-8">
+            <div className="grid gap-8">
               {artCategories.map((category, index) => (
                 <Link href={category.href} key={category.name}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
