@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -21,24 +22,28 @@ export default function Home() {
       description: "Intricate henna designs for all occasions.",
       image: "https://placehold.co/600x400.png",
       hint: "henna hand",
+      href: "/mehndi",
     },
     {
       name: "Rangoli",
       description: "Vibrant and colorful floor art.",
       image: "https://placehold.co/600x400.png",
       hint: "rangoli design",
+      href: "/rangoli",
     },
     {
       name: "Nail Art",
       description: "Creative and stylish nail designs.",
       image: "https://placehold.co/600x400.png",
       hint: "nail art",
+      href: "/nail-art",
     },
     {
       name: "Custom Plastic Jewelry",
       description: "Unique, handcrafted plastic jewelry.",
       image: "https://placehold.co/600x400.png",
       hint: "plastic jewelry",
+      href: "/custom-plastic-jewelry",
     },
   ];
 
@@ -76,14 +81,14 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-14 items-center">
-          <div className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <Palette className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </div>
+          </Link>
           <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex">Gallery</Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex">About</Button>
-            <Button size="sm">Contact</Button>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
+            <Button size="sm" asChild><Link href="/#contact">Contact</Link></Button>
           </nav>
         </div>
       </header>
@@ -97,7 +102,7 @@ export default function Home() {
             <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
               Discover stunning Mehndi, Rangoli, Nail Art, and custom jewelry. Your one-stop hub for artistic inspiration.
             </p>
-            <Button size="lg" className="mt-8 bg-primary hover:bg-primary/90">Explore Our Art</Button>
+            <Button size="lg" className="mt-8 bg-primary hover:bg-primary/90" asChild><Link href="/#featured">Explore Our Art</Link></Button>
           </div>
         </section>
 
@@ -148,22 +153,24 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {artCategories.map((category) => (
-                <Card key={category.name} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardHeader className="p-0">
-                    <Image
-                      src={category.image}
-                      alt={category.name}
-                      width={600}
-                      height={400}
-                      className="w-full h-48 object-cover"
-                      data-ai-hint={category.hint}
-                    />
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <CardTitle className="font-headline text-xl mb-2">{category.name}</CardTitle>
-                    <p className="text-muted-foreground">{category.description}</p>
-                  </CardContent>
-                </Card>
+                <Link href={category.href} key={category.name}>
+                  <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 h-full">
+                    <CardHeader className="p-0">
+                      <Image
+                        src={category.image}
+                        alt={category.name}
+                        width={600}
+                        height={400}
+                        className="w-full h-48 object-cover"
+                        data-ai-hint={category.hint}
+                      />
+                    </CardHeader>
+                    <CardContent className="p-6">
+                      <CardTitle className="font-headline text-xl mb-2">{category.name}</CardTitle>
+                      <p className="text-muted-foreground">{category.description}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
               ))}
             </div>
           </div>
@@ -171,7 +178,7 @@ export default function Home() {
 
       </main>
 
-      <footer className="bg-primary text-primary-foreground">
+      <footer id="contact" className="bg-primary text-primary-foreground">
         <div className="container py-12 grid lg:grid-cols-3 gap-12">
             <div className="space-y-4">
                 <div className="flex items-center space-x-2">
@@ -219,3 +226,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
