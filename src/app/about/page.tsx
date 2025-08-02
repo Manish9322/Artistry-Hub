@@ -305,7 +305,7 @@ export default function AboutPage() {
             </div>
             <div className="columns-2 md:columns-4 gap-4 space-y-4">
               {clientShowcase.map((item, index) => (
-                 <div key={index} className="overflow-hidden rounded-lg shadow-lg group">
+                 <div key={index} className="overflow-hidden rounded-lg shadow-lg group break-inside-avoid">
                     <Image
                         src={item.image}
                         alt="Client work"
