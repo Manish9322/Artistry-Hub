@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
 import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function AboutPage() {
   const teamMembers = [
@@ -192,16 +193,23 @@ export default function AboutPage() {
                 The principles that guide our work and define our commitment to art and our community.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              {coreValues.map((value) => (
-                <div key={value.title} className="group text-center p-8 bg-card rounded-xl shadow-lg border border-transparent hover:border-primary hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
-                    <value.icon className="w-10 h-10" />
-                  </div>
-                  <h3 className="text-xl font-bold font-headline mb-3">{value.title}</h3>
-                  <p className="text-muted-foreground">{value.description}</p>
-                </div>
-              ))}
+            <div className="max-w-4xl mx-auto">
+              <ul className="space-y-10">
+                {coreValues.map((value, index) => (
+                  <li key={value.title}>
+                    <div className="flex items-start gap-6 md:gap-8">
+                      <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary">
+                        <value.icon className="w-8 h-8" />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold font-headline mb-2">{value.title}</h3>
+                        <p className="text-muted-foreground text-lg">{value.description}</p>
+                      </div>
+                    </div>
+                    {index < coreValues.length - 1 && <Separator className="mt-10" />}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </section>
