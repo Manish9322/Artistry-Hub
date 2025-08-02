@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -198,9 +198,19 @@ export default function Home() {
       answer: "Yes, we love creating custom designs! You can provide us with inspiration, or our artists can create a unique design for you based on your preferences.",
     },
   ];
+
+  const marqueeNews = [
+    "New 'Bridal Collection' for Mehndi is now available!",
+    "Join our 'Rangoli for Beginners' workshop next month.",
+    "Limited edition 'Cosmic Dust' nail art is here!",
+    "Get 15% off on your first custom jewelry order.",
+    "Artistry Hub featured in this month's 'Creative Minds' magazine!"
+  ]
   
   const duplicatedArt = [...featuredArt, ...featuredArt];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
+  const duplicatedNews = [...marqueeNews, ...marqueeNews];
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -218,6 +228,19 @@ export default function Home() {
           </nav>
         </div>
       </header>
+
+      <div className="bg-primary/10 border-b">
+        <div className="container py-2 group flex overflow-hidden">
+          <div className="flex animate-marquee-slow group-hover:pause space-x-8">
+            {duplicatedNews.map((news, index) => (
+              <div key={index} className="flex-shrink-0 flex items-center gap-2 text-sm text-primary">
+                <Zap className="w-4 h-4" />
+                <span className="whitespace-nowrap">{news}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
 
       <main className="flex-1">
         <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background py-16 sm:py-20">
@@ -594,3 +617,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
