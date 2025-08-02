@@ -482,7 +482,7 @@ export default function Home() {
         <section id="artists" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold font-headline text-primary">Meet Our Talented Artists</h2>
+              <h2 className="text-4xl font-bold font-headline text-primary">Featured Artists</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
                 The creative minds behind our beautiful artwork. Passionate, skilled, and ready to bring your vision to life.
               </p>
