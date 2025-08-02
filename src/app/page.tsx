@@ -185,7 +185,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="featured" className="py-16 sm:py-24 space-y-4">
+        <section id="featured" className="py-12 sm:py-16 space-y-4">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold font-headline">Featured Gallery</h2>
@@ -264,7 +264,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="categories" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="categories" className="py-12 sm:py-16 bg-secondary/30">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-4 font-headline">Our Art Categories</h2>
             <p className="text-muted-foreground text-center mb-8">Filter by tags to find your perfect style.</p>
@@ -298,7 +298,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how-it-works" className="py-16 sm:py-24">
+        <section id="how-it-works" className="py-12 sm:py-16">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">How It Works</h2>
             <div className="grid md:grid-cols-3 gap-8 text-center">
@@ -327,7 +327,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="testimonials" className="py-16 sm:py-24 bg-primary/10">
+        <section id="testimonials" className="py-12 sm:py-16 bg-primary/10">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">What Our Clients Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -354,7 +354,7 @@ export default function Home() {
           </div>
         </section>
         
-        <section id="workshops" className="py-16 sm:py-24">
+        <section id="workshops" className="py-12 sm:py-16">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">Upcoming Workshops</h2>
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
