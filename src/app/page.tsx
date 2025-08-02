@@ -10,7 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -135,15 +135,27 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        <section className="bg-primary/10 py-20">
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background py-24 sm:py-32">
           <div className="container text-center">
-            <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary tracking-tight">
-              Where Creativity Knows No Bounds
-            </h1>
-            <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-              Discover stunning Mehndi, Rangoli, Nail Art, and custom jewelry. Your one-stop hub for artistic inspiration.
-            </p>
-            <Button size="lg" className="mt-8 bg-primary hover:bg-primary/90" asChild><Link href="/#featured">Explore Our Art</Link></Button>
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-4 mb-6">
+                <Brush className="w-8 h-8 text-primary/80" />
+                <Gem className="w-8 h-8 text-primary/80" />
+                <Sparkles className="w-8 h-8 text-primary/80" />
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold font-headline text-primary tracking-tighter">
+                Where Creativity Knows No Bounds
+              </h1>
+              <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
+                Discover stunning Mehndi, vibrant Rangoli, chic Nail Art, and unique custom jewelry. Your one-stop hub for authentic, handcrafted artistic expression.
+              </p>
+              <div className="mt-10 flex flex-wrap justify-center gap-4">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg" asChild><Link href="/#featured">Explore The Gallery</Link></Button>
+                <Button size="lg" variant="outline" className="shadow-lg" asChild><Link href="/booking">Book an Artist</Link></Button>
+              </div>
+            </div>
+             <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full filter blur-3xl opacity-50"></div>
+            <div className="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-accent/10 rounded-full filter blur-3xl opacity-50"></div>
           </div>
         </section>
 
