@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -157,25 +157,27 @@ export default function Home() {
     },
   ];
 
-  const featuredArtists = [
+  const processSteps = [
     {
-      name: "Jane Doe",
-      role: "Lead Mehndi Artist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
+      icon: MessageSquare,
+      title: "Consultation",
+      description: "We start with a one-on-one consultation to understand your vision, preferences, and the occasion for your artwork."
     },
     {
-      name: "John Smith",
-      role: "Rangoli Specialist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
+      icon: Lightbulb,
+      title: "Design Creation",
+      description: "Our artists craft a unique design concept, incorporating your ideas with their creative expertise to produce a preliminary sketch."
     },
     {
-      name: "Emily White",
-      role: "Nail & Jewelry Designer",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
+      icon: Scissors,
+      title: "Execution & Refinement",
+      description: "With your approval, we bring the design to life, paying meticulous attention to detail and allowing for refinements along the way."
     },
+    {
+      icon: Sparkles,
+      title: "Final Masterpiece",
+      description: "The result is a stunning, handcrafted piece of art that is uniquely yours, ready to be cherished and admired."
+    }
   ];
 
   const faqs = [
@@ -479,35 +481,52 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="artists" className="py-16 sm:py-24 bg-background">
+        <section id="process" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold font-headline text-primary">Featured Artists</h2>
+              <h2 className="text-4xl font-bold font-headline text-primary">Our Process</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                The creative minds behind our beautiful artwork. Passionate, skilled, and ready to bring your vision to life.
+                From concept to creation, we tailor our process to bring your unique vision to life with precision and artistry.
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredArtists.map((artist) => (
-                <div key={artist.name} className="text-center group">
-                  <div className="relative inline-block">
-                    <Image
-                      src={artist.image}
-                      alt={artist.name}
-                      width={400}
-                      height={400}
-                      className="rounded-full w-40 h-40 mx-auto mb-4 shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
-                      data-ai-hint={artist.hint}
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold font-headline">{artist.name}</h3>
-                  <p className="text-primary">{artist.role}</p>
+            <div className="relative">
+              <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-10 h-full w-px bg-border -z-10">
+                <div className="sticky top-1/2">
+                   <div className="w-4 h-4 rounded-full bg-primary ring-4 ring-primary/20"></div>
                 </div>
-              ))}
+              </div>
+
+              <div className="space-y-16">
+                {processSteps.map((step, index) => (
+                  <div key={step.title} className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                     <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
+                        <div className="relative">
+                          <div className={`flex items-center gap-4 mb-4 ${index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}`}>
+                            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
+                              <step.icon className="w-6 h-6" />
+                            </div>
+                            <h3 className="text-2xl font-bold font-headline">{step.title}</h3>
+                          </div>
+                          <p className={`text-muted-foreground ${index % 2 === 0 ? 'md:text-left' : 'md:text-right'}`}>{step.description}</p>
+                        </div>
+                      </div>
+                     <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
+                        <Image
+                          src={`https://placehold.co/600x400.png`}
+                          alt={step.title}
+                          width={600}
+                          height={400}
+                          className="rounded-lg shadow-xl"
+                          data-ai-hint="art process"
+                        />
+                      </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="text-center mt-12">
-              <Button asChild>
-                <Link href="/about">Meet The Whole Team</Link>
+             <div className="text-center mt-16">
+              <Button asChild size="lg">
+                <Link href="/booking">Start Your Project</Link>
               </Button>
             </div>
           </div>
