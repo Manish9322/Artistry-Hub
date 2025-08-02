@@ -192,12 +192,12 @@ export default function Home() {
               <p className="text-lg text-muted-foreground mt-2">A glimpse into our finest work.</p>
             </div>
             <Dialog>
-              <div className="relative w-full overflow-hidden group">
+               <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee group-hover:pause">
                     {duplicatedArt.map((art, index) => (
                       <div key={index} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
-                            <Card className="overflow-hidden group/card" onClick={() => setSelectedArt(art)}>
+                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt(art)}>
                               <CardContent className="p-0 relative">
                                 <Image
                                   src={art.src}
@@ -217,6 +217,8 @@ export default function Home() {
                         </div>
                     ))}
                   </div>
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
               </div>
               {selectedArt && (
                  <DialogContent className="max-w-3xl p-0">
