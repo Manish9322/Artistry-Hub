@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -153,6 +153,16 @@ export default function Home() {
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg" asChild><Link href="/#featured">Explore The Gallery</Link></Button>
                 <Button size="lg" variant="outline" className="shadow-lg" asChild><Link href="/booking">Book an Artist</Link></Button>
+              </div>
+              <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
+                 <a href="mailto:hello@artistryhub.com" className="flex items-center gap-2 hover:text-primary transition-colors">
+                  <Mail className="w-4 h-4" />
+                  <span>hello@artistryhub.com</span>
+                </a>
+                 <a href="tel:+1234567890" className="flex items-center gap-2 hover:text-primary transition-colors">
+                  <Phone className="w-4 h-4" />
+                  <span>+1 (234) 567-890</span>
+                </a>
               </div>
             </div>
              <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full filter blur-3xl opacity-50"></div>
