@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -18,28 +18,28 @@ export default function Home() {
     {
       name: "Mehndi",
       description: "Intricate henna designs for all occasions.",
-      image: "https://placehold.co/600x400.png",
+      image: "https://placehold.co/1200x400.png",
       hint: "henna hand",
       href: "/mehndi",
     },
     {
       name: "Rangoli",
       description: "Vibrant and colorful floor art.",
-      image: "https://placehold.co/600x400.png",
+      image: "https://placehold.co/1200x400.png",
       hint: "rangoli design",
       href: "/rangoli",
     },
     {
       name: "Nail Art",
       description: "Creative and stylish nail designs.",
-      image: "https://placehold.co/600x400.png",
+      image: "https://placehold.co/1200x400.png",
       hint: "nail art",
       href: "/nail-art",
     },
     {
       name: "Custom Plastic Jewelry",
       description: "Unique, handcrafted plastic jewelry.",
-      image: "https://placehold.co/600x400.png",
+      image: "https://placehold.co/1200x400.png",
       hint: "plastic jewelry",
       href: "/custom-plastic-jewelry",
     },
@@ -128,8 +128,6 @@ export default function Home() {
       icon: Palette,
     }
   ]
-
-  const tags = ["All", "Bridal", "Festival", "Modern", "Traditional"];
   
   const duplicatedArt = [...featuredArt, ...featuredArt];
 
@@ -185,7 +183,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="featured" className="py-12 sm:py-16 space-y-4">
+        <section id="featured" className="py-12 space-y-4">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold font-headline">Featured Gallery</h2>
@@ -195,7 +193,7 @@ export default function Home() {
                <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee-right group-hover:pause">
                     {duplicatedArt.map((art, index) => (
-                      <div key={index} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                      <div key={`fwd-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
                             <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt(art)}>
                               <CardContent className="p-0 relative">
@@ -223,7 +221,7 @@ export default function Home() {
                <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee group-hover:pause">
                     {duplicatedArt.map((art, index) => (
-                      <div key={index} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                      <div key={`rev-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
                             <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt(art)}>
                               <CardContent className="p-0 relative">
@@ -264,34 +262,35 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="categories" className="py-12 sm:py-16 bg-secondary/30">
+        <section id="categories" className="py-12 bg-secondary/30">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-4 font-headline">Our Art Categories</h2>
-            <p className="text-muted-foreground text-center mb-8">Filter by tags to find your perfect style.</p>
-            <div className="flex justify-center flex-wrap gap-2 mb-12">
-              {tags.map((tag) => (
-                <Badge key={tag} variant={tag === 'All' ? 'default' : 'outline'} className="text-sm px-4 py-2 cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground">{tag}</Badge>
-              ))}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline text-primary">Our Art Categories</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Explore the diverse range of artistic services we offer, each with its unique charm and tradition.
+              </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {artCategories.map((category) => (
+            <div className="space-y-8">
+              {artCategories.map((category, index) => (
                 <Link href={category.href} key={category.name}>
-                  <Card className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 h-full group">
-                    <CardHeader className="p-0">
-                      <Image
+                  <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                     <Image
                         src={category.image}
                         alt={category.name}
-                        width={600}
-                        height={400}
-                        className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
                         data-ai-hint={category.hint}
                       />
-                    </CardHeader>
-                    <CardContent className="p-6">
-                      <CardTitle className="font-headline text-xl mb-2">{category.name}</CardTitle>
-                      <p className="text-muted-foreground">{category.description}</p>
-                    </CardContent>
-                  </Card>
+                    <div className={`absolute inset-0 flex flex-col justify-center p-8 bg-gradient-to-r ${index % 2 === 0 ? 'from-black/70 to-transparent' : 'from-transparent to-black/70'} to-black/20`}>
+                      <div className={`w-full md:w-1/2 ${index % 2 === 0 ? 'text-left' : 'ml-auto text-right'}`}>
+                          <h3 className="text-4xl font-bold font-headline text-white">{category.name}</h3>
+                          <p className="text-lg text-white/90 mt-2">{category.description}</p>
+                           <Button variant="outline" className="mt-4 bg-transparent text-white border-white hover:bg-white hover:text-black group-hover:opacity-100 opacity-0 transition-opacity duration-300">
+                            View Gallery <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                      </div>
+                    </div>
+                  </div>
                 </Link>
               ))}
             </div>
@@ -350,7 +349,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="testimonials" className="py-12 sm:py-16 bg-primary/10">
+        <section id="testimonials" className="py-12 bg-primary/10">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">What Our Clients Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -377,7 +376,7 @@ export default function Home() {
           </div>
         </section>
         
-        <section id="workshops" className="py-12 sm:py-16">
+        <section id="workshops" className="py-12">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">Upcoming Workshops</h2>
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
