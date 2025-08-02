@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, Users, Rocket, Target } from "lucide-react";
+import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush } from "lucide-react";
 
 export default function AboutPage() {
   const teamMembers = [
@@ -24,6 +24,24 @@ export default function AboutPage() {
       image: "https://placehold.co/400x400.png",
       hint: "artist portrait",
     },
+  ];
+
+  const coreValues = [
+    {
+      icon: Sparkles,
+      title: "Creativity",
+      description: "We thrive on innovation and artistic expression, pushing the boundaries of design to create something truly unique for every client.",
+    },
+    {
+      icon: HandHeart,
+      title: "Passion",
+      description: "Art is not just our job; it's our life. We pour our hearts into every project, ensuring each piece is crafted with love and dedication.",
+    },
+    {
+      icon: Handshake,
+      title: "Collaboration",
+      description: "We believe the best art is created together. We work closely with our clients and community to bring shared visions to life.",
+    }
   ];
 
   return (
@@ -112,30 +130,110 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-24">
+        <section id="values" className="py-16 sm:py-24 bg-background">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
-                <div key={member.name} className="text-center">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    width={400}
-                    height={400}
-                    className="rounded-full w-40 h-40 mx-auto mb-4 shadow-lg object-cover"
-                    data-ai-hint={member.hint}
-                  />
-                  <h3 className="text-xl font-semibold font-headline">{member.name}</h3>
-                  <p className="text-primary">{member.role}</p>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Our Core Values</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                The principles that guide our work and define our commitment to art and our community.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {coreValues.map((value) => (
+                <div key={value.title} className="text-center p-8 bg-card rounded-xl shadow-lg border hover:shadow-xl transition-shadow">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mx-auto mb-6">
+                    <value.icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold font-headline mb-3">{value.title}</h3>
+                  <p className="text-muted-foreground">{value.description}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
+
+        <section id="studio" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">A Glimpse Into Our Studio</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Where creativity flows and masterpieces are born. Our studio is designed to inspire artists and welcome clients into a world of imagination.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="group overflow-hidden rounded-lg shadow-lg">
+                <Image src="https://placehold.co/400x500.png" alt="Studio view 1" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="art studio interior" />
+              </div>
+              <div className="group overflow-hidden rounded-lg shadow-lg">
+                <Image src="https://placehold.co/400x500.png" alt="Studio view 2" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="art supplies detail" />
+              </div>
+              <div className="group overflow-hidden rounded-lg shadow-lg">
+                <Image src="https://placehold.co/400x500.png" alt="Studio view 3" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="artist at work" />
+              </div>
+              <div className="group overflow-hidden rounded-lg shadow-lg">
+                <Image src="https://placehold.co/400x500.png" alt="Studio view 4" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="finished artwork display" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="community" className="py-16 sm:py-24">
+          <div className="container">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h2 className="text-3xl font-bold font-headline mb-4">Community & Collaboration</h2>
+                <p className="text-muted-foreground mb-4">
+                  Artistry Hub is more than a service—it's a community. We actively participate in local art fairs, host workshops to share our skills, and collaborate with other creatives to foster a vibrant arts scene.
+                </p>
+                <p className="text-muted-foreground mb-6">
+                  We believe in the power of art to connect people and are always open to new partnerships and projects. If you have an idea, let's create something beautiful together.
+                </p>
+                <Button asChild><Link href="/contact">Partner With Us</Link></Button>
+              </div>
+              <div>
+                <Image
+                  src="https://placehold.co/600x400.png"
+                  alt="Community event"
+                  width={600}
+                  height={400}
+                  className="rounded-lg shadow-lg"
+                  data-ai-hint="community art event"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 sm:py-24 bg-primary/10">
+          <div className="container">
+            <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {teamMembers.map((member) => (
+                <div key={member.name} className="text-center group">
+                  <div className="relative inline-block">
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      width={400}
+                      height={400}
+                      className="rounded-full w-40 h-40 mx-auto mb-4 shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                      data-ai-hint={member.hint}
+                    />
+                     <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                  <h3 className="text-xl font-semibold font-headline">{member.name}</h3>
+                  <p className="text-primary">{member.role}</p>
+                </div>
+              ))}
+            </div>
+             <div className="text-center mt-12">
+                <Button variant="outline" asChild><Link href="/contact#team">Join Our Team</Link></Button>
+            </div>
+          </div>
+        </section>
       </main>
 
-      <footer className="bg-primary text-primary-foreground mt-16">
+      <footer className="bg-primary text-primary-foreground mt-auto">
         <div className="bg-primary/90 py-4">
           <Copyright />
         </div>
