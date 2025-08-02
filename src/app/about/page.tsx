@@ -5,6 +5,8 @@ import { Copyright } from "@/components/copyright";
 import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
 
 export default function AboutPage() {
   const teamMembers = [
@@ -92,10 +94,12 @@ export default function AboutPage() {
     ];
 
     const clientShowcase = [
-      { image: 'https://placehold.co/400x500.png', hint: 'woman mehndi hand' },
-      { image: 'https://placehold.co/400x500.png', hint: 'wedding rangoli' },
-      { image: 'https://placehold.co/400x500.png', hint: 'custom nail art' },
-      { image: 'https://placehold.co/400x500.png', hint: 'person wearing necklace' },
+      { image: 'https://placehold.co/400x600.png', hint: 'woman mehndi hand', className: 'w-80' },
+      { image: 'https://placehold.co/600x400.png', hint: 'wedding rangoli', className: 'w-[30rem]'},
+      { image: 'https://placehold.co/400x500.png', hint: 'custom nail art', className: 'w-72' },
+      { image: 'https://placehold.co/400x600.png', hint: 'person wearing necklace', className: 'w-80' },
+      { image: 'https://placehold.co/600x400.png', hint: 'festival mehndi', className: 'w-[30rem]' },
+      { image: 'https://placehold.co/400x500.png', hint: 'detailed nail design', className: 'w-72' },
     ];
 
 
@@ -295,7 +299,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section id="clients-lens" className="py-16 sm:py-24 bg-background">
+        <section id="clients-lens" className="py-16 sm:py-24 bg-background overflow-hidden">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">From Our Clients' Lens</h2>
@@ -303,20 +307,27 @@ export default function AboutPage() {
                 Our greatest joy is seeing our art become a part of your story. Here are some of the beautiful moments captured by our amazing clients.
               </p>
             </div>
-            <div className="columns-2 md:columns-4 gap-4 space-y-4">
-              {clientShowcase.map((item, index) => (
-                 <div key={index} className="overflow-hidden rounded-lg shadow-lg group break-inside-avoid">
+          </div>
+          <div className="relative">
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex w-max space-x-8 p-4">
+                {clientShowcase.map((item, index) => (
+                  <figure key={index} className={`shrink-0 rounded-xl overflow-hidden shadow-xl group ${item.className}`}>
                     <Image
-                        src={item.image}
-                        alt="Client work"
-                        width={400}
-                        height={500}
-                        className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
-                        data-ai-hint={item.hint}
+                      src={item.image}
+                      alt="Client work"
+                      width={600}
+                      height={600}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      data-ai-hint={item.hint}
                     />
-                 </div>
-              ))}
-            </div>
+                  </figure>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" className="mt-4" />
+            </ScrollArea>
+             <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
+             <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
           </div>
         </section>
 
