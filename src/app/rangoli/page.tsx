@@ -60,7 +60,8 @@ export default function RangoliPage() {
           <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button size="sm" asChild><Link href="/#contact">Contact</Link></Button>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
+            <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
           </nav>
         </div>
       </header>
@@ -109,8 +110,7 @@ export default function RangoliPage() {
                         <p className="text-2xl font-bold text-primary">${piece.price}</p>
                       </div>
                       <div className="flex gap-2">
-                        <Button className="w-full" size="sm">Book Appointment</Button>
-                        <Button className="w-full" size="sm" variant="outline">Order This Design</Button>
+                        <Button className="w-full" size="sm" asChild><Link href="/booking">Book Appointment</Link></Button>
                       </div>
                     </div>
                   </CardContent>
@@ -129,5 +129,3 @@ export default function RangoliPage() {
     </div>
   );
 }
-
-    

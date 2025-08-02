@@ -10,9 +10,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Palette, Instagram, Twitter, Facebook, MessageCircle, Mail, User, Phone } from "lucide-react";
+import { Palette } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 
 export default function Home() {
@@ -88,7 +86,8 @@ export default function Home() {
           <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button size="sm" asChild><Link href="/#contact">Contact</Link></Button>
+            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
+            <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
           </nav>
         </div>
       </header>
@@ -178,47 +177,7 @@ export default function Home() {
 
       </main>
 
-      <footer id="contact" className="bg-primary text-primary-foreground">
-        <div className="container py-12 grid lg:grid-cols-3 gap-12">
-            <div className="space-y-4">
-                <div className="flex items-center space-x-2">
-                    <Palette className="h-8 w-8" />
-                    <h3 className="text-2xl font-bold font-headline">Artistry Hub</h3>
-                </div>
-                <p className="text-primary-foreground/80">
-                    Celebrating artistry in every form. Connect with us for collaborations and custom designs.
-                </p>
-                <div className="flex space-x-4">
-                    <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"><Instagram className="h-6 w-6" /></a>
-                    <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"><Twitter className="h-6 w-6" /></a>
-                    <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"><Facebook className="h-6 w-6" /></a>
-                    <a href="#" className="text-primary-foreground/80 hover:text-primary-foreground transition-colors"><MessageCircle className="h-6 w-6" /></a>
-                </div>
-            </div>
-            <div className="lg:col-span-2">
-                <h3 className="text-xl font-semibold mb-4 font-headline">Get In Touch</h3>
-                <form className="grid sm:grid-cols-2 gap-4">
-                    <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary-foreground/50" />
-                        <Input type="text" placeholder="Your Name" className="bg-primary/80 border-primary-foreground/20 placeholder:text-primary-foreground/50 pl-10 focus:bg-primary/90" />
-                    </div>
-                    <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary-foreground/50" />
-                        <Input type="email" placeholder="Your Email" className="bg-primary/80 border-primary-foreground/20 placeholder:text-primary-foreground/50 pl-10 focus:bg-primary/90" />
-                    </div>
-                    <div className="sm:col-span-2 relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary-foreground/50" />
-                        <Input type="tel" placeholder="Your Phone (Optional)" className="bg-primary/80 border-primary-foreground/20 placeholder:text-primary-foreground/50 pl-10 focus:bg-primary/90" />
-                    </div>
-                    <div className="sm:col-span-2">
-                        <Textarea placeholder="Your Message" rows={4} className="bg-primary/80 border-primary-foreground/20 placeholder:text-primary-foreground/50 focus:bg-primary/90" />
-                    </div>
-                    <div className="sm:col-span-2">
-                        <Button type="submit" variant="secondary" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Send Message</Button>
-                    </div>
-                </form>
-            </div>
-        </div>
+      <footer id="contact" className="bg-primary text-primary-foreground mt-16">
         <div className="bg-primary/90 py-4">
             <Copyright />
         </div>
@@ -226,5 +185,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
