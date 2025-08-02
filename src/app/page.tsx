@@ -272,7 +272,7 @@ export default function Home() {
               <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
                 Discover stunning Mehndi, vibrant Rangoli, chic Nail Art, and unique custom jewelry. Your one-stop hub for authentic, handcrafted artistic expression.
               </p>
-              <p className="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-primary/80 transition-opacity duration-500">
+              <p className="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-primary/80 transition-opacity duration-1000 ease-in-out">
                 {dynamicHeadlines[dynamicHeadline]}
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
