@@ -204,10 +204,9 @@ export default function Home() {
                                 className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 data-ai-hint={art.hint}
                               />
-                              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <Eye className="w-8 h-8 text-white mb-2" />
-                                <span className="text-white font-semibold text-lg">{art.alt}</span>
-                                <span className="text-white/80 text-sm">Click to preview</span>
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <h3 className="text-white font-bold text-lg">{art.alt}</h3>
+                                <p className="text-white/80 text-sm">Click to preview</p>
                               </div>
                             </CardContent>
                           </Card>
