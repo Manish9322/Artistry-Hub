@@ -194,9 +194,9 @@ export default function AboutPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {coreValues.map((value) => (
-                <div key={value.title} className="text-center p-8 bg-card rounded-xl shadow-lg border hover:shadow-xl transition-shadow">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mx-auto mb-6">
-                    <value.icon className="w-8 h-8" />
+                <div key={value.title} className="group text-center p-8 bg-card rounded-xl shadow-lg border border-transparent hover:border-primary hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <value.icon className="w-10 h-10" />
                   </div>
                   <h3 className="text-xl font-bold font-headline mb-3">{value.title}</h3>
                   <p className="text-muted-foreground">{value.description}</p>
