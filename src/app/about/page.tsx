@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper } from "lucide-react";
+import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function AboutPage() {
@@ -45,34 +45,27 @@ export default function AboutPage() {
     }
   ];
 
-  const creativeProcess = [
+  const artisticPhilosophy = [
       {
-        icon: MessageSquare,
-        title: "Consultation",
-        description: "We start with a conversation to understand your vision, preferences, and the occasion for your artwork.",
+        icon: Leaf,
+        title: "Rooted in Tradition",
+        description: "We honor the rich history of our art forms, studying ancient techniques and patterns to create authentic, timeless pieces that tell a story of cultural heritage.",
         image: "https://placehold.co/600x400.png",
-        hint: "design consultation"
+        hint: "traditional art pattern"
       },
       {
-        icon: Lightbulb,
-        title: "Design Creation",
-        description: "Our artists craft a unique design concept, incorporating your ideas with their creative expertise to produce a preliminary sketch.",
+        icon: Wand,
+        title: "Inspired by Innovation",
+        description: "While respecting tradition, we are constantly pushing creative boundaries. We experiment with modern styles, materials, and applications to offer fresh, contemporary designs.",
         image: "https://placehold.co/600x400.png",
-        hint: "art sketch"
+        hint: "modern art tools"
       },
       {
-        icon: Scissors,
-        title: "Execution",
-        description: "With meticulous attention to detail, our artists bring the design to life, ensuring the highest quality in every stroke and placement.",
+        icon: UserCheck,
+        title: "Driven by Personalization",
+        description: "Your story is our canvas. We specialize in creating bespoke art that reflects your personality, occasion, and unique vision, ensuring every piece is deeply meaningful.",
         image: "https://placehold.co/600x400.png",
-        hint: "artwork creation"
-      },
-      {
-        icon: Sparkles,
-        title: "Final Masterpiece",
-        description: "The result is a stunning, handcrafted piece of art that is uniquely yours, ready to be cherished and admired.",
-        image: "https://placehold.co/600x400.png",
-        hint: "finished art"
+        hint: "custom art design"
       }
     ];
 
@@ -213,38 +206,32 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section id="process" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="philosophy" className="py-16 sm:py-24 bg-secondary/30">
             <div className="container">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl font-bold font-headline text-primary">Our Creative Journey</h2>
+                    <h2 className="text-3xl font-bold font-headline text-primary">Our Artistic Philosophy</h2>
                     <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                        From a simple idea to a masterpiece, our collaborative process ensures your vision is brought to life with precision and passion.
+                        Our work is a blend of timeless tradition, bold innovation, and heartfelt personalization. This is the essence of Artistry Hub.
                     </p>
                 </div>
-                <div className="relative">
-                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 hidden md:block" aria-hidden="true"></div>
-                    {creativeProcess.map((step, index) => (
-                        <div key={step.title} className="relative mb-12">
-                            <div className="flex flex-col md:flex-row items-center gap-8">
-                                <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
-                                    <Image
-                                        src={step.image}
-                                        alt={step.title}
-                                        width={600}
-                                        height={400}
-                                        className="rounded-lg shadow-xl"
-                                        data-ai-hint={step.hint}
-                                    />
+                <div className="grid lg:grid-cols-3 gap-8">
+                    {artisticPhilosophy.map((item) => (
+                        <div key={item.title} className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                             <Image
+                                src={item.image}
+                                alt={item.title}
+                                width={600}
+                                height={400}
+                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                data-ai-hint={item.hint}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                            <div className="absolute inset-0 flex flex-col items-center justify-end text-center p-8 text-white">
+                                <div className="flex items-center justify-center w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm text-white mb-4 border border-white/30 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary">
+                                    <item.icon className="w-8 h-8"/>
                                 </div>
-                                <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2 md:text-left text-center' : 'md:order-1 md:text-right text-center'}`}>
-                                    <div className="inline-block bg-background p-4 rounded-lg shadow-md border">
-                                        <h3 className="text-2xl font-bold font-headline text-primary mb-2">{step.title}</h3>
-                                        <p className="text-muted-foreground">{step.description}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground ring-8 ring-secondary/30">
-                                <step.icon className="w-8 h-8" />
+                                <h3 className="text-2xl font-bold font-headline mb-2">{item.title}</h3>
+                                <p className="text-white/90 opacity-0 max-h-0 group-hover:opacity-100 group-hover:max-h-screen transition-all duration-500">{item.description}</p>
                             </div>
                         </div>
                     ))}
@@ -389,5 +376,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-    
