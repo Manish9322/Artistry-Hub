@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush } from "lucide-react";
+import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function AboutPage() {
   const teamMembers = [
@@ -43,6 +44,66 @@ export default function AboutPage() {
       description: "We believe the best art is created together. We work closely with our clients and community to bring shared visions to life.",
     }
   ];
+
+  const creativeProcess = [
+      {
+        icon: MessageSquare,
+        title: "Consultation",
+        description: "We start with a conversation to understand your vision, preferences, and the occasion for your artwork.",
+        image: "https://placehold.co/600x400.png",
+        hint: "design consultation"
+      },
+      {
+        icon: Lightbulb,
+        title: "Design Creation",
+        description: "Our artists craft a unique design concept, incorporating your ideas with their creative expertise to produce a preliminary sketch.",
+        image: "https://placehold.co/600x400.png",
+        hint: "art sketch"
+      },
+      {
+        icon: Scissors,
+        title: "Execution",
+        description: "With meticulous attention to detail, our artists bring the design to life, ensuring the highest quality in every stroke and placement.",
+        image: "https://placehold.co/600x400.png",
+        hint: "artwork creation"
+      },
+      {
+        icon: Sparkles,
+        title: "Final Masterpiece",
+        description: "The result is a stunning, handcrafted piece of art that is uniquely yours, ready to be cherished and admired.",
+        image: "https://placehold.co/600x400.png",
+        hint: "finished art"
+      }
+    ];
+
+    const accolades = [
+      {
+        icon: Trophy,
+        title: "International Artistry Award 2023",
+        issuer: "Global Art Federation",
+        description: "Recognized for 'Excellence in Traditional Mehndi Artistry', this award highlights our dedication to preserving and innovating cultural art forms on a global stage.",
+      },
+      {
+        icon: Newspaper,
+        title: "Featured in 'Creative Minds' Magazine",
+        issuer: "Art & Culture Monthly",
+        description: "Our studio and artists were featured in a four-page spread celebrating local artisans who are making a significant impact in the creative community.",
+      },
+       {
+        icon: Award,
+        title: "Community Choice for Best Design Studio",
+        issuer: "Local Art Fair 2024",
+        description: "Voted by our community as the top destination for creative and reliable artistic services, a testament to our strong connection with our clients.",
+      },
+    ];
+
+    const clientShowcase = [
+      { image: 'https://placehold.co/400x500.png', hint: 'woman mehndi hand' },
+      { image: 'https://placehold.co/400x500.png', hint: 'wedding rangoli' },
+      { image: 'https://placehold.co/400x500.png', hint: 'custom nail art' },
+      { image: 'https://placehold.co/400x500.png', hint: 'person wearing necklace' },
+    ];
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -152,6 +213,68 @@ export default function AboutPage() {
           </div>
         </section>
 
+        <section id="process" className="py-16 sm:py-24 bg-secondary/30">
+            <div className="container">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl font-bold font-headline text-primary">Our Creative Journey</h2>
+                    <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                        From a simple idea to a masterpiece, our collaborative process ensures your vision is brought to life with precision and passion.
+                    </p>
+                </div>
+                <div className="relative">
+                    <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 hidden md:block" aria-hidden="true"></div>
+                    {creativeProcess.map((step, index) => (
+                        <div key={step.title} className="relative mb-12">
+                            <div className="flex flex-col md:flex-row items-center gap-8">
+                                <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
+                                    <Image
+                                        src={step.image}
+                                        alt={step.title}
+                                        width={600}
+                                        height={400}
+                                        className="rounded-lg shadow-xl"
+                                        data-ai-hint={step.hint}
+                                    />
+                                </div>
+                                <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2 md:text-left text-center' : 'md:order-1 md:text-right text-center'}`}>
+                                    <div className="inline-block bg-background p-4 rounded-lg shadow-md border">
+                                        <h3 className="text-2xl font-bold font-headline text-primary mb-2">{step.title}</h3>
+                                        <p className="text-muted-foreground">{step.description}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center w-16 h-16 rounded-full bg-primary text-primary-foreground ring-8 ring-secondary/30">
+                                <step.icon className="w-8 h-8" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+
+         <section id="awards" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">In the Spotlight</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                We're proud of our journey and grateful for the recognition our passion has received from the community and industry experts.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {accolades.map((accolade) => (
+                <Card key={accolade.title} className="text-center p-8 hover:shadow-2xl transition-shadow duration-300 border-2 border-transparent hover:border-primary">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6">
+                    <accolade.icon className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-xl font-bold font-headline mb-2">{accolade.title}</h3>
+                   <p className="text-sm font-semibold text-muted-foreground mb-3">{accolade.issuer}</p>
+                  <p className="text-muted-foreground text-sm">{accolade.description}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="studio" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
@@ -177,7 +300,32 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section id="community" className="py-16 sm:py-24">
+        <section id="clients-lens" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">From Our Clients' Lens</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Our greatest joy is seeing our art become a part of your story. Here are some of the beautiful moments captured by our amazing clients.
+              </p>
+            </div>
+            <div className="columns-2 md:columns-4 gap-4 space-y-4">
+              {clientShowcase.map((item, index) => (
+                 <div key={index} className="overflow-hidden rounded-lg shadow-lg group">
+                    <Image
+                        src={item.image}
+                        alt="Client work"
+                        width={400}
+                        height={500}
+                        className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-105"
+                        data-ai-hint={item.hint}
+                    />
+                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="community" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
@@ -241,3 +389,5 @@ export default function AboutPage() {
     </div>
   );
 }
+
+    
