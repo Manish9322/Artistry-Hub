@@ -110,6 +110,13 @@ export default function Home() {
       rating: 5,
       comment: "I love getting my nails done here. The artists always come up with the most creative designs. The best nail art in town!",
     },
+    {
+      name: "Sarah L.",
+      avatar: "https://placehold.co/100x100.png",
+      hint: "woman portrait",
+      rating: 5,
+      comment: "The rangoli for our event was stunning. It was the centerpiece of our decorations and everyone loved it. Thank you!",
+    },
   ];
 
   const workshops = [
@@ -130,6 +137,7 @@ export default function Home() {
   ]
   
   const duplicatedArt = [...featuredArt, ...featuredArt];
+  const duplicatedTestimonials = [...testimonials, ...testimonials];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -349,31 +357,35 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="testimonials" className="py-12 bg-primary/10">
+        <section id="testimonials" className="py-12 bg-primary/10 overflow-hidden">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">What Our Clients Say</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <Card key={index} className="bg-background shadow-lg flex flex-col">
-                  <CardContent className="p-6 flex-grow flex flex-col">
-                    <Quote className="w-8 h-8 text-primary/50 mb-4" />
-                    <p className="text-muted-foreground italic text-lg flex-grow">"{testimonial.comment}"</p>
-                    <div className="flex items-center mt-6 pt-4 border-t border-border">
-                      <Avatar className="h-12 w-12 mr-4">
-                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />
-                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-grow">
-                        <p className="font-bold font-headline">{testimonial.name}</p>
-                         <div className="flex mt-1">
-                          {Array(testimonial.rating).fill(0).map((_, i) => <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />)}
-                        </div>
+             <div className="relative w-full overflow-hidden group">
+                  <div className="flex animate-marquee group-hover:pause">
+                    {duplicatedTestimonials.map((testimonial, index) => (
+                      <div key={`testimonial-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-4">
+                        <Card className="bg-background shadow-lg flex flex-col h-full">
+                          <CardContent className="p-6 flex-grow flex flex-col">
+                            <Quote className="w-8 h-8 text-primary/50 mb-4" />
+                            <p className="text-muted-foreground italic text-lg flex-grow">"{testimonial.comment}"</p>
+                            <div className="flex items-center mt-6 pt-4 border-t border-border">
+                              <Avatar className="h-12 w-12 mr-4">
+                                <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />
+                                <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-grow">
+                                <p className="font-bold font-headline">{testimonial.name}</p>
+                                 <div className="flex mt-1">
+                                  {Array(testimonial.rating).fill(0).map((_, i) => <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />)}
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    ))}
+                  </div>
+              </div>
           </div>
         </section>
         
