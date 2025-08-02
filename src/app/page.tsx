@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -135,7 +136,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background py-24 sm:py-32">
+        <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-background py-16 sm:py-20">
           <div className="container text-center">
             <div className="relative z-10">
               <div className="inline-flex items-center gap-4 mb-6">
