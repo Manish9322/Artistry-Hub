@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -298,30 +298,53 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="how-it-works" className="py-12 sm:py-16">
+        <section id="how-it-works" className="py-16 sm:py-24 bg-background">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">How It Works</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-center">
-              <div className="flex flex-col items-center">
-                <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 text-primary mb-4">
-                  <PenTool className="w-10 h-10" />
-                </div>
-                <h3 className="text-xl font-bold mb-2 font-headline">1. Choose a Design</h3>
-                <p className="text-muted-foreground">Browse our extensive gallery of Mehndi, Nail Art, and more. Find the perfect style that speaks to you.</p>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline text-primary">Your Vision, Our Expertise</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                A simple and transparent process to bring your artistic ideas to life. From browsing our gallery to booking a session, we make it effortless.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <Image
+                  src="https://placehold.co/600x500.png"
+                  alt="Artist working on a design"
+                  width={600}
+                  height={500}
+                  className="rounded-xl shadow-2xl"
+                  data-ai-hint="artist workspace"
+                />
               </div>
-              <div className="flex flex-col items-center">
-                <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 text-primary mb-4">
-                  <Calendar className="w-10 h-10" />
+              <div className="space-y-8">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold font-headline">1. Discover & Choose</h3>
+                    <p className="text-muted-foreground mt-1">Browse our extensive gallery of Mehndi, Nail Art, Rangoli, and Custom Jewelry. Find the perfect style that speaks to you or gather inspiration for a custom piece.</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold mb-2 font-headline">2. Book an Artist</h3>
-                <p className="text-muted-foreground">Select a convenient date and time. Our talented artists are ready to bring your vision to life.</p>
-              </div>
-              <div className="flex flex-col items-center">
-                 <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 text-primary mb-4">
-                  <Gift className="w-10 h-10" />
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
+                    <Pencil className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold font-headline">2. Book Your Session</h3>
+                    <p className="text-muted-foreground mt-1">Select a convenient date and time through our easy-to-use booking system. Our talented artists are ready to bring your vision to life with skill and precision.</p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold mb-2 font-headline">3. Enjoy Your Art</h3>
-                <p className="text-muted-foreground">Relax and enjoy the experience. Walk away with a beautiful piece of art that you'll love to show off.</p>
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
+                    <CheckCircle className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold font-headline">3. Enjoy Your Art</h3>
+                    <p className="text-muted-foreground mt-1">Relax and enjoy a personalized artistic experience. Walk away with a beautiful, handcrafted piece of art that you'll be excited to show off.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
