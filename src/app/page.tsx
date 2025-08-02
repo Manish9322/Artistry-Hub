@@ -489,32 +489,31 @@ export default function Home() {
                 From your initial idea to the final masterpiece, we follow a collaborative process to ensure your vision is brought to life with precision and artistry.
               </p>
             </div>
-            <div className="relative">
-              <div className="hidden md:block absolute left-1/2 top-0 h-full w-px bg-border/70" />
-              <div className="space-y-16">
-                {processSteps.map((step, index) => (
-                  <div key={step.title} className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
-                    <div className="flex-shrink-0 hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground absolute left-1/2 -translate-x-1/2 ring-8 ring-background">
-                      <step.icon className="w-6 h-6" />
-                    </div>
-                    <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1 text-left' : 'md:order-2 text-right'}`}>
-                      <Image
-                        src={`https://placehold.co/600x400.png`}
-                        alt={step.title}
-                        width={600}
-                        height={400}
-                        className="rounded-lg shadow-xl"
-                        data-ai-hint="art process"
-                      />
-                    </div>
-                    <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2 text-left' : 'md:order-1 text-right'}`}>
-                      <Badge variant="outline" className="mb-2 border-primary text-primary">Step {index + 1}</Badge>
-                      <h3 className="text-2xl font-bold font-headline mb-3">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
+            <div className="space-y-16">
+              {processSteps.map((step, index) => (
+                <div key={step.title} className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                  <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
+                    <Image
+                      src={`https://placehold.co/600x400.png`}
+                      alt={step.title}
+                      width={600}
+                      height={400}
+                      className="rounded-lg shadow-xl"
+                      data-ai-hint="art process"
+                    />
                   </div>
-                ))}
-              </div>
+                  <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
+                    <div className="flex items-center gap-4 mb-4">
+                       <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
+                         <step.icon className="w-6 h-6" />
+                       </div>
+                       <Badge variant="outline" className="border-primary text-primary">Step {index + 1}</Badge>
+                    </div>
+                    <h3 className="text-2xl font-bold font-headline mb-3">{step.title}</h3>
+                    <p className="text-muted-foreground">{step.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
             <div className="text-center mt-16">
               <Button asChild size="lg">
@@ -595,7 +594,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
