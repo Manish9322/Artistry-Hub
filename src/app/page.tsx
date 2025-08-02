@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
+import Autoplay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +77,21 @@ export default function Home() {
       alt: "Detailed Henna",
       hint: "intricate henna",
     },
+     {
+      src: "https://placehold.co/600x400.png",
+      alt: "Featured Mehndi Art 2",
+      hint: "bridal mehndi",
+    },
+    {
+      src: "https://placehold.co/600x400.png",
+      alt: "Featured Rangoli Art 2",
+      hint: "diwali rangoli",
+    },
+    {
+      src: "https://placehold.co/600x400.png",
+      alt: "Featured Nail Art 2",
+      hint: "abstract nails",
+    },
   ];
   
   const testimonials = [
@@ -122,6 +136,10 @@ export default function Home() {
   ]
 
   const tags = ["All", "Bridal", "Festival", "Modern", "Traditional"];
+  
+  const plugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -183,15 +201,16 @@ export default function Home() {
             </div>
             <Dialog>
               <Carousel
+                plugins={[plugin.current]}
                 opts={{
                   align: "start",
                   loop: true,
                 }}
                 className="w-full"
               >
-                <CarouselContent>
+                <CarouselContent className="-ml-4">
                   {featuredArt.map((art, index) => (
-                    <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                    <CarouselItem key={index} className="pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                       <div className="p-1">
                         <DialogTrigger asChild>
                           <Card className="overflow-hidden group" onClick={() => setSelectedArt(art)}>
@@ -215,8 +234,6 @@ export default function Home() {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="hidden sm:flex"/>
-                <CarouselNext className="hidden sm:flex"/>
               </Carousel>
               {selectedArt && (
                  <DialogContent className="max-w-3xl p-0">
