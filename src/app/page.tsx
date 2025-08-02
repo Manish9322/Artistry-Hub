@@ -3,7 +3,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 
 export default function Home() {
   const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint: string} | null>(null);
+  const [dynamicHeadline, setDynamicHeadline] = useState(0);
 
   const artCategories = [
     {
@@ -206,6 +207,20 @@ export default function Home() {
     "Get 15% off on your first custom jewelry order.",
     "Artistry Hub featured in this month's 'Creative Minds' magazine!"
   ]
+
+  const dynamicHeadlines = [
+    "Book our talented artists for your next event and let us bring your vision to life with creativity and passion.",
+    "Explore our workshops to learn new skills and connect with a vibrant community of fellow art enthusiasts.",
+    "Commission a personalized piece of jewelry, a unique expression of your style, handcrafted with care."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDynamicHeadline((prevIndex) => (prevIndex + 1) % dynamicHeadlines.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [dynamicHeadlines.length]);
+
   
   const duplicatedArt = [...featuredArt, ...featuredArt];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
@@ -256,6 +271,9 @@ export default function Home() {
               </h1>
               <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground">
                 Discover stunning Mehndi, vibrant Rangoli, chic Nail Art, and unique custom jewelry. Your one-stop hub for authentic, handcrafted artistic expression.
+              </p>
+              <p className="mt-4 max-w-3xl mx-auto text-lg md:text-xl text-primary/80 transition-opacity duration-500">
+                {dynamicHeadlines[dynamicHeadline]}
               </p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
                 <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg" asChild><Link href="/#featured">Explore The Gallery</Link></Button>
@@ -617,5 +635,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
