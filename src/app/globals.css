@@ -104,3 +104,7 @@ body {
 .animate-marquee-right {
   animation: marquee-right 40s linear infinite;
 }
+
+.group:hover .pause {
+    animation-play-state: paused;
+}

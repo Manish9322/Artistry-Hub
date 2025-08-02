@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -354,21 +354,22 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">What Our Clients Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {testimonials.map((testimonial, index) => (
-                <Card key={index} className="bg-background shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center mb-4">
+                <Card key={index} className="bg-background shadow-lg flex flex-col">
+                  <CardContent className="p-6 flex-grow flex flex-col">
+                    <Quote className="w-8 h-8 text-primary/50 mb-4" />
+                    <p className="text-muted-foreground italic text-lg flex-grow">"{testimonial.comment}"</p>
+                    <div className="flex items-center mt-6 pt-4 border-t border-border">
                       <Avatar className="h-12 w-12 mr-4">
                         <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />
                         <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div>
+                      <div className="flex-grow">
                         <p className="font-bold font-headline">{testimonial.name}</p>
-                        <div className="flex">
+                         <div className="flex mt-1">
                           {Array(testimonial.rating).fill(0).map((_, i) => <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />)}
                         </div>
                       </div>
                     </div>
-                    <p className="text-muted-foreground italic">"{testimonial.comment}"</p>
                   </CardContent>
                 </Card>
               ))}
