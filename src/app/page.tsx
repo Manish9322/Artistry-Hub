@@ -185,13 +185,41 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="featured" className="py-16 sm:py-24">
+        <section id="featured" className="py-16 sm:py-24 space-y-4">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold font-headline">Featured Gallery</h2>
               <p className="text-lg text-muted-foreground mt-2">A glimpse into our finest work.</p>
             </div>
             <Dialog>
+               <div className="relative w-full overflow-hidden group">
+                  <div className="flex animate-marquee-right group-hover:pause">
+                    {duplicatedArt.map((art, index) => (
+                      <div key={index} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                          <DialogTrigger asChild>
+                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt(art)}>
+                              <CardContent className="p-0 relative">
+                                <Image
+                                  src={art.src}
+                                  alt={art.alt}
+                                  width={600}
+                                  height={400}
+                                  className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                                  data-ai-hint={art.hint}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
+                                  <h3 className="text-white font-bold text-lg">{art.alt}</h3>
+                                  <p className="text-white/80 text-sm">Click to preview</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </DialogTrigger>
+                        </div>
+                    ))}
+                  </div>
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
+              </div>
                <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee group-hover:pause">
                     {duplicatedArt.map((art, index) => (
