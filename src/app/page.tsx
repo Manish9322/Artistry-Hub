@@ -1,6 +1,8 @@
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -11,11 +13,14 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Home() {
+  const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint: string} | null>(null);
+
   const artCategories = [
     {
       name: "Mehndi",
@@ -172,37 +177,61 @@ export default function Home() {
 
         <section id="featured" className="py-16 sm:py-24">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">Featured Gallery</h2>
-            <Carousel
-              opts={{
-                align: "start",
-                loop: true,
-              }}
-              className="w-full"
-            >
-              <CarouselContent>
-                {featuredArt.map((art, index) => (
-                  <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
-                    <div className="p-1">
-                      <Card className="overflow-hidden">
-                        <CardContent className="p-0">
-                          <Image
-                            src={art.src}
-                            alt={art.alt}
-                            width={600}
-                            height={400}
-                            className="aspect-video w-full object-cover transition-transform duration-300 hover:scale-105"
-                            data-ai-hint={art.hint}
-                          />
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className="hidden sm:flex"/>
-              <CarouselNext className="hidden sm:flex"/>
-            </Carousel>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline">Featured Gallery</h2>
+              <p className="text-lg text-muted-foreground mt-2">A glimpse into our finest work.</p>
+            </div>
+            <Dialog>
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {featuredArt.map((art, index) => (
+                    <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
+                      <div className="p-1">
+                        <DialogTrigger asChild>
+                          <Card className="overflow-hidden group" onClick={() => setSelectedArt(art)}>
+                            <CardContent className="p-0 relative">
+                              <Image
+                                src={art.src}
+                                alt={art.alt}
+                                width={600}
+                                height={400}
+                                className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                data-ai-hint={art.hint}
+                              />
+                              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <Eye className="w-8 h-8 text-white mb-2" />
+                                <span className="text-white font-semibold text-lg">{art.alt}</span>
+                                <span className="text-white/80 text-sm">Click to preview</span>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </DialogTrigger>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="hidden sm:flex"/>
+                <CarouselNext className="hidden sm:flex"/>
+              </Carousel>
+              {selectedArt && (
+                 <DialogContent className="max-w-3xl p-0">
+                    <Image
+                        src={selectedArt.src}
+                        alt={selectedArt.alt}
+                        width={1200}
+                        height={800}
+                        className="w-full h-auto rounded-lg object-contain"
+                        data-ai-hint={selectedArt.hint}
+                    />
+                 </DialogContent>
+              )}
+            </Dialog>
           </div>
         </section>
 
