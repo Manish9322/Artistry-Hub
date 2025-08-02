@@ -392,32 +392,32 @@ export default function Home() {
           </div>
         </section>
         
-        <section id="workshops" className="py-12">
+        <section id="workshops" className="py-16 sm:py-24">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">Upcoming Workshops</h2>
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {workshops.map((workshop) => (
-                <Card key={workshop.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300">
-                   <CardHeader>
-                     <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0">
-                          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/20 text-primary">
-                            <workshop.icon className="w-6 h-6" />
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <CardTitle className="font-headline text-xl">{workshop.title}</CardTitle>
-                          <CardDescription className="flex items-center gap-4 mt-1">
-                             <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{workshop.date}</span>
-                             <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" />{workshop.location}</span>
-                          </CardDescription>
+                <Card key={workshop.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
+                   <CardHeader className="flex-row gap-4 items-center">
+                      <div className="flex-shrink-0">
+                        <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary">
+                          <workshop.icon className="w-8 h-8" />
                         </div>
                       </div>
+                      <div className="flex-1">
+                        <CardTitle className="font-headline text-xl">{workshop.title}</CardTitle>
+                        <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
+                           <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{workshop.date}</span>
+                           <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" />{workshop.location}</span>
+                        </CardDescription>
+                      </div>
                    </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-grow">
                     <p className="text-muted-foreground">{workshop.description}</p>
-                    <Button variant="link" className="px-0 mt-2">Learn More & Register</Button>
                   </CardContent>
+                  <div className="p-6 pt-0">
+                    <Button variant="outline" className="w-full">Learn More & Register</Button>
+                  </div>
                 </Card>
               ))}
             </div>
