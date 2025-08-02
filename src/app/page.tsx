@@ -7,10 +7,12 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 
 export default function Home() {
   const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint: string} | null>(null);
@@ -135,7 +137,65 @@ export default function Home() {
       description: "Explore complex patterns, color blending, and techniques for creating large-scale rangoli art for competitions.",
       icon: Palette,
     }
-  ]
+  ];
+
+  const whyChooseUsItems = [
+    {
+      icon: Award,
+      title: "Experienced Artists",
+      description: "Our team consists of highly skilled and passionate artists with years of experience in traditional and contemporary art forms.",
+    },
+    {
+      icon: Handshake,
+      title: "Personalized Service",
+      description: "We work closely with you to understand your vision and create custom designs that are truly unique and personal.",
+    },
+    {
+      icon: Heart,
+      title: "Quality Materials",
+      description: "We use only the finest, skin-friendly materials to ensure beautiful, long-lasting results for all our art forms.",
+    },
+  ];
+
+  const featuredArtists = [
+    {
+      name: "Jane Doe",
+      role: "Lead Mehndi Artist",
+      image: "https://placehold.co/400x400.png",
+      hint: "artist portrait",
+    },
+    {
+      name: "John Smith",
+      role: "Rangoli Specialist",
+      image: "https://placehold.co/400x400.png",
+      hint: "artist portrait",
+    },
+    {
+      name: "Emily White",
+      role: "Nail & Jewelry Designer",
+      image: "https://placehold.co/400x400.png",
+      hint: "artist portrait",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "How do I book an appointment?",
+      answer: "You can easily book an appointment through our website's booking page. Simply select your desired service, artist, date, and time, and we'll confirm your session via email.",
+    },
+    {
+      question: "Do you offer services for events and weddings?",
+      answer: "Absolutely! We specialize in providing artistic services for weddings, parties, corporate events, and other special occasions. Contact us to discuss your event needs.",
+    },
+    {
+      question: "How long does a Mehndi/Henna design last?",
+      answer: "Our natural henna designs typically last for 1-3 weeks, depending on your skin type and aftercare. We provide detailed aftercare instructions to help you prolong the life of your design.",
+    },
+     {
+      question: "Can I request a custom design?",
+      answer: "Yes, we love creating custom designs! You can provide us with inspiration, or our artists can create a unique design for you based on your preferences.",
+    },
+  ];
   
   const duplicatedArt = [...featuredArt, ...featuredArt];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
@@ -357,10 +417,37 @@ export default function Home() {
             </div>
           </div>
         </section>
+        
+        <section id="why-choose-us" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline text-primary">Why Choose Artistry Hub?</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                We are dedicated to providing an exceptional artistic experience from start to finish.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {whyChooseUsItems.map((item) => (
+                <div key={item.title} className="text-center p-6 bg-background rounded-lg shadow-lg">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mx-auto mb-4">
+                    <item.icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold font-headline mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <section id="testimonials" className="py-12 bg-primary/10 overflow-hidden">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">What Our Clients Say</h2>
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">What Our Clients Say</h2>
+              <p className="mt-2 max-w-2xl mx-auto text-muted-foreground">
+                Real stories from our valued customers who have experienced the magic of our artistry.
+              </p>
+            </div>
              <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee group-hover:pause">
                     {duplicatedTestimonials.map((testimonial, index) => (
@@ -391,10 +478,49 @@ export default function Home() {
               </div>
           </div>
         </section>
-        
-        <section id="workshops" className="py-16 sm:py-24">
+
+        <section id="artists" className="py-16 sm:py-24 bg-background">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">Upcoming Workshops</h2>
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline text-primary">Meet Our Talented Artists</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                The creative minds behind our beautiful artwork. Passionate, skilled, and ready to bring your vision to life.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredArtists.map((artist) => (
+                <div key={artist.name} className="text-center group">
+                  <div className="relative inline-block">
+                    <Image
+                      src={artist.image}
+                      alt={artist.name}
+                      width={400}
+                      height={400}
+                      className="rounded-full w-40 h-40 mx-auto mb-4 shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
+                      data-ai-hint={artist.hint}
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold font-headline">{artist.name}</h3>
+                  <p className="text-primary">{artist.role}</p>
+                </div>
+              ))}
+            </div>
+            <div className="text-center mt-12">
+              <Button asChild>
+                <Link href="/about">Meet The Whole Team</Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+        
+        <section id="workshops" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">Upcoming Workshops</h2>
+              <p className="mt-2 max-w-2xl mx-auto text-muted-foreground">
+                Join our workshops to learn new skills, meet fellow art lovers, and unleash your creativity.
+              </p>
+            </div>
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               {workshops.map((workshop) => (
                 <Card key={workshop.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
@@ -424,6 +550,30 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="faq" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold font-headline text-primary">Frequently Asked Questions</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Have questions? We've got answers. Here are some of the most common inquiries we receive.
+              </p>
+            </div>
+            <div className="max-w-3xl mx-auto">
+              <Accordion type="single" collapsible className="w-full">
+                {faqs.map((faq, index) => (
+                  <AccordionItem key={index} value={`item-${index}`}>
+                    <AccordionTrigger className="text-lg font-semibold text-left">{faq.question}</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground text-base">
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </div>
+        </section>
+
+
       </main>
 
       <footer id="contact" className="bg-primary text-primary-foreground mt-16">
@@ -434,3 +584,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
