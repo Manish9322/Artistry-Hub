@@ -428,12 +428,12 @@ export default function Home() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {whyChooseUsItems.map((item) => (
-                <div key={item.title} className="text-center p-6 bg-background rounded-lg shadow-lg">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mx-auto mb-4">
-                    <item.icon className="w-8 h-8" />
+                <div key={item.title} className="group text-center p-8 bg-background rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <item.icon className="w-10 h-10" />
                   </div>
-                  <h3 className="text-xl font-bold font-headline mb-2">{item.title}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
+                  <h3 className="text-2xl font-bold font-headline mb-3">{item.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{item.description}</p>
                 </div>
               ))}
             </div>
