@@ -3,12 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -137,9 +131,7 @@ export default function Home() {
 
   const tags = ["All", "Bridal", "Festival", "Modern", "Traditional"];
   
-  const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true, stopOnMouseEnter: true })
-  );
+  const duplicatedArt = [...featuredArt, ...featuredArt];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -200,41 +192,32 @@ export default function Home() {
               <p className="text-lg text-muted-foreground mt-2">A glimpse into our finest work.</p>
             </div>
             <Dialog>
-              <Carousel
-                plugins={[plugin.current]}
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className="w-full"
-              >
-                <CarouselContent className="-ml-4">
-                  {featuredArt.map((art, index) => (
-                    <CarouselItem key={index} className="pl-4 basis-full md:basis-1/2 lg:basis-1/3">
-                      <div className="p-1">
-                        <DialogTrigger asChild>
-                          <Card className="overflow-hidden group" onClick={() => setSelectedArt(art)}>
-                            <CardContent className="p-0 relative">
-                              <Image
-                                src={art.src}
-                                alt={art.alt}
-                                width={600}
-                                height={400}
-                                className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                data-ai-hint={art.hint}
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <h3 className="text-white font-bold text-lg">{art.alt}</h3>
-                                <p className="text-white/80 text-sm">Click to preview</p>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </DialogTrigger>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-              </Carousel>
+              <div className="relative w-full overflow-hidden group">
+                  <div className="flex animate-marquee group-hover:pause">
+                    {duplicatedArt.map((art, index) => (
+                      <div key={index} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                          <DialogTrigger asChild>
+                            <Card className="overflow-hidden group/card" onClick={() => setSelectedArt(art)}>
+                              <CardContent className="p-0 relative">
+                                <Image
+                                  src={art.src}
+                                  alt={art.alt}
+                                  width={600}
+                                  height={400}
+                                  className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                                  data-ai-hint={art.hint}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
+                                  <h3 className="text-white font-bold text-lg">{art.alt}</h3>
+                                  <p className="text-white/80 text-sm">Click to preview</p>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </DialogTrigger>
+                        </div>
+                    ))}
+                  </div>
+              </div>
               {selectedArt && (
                  <DialogContent className="max-w-3xl p-0">
                     <Image
