@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArtRecommendationsForm } from "@/components/art-recommendations";
 import { Palette, Instagram, Twitter, Facebook, MessageCircle, Mail, User, Phone } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 
@@ -168,12 +167,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-        </section>
-
-        <section id="ai-recommendations" className="py-16 sm:py-24">
-            <div className="container">
-                <ArtRecommendationsForm />
-            </div>
         </section>
 
       </main>
