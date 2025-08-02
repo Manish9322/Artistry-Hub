@@ -161,22 +161,22 @@ export default function Home() {
     {
       icon: MessageSquare,
       title: "Consultation",
-      description: "We start with a one-on-one consultation to understand your vision, preferences, and the occasion for your artwork."
+      description: "We start with a one-on-one consultation to understand your vision, preferences, and the occasion for your artwork. Whether you have a specific idea or need inspiration, we're here to listen and guide you."
     },
     {
       icon: Lightbulb,
       title: "Design Creation",
-      description: "Our artists craft a unique design concept, incorporating your ideas with their creative expertise to produce a preliminary sketch."
+      description: "Our artists craft a unique design concept, incorporating your ideas with their creative expertise. We'll produce a preliminary sketch, allowing you to visualize the final piece and provide feedback before we proceed."
     },
     {
       icon: Scissors,
       title: "Execution & Refinement",
-      description: "With your approval, we bring the design to life, paying meticulous attention to detail and allowing for refinements along the way."
+      description: "With your approval, our artists bring the design to life with meticulous attention to detail. We welcome your input throughout the process, making refinements to ensure the artwork perfectly matches your expectations."
     },
     {
       icon: Sparkles,
       title: "Final Masterpiece",
-      description: "The result is a stunning, handcrafted piece of art that is uniquely yours, ready to be cherished and admired."
+      description: "The result is a stunning, handcrafted piece of art that is uniquely yours. We ensure you are completely satisfied, providing you with a masterpiece ready to be cherished and admired for years to come."
     }
   ];
 
@@ -484,47 +484,39 @@ export default function Home() {
         <section id="process" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold font-headline text-primary">Our Process</h2>
+              <h2 className="text-4xl font-bold font-headline text-primary">Our Creative Process</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                From concept to creation, we tailor our process to bring your unique vision to life with precision and artistry.
+                From your initial idea to the final masterpiece, we follow a collaborative process to ensure your vision is brought to life with precision and artistry.
               </p>
             </div>
             <div className="relative">
-              <div className="hidden md:block absolute left-1/2 -translate-x-1/2 top-10 h-full w-px bg-border -z-10">
-                <div className="sticky top-1/2">
-                   <div className="w-4 h-4 rounded-full bg-primary ring-4 ring-primary/20"></div>
-                </div>
-              </div>
-
+              <div className="hidden md:block absolute left-1/2 top-0 h-full w-px bg-border/70" />
               <div className="space-y-16">
                 {processSteps.map((step, index) => (
-                  <div key={step.title} className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
-                     <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
-                        <div className="relative">
-                          <div className={`flex items-center gap-4 mb-4 ${index % 2 === 0 ? 'md:justify-start' : 'md:justify-end'}`}>
-                            <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
-                              <step.icon className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-2xl font-bold font-headline">{step.title}</h3>
-                          </div>
-                          <p className={`text-muted-foreground ${index % 2 === 0 ? 'md:text-left' : 'md:text-right'}`}>{step.description}</p>
-                        </div>
-                      </div>
-                     <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
-                        <Image
-                          src={`https://placehold.co/600x400.png`}
-                          alt={step.title}
-                          width={600}
-                          height={400}
-                          className="rounded-lg shadow-xl"
-                          data-ai-hint="art process"
-                        />
-                      </div>
+                  <div key={step.title} className="relative flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                    <div className="flex-shrink-0 hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-primary text-primary-foreground absolute left-1/2 -translate-x-1/2 ring-8 ring-background">
+                      <step.icon className="w-6 h-6" />
+                    </div>
+                    <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1 text-left' : 'md:order-2 text-right'}`}>
+                      <Image
+                        src={`https://placehold.co/600x400.png`}
+                        alt={step.title}
+                        width={600}
+                        height={400}
+                        className="rounded-lg shadow-xl"
+                        data-ai-hint="art process"
+                      />
+                    </div>
+                    <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2 text-left' : 'md:order-1 text-right'}`}>
+                      <Badge variant="outline" className="mb-2 border-primary text-primary">Step {index + 1}</Badge>
+                      <h3 className="text-2xl font-bold font-headline mb-3">{step.title}</h3>
+                      <p className="text-muted-foreground">{step.description}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-             <div className="text-center mt-16">
+            <div className="text-center mt-16">
               <Button asChild size="lg">
                 <Link href="/booking">Start Your Project</Link>
               </Button>
@@ -603,5 +595,7 @@ export default function Home() {
     </div>
   );
 }
+
+    
 
     
