@@ -230,7 +230,7 @@ export default function Home() {
       </header>
 
       <div className="bg-primary/10 border-b">
-        <div className="container py-2 group flex overflow-hidden">
+        <div className="py-2 group flex overflow-hidden">
           <div className="flex animate-marquee-slow group-hover:pause space-x-8">
             {duplicatedNews.map((news, index) => (
               <div key={index} className="flex-shrink-0 flex items-center gap-2 text-sm text-primary">
