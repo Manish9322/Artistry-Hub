@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ import { Palette } from "lucide-react";
 export default function CustomJewelryPage() {
   const page = {
     title: "Custom Plastic Jewelry",
-    description: "Unique, handcrafted plastic jewelry designed to make a statement.",
+    description: "Discover a world of bold expression with our unique, handcrafted plastic jewelry. Each piece is designed to be a conversation starter, blending modern aesthetics with playful creativity to make a definitive statement.",
   };
 
   const artPieces = [
@@ -111,7 +112,7 @@ export default function CustomJewelryPage() {
                       </div>
                       <div className="flex gap-2">
                         <Button className="w-full" size="sm" asChild><Link href="/booking">Book Appointment</Link></Button>
-                        <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${piece.title}`}>Order This Design</Link></Button>
+                        <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This Design</Link></Button>
                       </div>
                     </div>
                   </CardContent>

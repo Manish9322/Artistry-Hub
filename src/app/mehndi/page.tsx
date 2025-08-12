@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ import { Palette } from "lucide-react";
 export default function MehndiPage() {
   const page = {
     title: "Mehndi Designs",
-    description: "Explore our exquisite collection of traditional and contemporary Mehndi art.",
+    description: "Explore our exquisite collection of traditional and contemporary Mehndi art, where every design tells a story of culture, celebration, and personal expression. From intricate bridal patterns to modern minimalist styles, find the perfect art for your hands.",
   };
 
   const artPieces = [

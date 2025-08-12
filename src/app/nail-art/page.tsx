@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ import { Palette } from "lucide-react";
 export default function NailArtPage() {
   const page = {
     title: "Nail Art",
-    description: "Creative and stylish nail designs for any occasion.",
+    description: "Unleash your personality with our creative and stylish nail designs. From chic minimalism to glamorous statements, our artists craft the perfect look for any occasion, ensuring your nails are a true work of art.",
   };
 
   const artPieces = [

@@ -1,6 +1,7 @@
+
 "use client";
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,6 +78,15 @@ function OrderFormComponent() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <div className="space-y-4">
+           <FormField
+            control={form.control}
+            name="itemName"
+            render={({ field }) => (
+              <FormItem className="hidden">
+                <FormControl><Input {...field} /></FormControl>
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="name"
@@ -161,7 +171,10 @@ function OrderFormComponent() {
   )
 }
 
-export default function OrderPage() {
+function OrderPageContent() {
+  const searchParams = useSearchParams();
+  const itemName = searchParams.get('item') || 'Custom Jewelry Piece';
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -196,16 +209,12 @@ export default function OrderPage() {
                 <CardTitle className="text-center text-2xl font-headline">
                   Order Details
                 </CardTitle>
-                <Suspense fallback={<div>Loading...</div>}>
-                    <CardDescription className="text-center">
-                        You are ordering: <span className="font-bold text-primary">{useSearchParams().get('item') || 'Custom Jewelry Piece'}</span>
-                    </CardDescription>
-                </Suspense>
+                <CardDescription className="text-center">
+                    You are ordering: <span className="font-bold text-primary">{itemName}</span>
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <Suspense fallback={<div>Loading form...</div>}>
-                  <OrderFormComponent />
-                </Suspense>
+                <OrderFormComponent />
               </CardContent>
             </Card>
           </div>
@@ -219,4 +228,13 @@ export default function OrderPage() {
       </footer>
     </div>
   );
+}
+
+
+export default function OrderPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <OrderPageContent />
+        </Suspense>
+    )
 }

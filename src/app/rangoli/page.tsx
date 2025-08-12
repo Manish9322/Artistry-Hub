@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +10,7 @@ import { Palette } from "lucide-react";
 export default function RangoliPage() {
   const page = {
     title: "Rangoli Art",
-    description: "Vibrant and colorful floor art for festivals and celebrations.",
+    description: "Celebrate tradition with our vibrant and colorful floor art. Perfect for festivals, weddings, and special events, our Rangoli designs bring life and energy to any space with their intricate patterns and beautiful symmetry.",
   };
 
   const artPieces = [
