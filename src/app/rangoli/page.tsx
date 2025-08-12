@@ -3,9 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Wind, Trash2, ShieldCheck, User, Award, Handshake, Heart } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function RangoliPage() {
   const page = {
@@ -46,9 +48,112 @@ export default function RangoliPage() {
       tags: ["Modern", "Water"],
       hint: "floating rangoli"
     },
+     {
+      title: "Peacock Grandeur",
+      artist: "John Smith",
+      price: 180,
+      image: "https://placehold.co/600x400.png",
+      tags: ["Traditional", "Festival"],
+      hint: "peacock rangoli"
+    },
+    {
+      title: "Minimalist Corner",
+      artist: "Ravi Verma",
+      price: 60,
+      image: "https://placehold.co/600x400.png",
+      tags: ["Modern", "Minimalist"],
+      hint: "simple rangoli"
+    },
+    {
+      title: "Wedding Aisle",
+      artist: "John Smith",
+      price: 250,
+      image: "https://placehold.co/600x400.png",
+      tags: ["Large", "Festival"],
+      hint: "wedding rangoli",
+    },
+    {
+      title: "Flower Petal Art",
+      artist: "Ravi Verma",
+      price: 100,
+      image: "https://placehold.co/600x400.png",
+      tags: ["Traditional", "Water"],
+      hint: "flower rangoli",
+    }
   ];
 
-  const tags = ["All", "Festival", "Traditional", "Modern", "Geometric", "Large", "Water"];
+  const tags = ["All", "Festival", "Traditional", "Modern", "Geometric", "Large", "Water", "Minimalist"];
+
+  const processSteps = [
+    {
+      icon: MessageSquare,
+      title: "Consultation",
+      description: "Discuss your event theme, color palette, and space dimensions with us to create the perfect rangoli design."
+    },
+    {
+      icon: Lightbulb,
+      title: "Design & Materials",
+      description: "We create a custom design and select the best materials, from vibrant powders to fresh flowers and eco-friendly options."
+    },
+    {
+      icon: Scissors,
+      title: "On-Site Creation",
+      description: "Our artists arrive at your location to skillfully create the rangoli, ensuring every detail is perfectly placed."
+    },
+    {
+      icon: Sparkles,
+      title: "Vibrant Showcase",
+      description: "The finished rangoli becomes a stunning centerpiece for your event, ready to be admired by all your guests."
+    }
+  ];
+
+  const careTips = [
+    {
+      icon: Wind,
+      title: "Protect from Wind",
+      description: "If outdoors, place your rangoli in a spot sheltered from strong winds to prevent powders from scattering."
+    },
+    {
+      icon: ShieldCheck,
+      title: "Gentle Preservation",
+      description: "Avoid walking on or near the design. For powder rangolis, a light mist of water can sometimes help it set."
+    },
+    {
+      icon: Trash2,
+      title: "Easy Cleanup",
+      description: "We provide cleanup services or advise on the best methods to cleanly remove the rangoli after your event concludes."
+    }
+  ];
+
+  const faqs = [
+    {
+      question: "How long does a rangoli last?",
+      answer: "An indoor rangoli can last for several days if undisturbed. Outdoor and flower rangolis are more temporary, typically lasting for the duration of an event (1-2 days).",
+    },
+    {
+      question: "What materials do you use?",
+      answer: "We use a variety of materials including colored powders, rice flour, flower petals, diyas (lamps), and recycled materials for eco-friendly options.",
+    },
+    {
+      question: "Can you create a rangoli on any surface?",
+      answer: "Yes, we can create rangolis on most flat surfaces, including floors, entrances, and even on water (floating rangolis). We prepare the surface to ensure the best results.",
+    },
+  ];
+
+  const teamMembers = [
+    {
+      name: "John Smith",
+      role: "Lead Rangoli Artist",
+      image: "https://placehold.co/400x400.png",
+      hint: "artist portrait",
+    },
+    {
+      name: "Ravi Verma",
+      role: "Modern & Geometric Rangoli Expert",
+      image: "https://placehold.co/400x400.png",
+      hint: "artist portrait",
+    },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -85,7 +190,7 @@ export default function RangoliPage() {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {artPieces.map((piece, index) => (
                 <Card key={index} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
                   <CardContent className="p-0">
@@ -120,6 +225,98 @@ export default function RangoliPage() {
             </div>
           </div>
         </section>
+
+        <section id="process" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Our Rangoli Process</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                A seamless flow from concept to a stunning floor masterpiece for your event.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-4 gap-8">
+              {processSteps.map((step, index) => (
+                 <div key={step.title} className="text-center">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6">
+                    <step.icon className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-xl font-bold font-headline mb-2">{index+1}. {step.title}</h3>
+                  <p className="text-muted-foreground">{step.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="artists" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">Meet Our Rangoli Specialists</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                The creative minds behind our vibrant floor art.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8 max-w-3xl mx-auto">
+              {teamMembers.map((member) => (
+                <div key={member.name} className="text-center group">
+                  <div className="relative inline-block">
+                     <Avatar className="h-40 w-40 mx-auto mb-4 shadow-lg transition-transform duration-300 group-hover:scale-105">
+                        <AvatarImage src={member.image} alt={member.name} data-ai-hint={member.hint} className="object-cover" />
+                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                     <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                  <h3 className="text-xl font-semibold font-headline">{member.name}</h3>
+                  <p className="text-primary">{member.role}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+         <section id="care" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Preserving Your Rangoli</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Tips to keep your floor art looking fresh and vibrant throughout your event.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {careTips.map((tip) => (
+                <Card key={tip.title} className="text-center p-8 bg-background shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6">
+                    <tip.icon className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-xl font-bold font-headline mb-2">{tip.title}</h3>
+                  <p className="text-muted-foreground">{tip.description}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="faq" className="py-16 sm:py-24 bg-background">
+          <div className="container max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">Rangoli FAQs</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Common questions about our traditional floor art services.
+              </p>
+            </div>
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((faq, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger className="text-lg font-semibold text-left">{faq.question}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-base">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+
       </main>
 
       <footer className="bg-primary text-primary-foreground mt-16">
