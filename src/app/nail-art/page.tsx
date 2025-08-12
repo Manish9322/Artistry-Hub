@@ -81,6 +81,8 @@ export default function NailArtPage() {
       hint: "rhinestone nails"
     }
   ];
+  
+  const duplicatedArt = [...artPieces, ...artPieces];
 
   const tags = ["All", "Glam", "Modern", "Minimalist", "Chic", "Artsy", "Classic"];
 
@@ -182,45 +184,69 @@ export default function NailArtPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-24">
+        <section className="py-16 sm:py-24 space-y-4">
           <div className="container">
-            <div className="flex justify-center flex-wrap gap-2 mb-12">
-               {tags.map((tag) => (
-                <Badge key={tag} variant={tag === 'All' ? 'default' : 'outline'} className="text-sm px-4 py-2 cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground">{tag}</Badge>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {artPieces.map((piece, index) => (
-                <Card key={index} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
-                  <CardContent className="p-0">
-                     <div className="relative">
-                        <Image
-                          src={piece.image}
-                          alt={piece.title}
-                          width={600}
-                          height={400}
-                          className="w-full h-64 object-cover"
-                          data-ai-hint={piece.hint}
-                        />
-                         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                          <h3 className="text-xl font-bold text-white font-headline">{piece.title}</h3>
-                          <p className="text-sm text-white/90">by {piece.artist}</p>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold font-headline text-primary">Our Styles</h2>
+                 <p className="mt-2 text-lg text-muted-foreground">Find the perfect design to express your style.</p>
+              </div>
+              <div className="flex justify-center flex-wrap gap-2 mb-12">
+                 {tags.map((tag) => (
+                  <Badge key={tag} variant={tag === 'All' ? 'default' : 'outline'} className="text-sm px-4 py-2 cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground">{tag}</Badge>
+                ))}
+              </div>
+          </div>
+          <div className="relative w-full overflow-hidden group/container space-y-4">
+            <div className="flex animate-marquee group-hover/container:pause">
+              {duplicatedArt.map((piece, index) => (
+                <div key={`row1-${index}`} className="flex-shrink-0 w-80 p-4">
+                  <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl">
+                    <div className="relative h-80 w-full">
+                      <Image
+                        src={piece.image}
+                        alt={piece.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-ai-hint={piece.hint}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                        <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
+                        <p className="text-sm text-white/90 mb-2">by {piece.artist}</p>
+                         <div className="flex flex-wrap gap-1 mb-3">
+                          {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
                         </div>
-                      </div>
-                    <div className="p-4">
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {piece.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                      </div>
-                      <div className="flex justify-between items-center mb-4">
-                        <p className="text-2xl font-bold text-primary">${piece.price}</p>
-                      </div>
-                      <div className="flex gap-2">
+                        <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
                         <Button className="w-full" size="sm" asChild><Link href="/booking">Book Appointment</Link></Button>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </Card>
+                </div>
+              ))}
+            </div>
+            <div className="flex animate-marquee-right group-hover/container:pause">
+               {duplicatedArt.slice().reverse().map((piece, index) => (
+                <div key={`row2-${index}`} className="flex-shrink-0 w-80 p-4">
+                  <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl">
+                    <div className="relative h-80 w-full">
+                      <Image
+                        src={piece.image}
+                        alt={piece.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-ai-hint={piece.hint}
+                      />
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                        <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
+                        <p className="text-sm text-white/90 mb-2">by {piece.artist}</p>
+                         <div className="flex flex-wrap gap-1 mb-3">
+                          {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                        </div>
+                        <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
+                        <Button className="w-full" size="sm" asChild><Link href="/booking">Book Appointment</Link></Button>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
               ))}
             </div>
           </div>
