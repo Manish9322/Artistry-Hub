@@ -141,27 +141,6 @@ export default function MehndiPage() {
       answer: "We recommend booking your bridal mehndi 2-3 months in advance, especially during peak wedding season, to ensure artist availability.",
     },
   ];
-
-   const teamMembers = [
-    {
-      name: "Jane Doe",
-      role: "Lead Mehndi Artist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
-    {
-      name: "Aisha Khan",
-      role: "Contemporary Henna Specialist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
-    {
-      name: "Priya Sharma",
-      role: "Bridal & Intricate Design Expert",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
-  ];
    
     const commitment = [
       {
@@ -334,7 +313,16 @@ export default function MehndiPage() {
                       <h3 className="text-xl font-bold font-headline mb-2">{index + 1}. {step.title}</h3>
                       <p className="text-muted-foreground">{step.description}</p>
                     </div>
-                    <div className="hidden md:block"></div>
+                     <div className={`h-48 w-48 hidden md:flex items-center justify-center ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
+                       <Image
+                        src="https://placehold.co/400x400.png"
+                        alt={step.title}
+                        width={400}
+                        height={400}
+                        className="rounded-lg shadow-lg"
+                        data-ai-hint="art process"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -432,32 +420,6 @@ export default function MehndiPage() {
                     <Button variant="outline">Read More <BookOpen className="ml-2 h-4 w-4" /></Button>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="artists" className="py-16 sm:py-24 bg-background">
-          <div className="container">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold font-headline">Meet Our Mehndi Specialists</h2>
-              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                The talented hands behind our beautiful henna creations.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
-                <div key={member.name} className="text-center group">
-                  <div className="relative inline-block">
-                    <Avatar className="h-40 w-40 mx-auto mb-4 shadow-lg transition-transform duration-300 group-hover:scale-105">
-                        <AvatarImage src={member.image} alt={member.name} data-ai-hint={member.hint} className="object-cover" />
-                        <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                     <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-                  <h3 className="text-xl font-semibold font-headline">{member.name}</h3>
-                  <p className="text-primary">{member.role}</p>
-                </div>
               ))}
             </div>
           </div>
