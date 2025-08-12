@@ -47,7 +47,7 @@ function AdminHeader() {
   const { toggleSidebar } = useSidebar();
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
-      <SidebarTrigger className="md:hidden" />
+       <SidebarTrigger className="md:hidden" />
       <div className="flex-1">
         {/* You can add a dynamic title here if needed */}
       </div>
@@ -108,42 +108,42 @@ export default function AdminLayout({
 }
 
 function AdminSidebar() {
-  const { toggleSidebar } = useSidebar();
+  const { state } = useSidebar();
   const pathname = usePathname();
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
-        <div className="flex items-center gap-2">
-          <Palette className="w-8 h-8 text-primary" />
-          <span className="font-bold text-lg font-headline">Artistry Hub</span>
+         <div className="flex items-center gap-2">
+            <Palette className="w-6 h-6 text-primary" />
+            {state === 'expanded' && <span className="font-bold text-lg font-headline">Artistry Hub</span>}
         </div>
          <SidebarTrigger className="hidden md:flex" />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton href="/admin/dashboard" isActive={pathname === '/admin/dashboard'}>
+            <SidebarMenuButton href="/admin/dashboard" tooltip="Dashboard" isActive={pathname === '/admin/dashboard'}>
               <Home />
-              Dashboard
+              <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton href="/admin/art-pieces" isActive={pathname === '/admin/art-pieces'}>
+            <SidebarMenuButton href="/admin/art-pieces" tooltip="Art Pieces" isActive={pathname === '/admin/art-pieces'}>
               <Paintbrush />
-              Art Pieces
-              <SidebarMenuBadge>12</SidebarMenuBadge>
+               <span className="group-data-[collapsible=icon]:hidden">Art Pieces</span>
+              <SidebarMenuBadge className="group-data-[collapsible=icon]:hidden">12</SidebarMenuBadge>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton href="/admin/bookings" isActive={pathname === '/admin/bookings'}>
+            <SidebarMenuButton href="/admin/bookings" tooltip="Bookings" isActive={pathname === '/admin/bookings'}>
               <Calendar />
-              Bookings
+              <span className="group-data-[collapsible=icon]:hidden">Bookings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton href="/admin/clients" isActive={pathname === '/admin/clients'}>
+            <SidebarMenuButton href="/admin/clients" tooltip="Clients" isActive={pathname === '/admin/clients'}>
               <Users />
-              Clients
+              <span className="group-data-[collapsible=icon]:hidden">Clients</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -151,15 +151,15 @@ function AdminSidebar() {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton href="#">
+            <SidebarMenuButton href="#" tooltip="Settings">
               <Settings />
-              Settings
+              <span className="group-data-[collapsible=icon]:hidden">Settings</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton href="/admin/login">
+            <SidebarMenuButton href="/admin/login" tooltip="Logout">
               <LogOut />
-              Logout
+              <span className="group-data-[collapsible=icon]:hidden">Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
