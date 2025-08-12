@@ -3,9 +3,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Wind, Trash2, ShieldCheck, User, Award, Handshake, Heart } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Wind, Trash2, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -156,6 +156,61 @@ export default function RangoliPage() {
       hint: "artist portrait",
     },
   ];
+  
+    const commitment = [
+      {
+        icon: Award,
+        title: "Vibrant Colors",
+        description: "We source high-quality, vivid color powders to create brilliant and eye-catching Rangoli designs that pop."
+      },
+      {
+        icon: Handshake,
+        title: "Precision & Symmetry",
+        description: "Our artists are masters of precision, creating perfectly symmetrical and intricate patterns that honor tradition."
+      },
+      {
+        icon: Heart,
+        title: "Eco-Friendly Options",
+        description: "We offer beautiful designs made from natural materials like flowers and colored rice for an eco-conscious celebration."
+      }
+    ];
+
+    const bespokeCreations = [
+      { image: 'https://placehold.co/400x500.png', hint: 'large wedding rangoli' },
+      { image: 'https://placehold.co/400x500.png', hint: 'corporate event rangoli' },
+      { image: 'https://placehold.co/400x500.png', hint: 'intricate diwali rangoli' },
+      { image: 'https://placehold.co/400x500.png', hint: 'flower petal rangoli art' }
+    ];
+
+    const testimonials = [
+      {
+        name: "Priya V.",
+        comment: "The Rangoli for our Diwali celebration was absolutely breathtaking. It was the highlight of our decor and everyone was in awe.",
+        image: "https://placehold.co/100x100.png",
+        hint: "woman smiling"
+      },
+      {
+        name: "David Chen",
+        comment: "John and his team created a stunning Rangoli for our corporate event. It was professional, beautiful, and delivered on time. Highly recommended.",
+        image: "https://placehold.co/100x100.png",
+        hint: "man portrait"
+      }
+    ];
+
+    const blogPosts = [
+      {
+        title: "The Art of Color in Rangoli Design",
+        description: "Learn about the significance of different colors in Rangoli and how to create a harmonious and vibrant palette.",
+        image: "https://placehold.co/600x400.png",
+        hint: "rangoli colors"
+      },
+      {
+        title: "DIY Floating Rangoli Tutorial",
+        description: "A step-by-step guide to creating your own beautiful floating Rangoli for a stunning water feature.",
+        image: "https://placehold.co/600x400.png",
+        hint: "diy craft"
+      }
+    ];
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -201,7 +256,7 @@ export default function RangoliPage() {
               {duplicatedArt.map((piece, index) => (
                 <div key={`row1-${index}`} className="flex-shrink-0 w-80 p-4">
                   <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl">
-                    <div className="relative h-80 w-full">
+                    <div className="relative h-64 w-full">
                       <Image
                         src={piece.image}
                         alt={piece.title}
@@ -227,7 +282,7 @@ export default function RangoliPage() {
                {duplicatedArt.slice().reverse().map((piece, index) => (
                 <div key={`row2-${index}`} className="flex-shrink-0 w-80 p-4">
                   <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl">
-                    <div className="relative h-80 w-full">
+                    <div className="relative h-64 w-full">
                       <Image
                         src={piece.image}
                         alt={piece.title}
@@ -254,21 +309,122 @@ export default function RangoliPage() {
 
         <section id="process" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
               <h2 className="text-3xl font-bold font-headline text-primary">Our Rangoli Process</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
                 A seamless flow from concept to a stunning floor masterpiece for your event.
               </p>
             </div>
-            <div className="grid md:grid-cols-4 gap-8">
-              {processSteps.map((step, index) => (
-                 <div key={step.title} className="text-center">
-                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6">
-                    <step.icon className="w-10 h-10" />
+             <div className="relative">
+              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 hidden md:block" aria-hidden="true"></div>
+              <div className="space-y-16 md:space-y-0">
+                {processSteps.map((step, index) => (
+                  <div key={step.title} className="md:grid md:grid-cols-2 md:items-center md:gap-16">
+                    <div className={`flex flex-col items-center text-center md:items-start md:text-left ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
+                      <div className="flex items-center justify-center w-20 h-20 rounded-full bg-background shadow-lg mb-6">
+                        <step.icon className="w-10 h-10 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold font-headline mb-2">{index + 1}. {step.title}</h3>
+                      <p className="text-muted-foreground">{step.description}</p>
+                    </div>
+                    <div className="hidden md:block"></div>
                   </div>
-                  <h3 className="text-xl font-bold font-headline mb-2">{index+1}. {step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="commitment" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">Our Commitment to You</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                We are dedicated to making your celebrations more colorful and memorable.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {commitment.map((item) => (
+                <div key={item.title} className="text-center p-8 bg-secondary/30 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6">
+                    <item.icon className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-xl font-bold font-headline mb-2">{item.title}</h3>
+                  <p className="text-muted-foreground">{item.description}</p>
                 </div>
+              ))}
+            </div>
+          </div>
+        </section>
+        
+        <section id="bespoke" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Bespoke Creations</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                A gallery of our unique, client-inspired custom Rangoli designs for various events.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {bespokeCreations.map((item, index) => (
+                <div key={index} className="group overflow-hidden rounded-lg shadow-lg">
+                  <Image src={item.image} alt="Bespoke Rangoli" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint={item.hint} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="testimonials" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">From Our Clients</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Hear what our happy clients have to say about their Rangoli experience.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {testimonials.map((testimonial, index) => (
+                <Card key={index} className="bg-secondary/30 border-0 shadow-lg">
+                  <CardContent className="p-8">
+                    <div className="flex items-center mb-4">
+                      <Avatar className="h-16 w-16 mr-4 border-2 border-primary">
+                        <AvatarImage src={testimonial.image} alt={testimonial.name} data-ai-hint={testimonial.hint} />
+                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <h3 className="text-xl font-bold font-headline">{testimonial.name}</h3>
+                        <div className="flex mt-1">
+                          {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 text-yellow-500 fill-current" />)}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground italic">"{testimonial.comment}"</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="blog" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">Explore Our Blog</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Dive into the colorful world of Rangoli with our articles on history, techniques, and designs.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-8">
+              {blogPosts.map((post) => (
+                <Card key={post.title} className="overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <Image src={post.image} alt={post.title} width={600} height={400} className="w-full h-48 object-cover" data-ai-hint={post.hint} />
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold font-headline mb-2">{post.title}</h3>
+                    <p className="text-muted-foreground mb-4">{post.description}</p>
+                    <Button variant="outline">Read More <BookOpen className="ml-2 h-4 w-4" /></Button>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
@@ -343,9 +499,21 @@ export default function RangoliPage() {
           </div>
         </section>
 
+        <section id="contact-cta" className="py-16 sm:py-24 bg-primary/10">
+            <div className="container text-center">
+                 <h2 className="text-3xl font-bold font-headline text-primary">Bring Your Celebration to Life with Color</h2>
+                 <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+                    Planning an event? Let us create a stunning Rangoli that will leave a lasting impression on your guests.
+                 </p>
+                 <Button size="lg" className="mt-8" asChild>
+                    <Link href="/contact">Get a Quote <Send className="ml-2 h-5 w-5"/></Link>
+                 </Button>
+            </div>
+        </section>
+
       </main>
 
-      <footer className="bg-primary text-primary-foreground mt-16">
+      <footer className="bg-primary text-primary-foreground mt-auto">
         <div className="bg-primary/90 py-4">
           <Copyright />
         </div>
