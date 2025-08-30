@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -143,6 +143,38 @@ export default function BookingPage() {
       hint: "artist portrait",
     },
   ];
+
+   const eventSchedule = [
+    {
+      time: "11:00 AM - 12:00 PM",
+      title: "Live Mehndi Demonstration",
+      artist: "Jane Doe",
+      location: "Main Hall",
+      icon: Hand,
+    },
+    {
+      time: "01:00 PM - 02:00 PM",
+      title: "Rangoli Workshop for Beginners",
+      artist: "John Smith",
+      location: "Studio A",
+      icon: Brush,
+    },
+    {
+      time: "03:00 PM - 04:00 PM",
+      title: "Nail Art Trends & Techniques",
+      artist: "Emily White",
+      location: "Studio B",
+      icon: Paintbrush,
+    },
+    {
+      time: "04:30 PM - 05:00 PM",
+      title: "Artist Q&A Session",
+      artist: "All Artists",
+      location: "Main Hall",
+      icon: Mic,
+    },
+  ];
+
 
   async function handleNextStep() {
     const fieldsToValidate: (keyof BookingFormValues)[] =
@@ -370,7 +402,49 @@ export default function BookingPage() {
           </div>
         </section>
         
-        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="schedule" className="py-16 sm:py-24 bg-secondary/30">
+            <div className="container">
+                <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold font-headline text-primary">Event Schedule</h2>
+                <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                    Plan your visit with our schedule of live demonstrations, workshops, and talks.
+                </p>
+                </div>
+                <div className="relative max-w-2xl mx-auto">
+                <div className="absolute left-1/2 top-0 bottom-0 w-px bg-primary/20 transform -translate-x-1/2"></div>
+                <div className="space-y-12">
+                    {eventSchedule.map((event, index) => (
+                    <div key={event.title} className="relative flex items-center group">
+                        <div className="absolute left-1/2 w-6 h-6 rounded-full bg-background border-2 border-primary transform -translate-x-1/2 flex items-center justify-center">
+                           <div className="w-3 h-3 rounded-full bg-primary"></div>
+                        </div>
+                        <div className={`w-5/12 ${index % 2 === 0 ? 'text-right pr-12' : 'text-left pl-12 order-2'}`}>
+                           <p className="text-lg font-bold text-primary">{event.time}</p>
+                        </div>
+                        <div className="w-7/12">
+                            <Card className={`shadow-lg hover:shadow-xl transition-shadow duration-300 ${index % 2 === 0 ? 'ml-auto' : 'mr-auto'}`}>
+                                <CardContent className="p-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-primary/10 p-3 rounded-full">
+                                            <event.icon className="w-6 h-6 text-primary" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-bold font-headline">{event.title}</h3>
+                                            <p className="text-sm text-muted-foreground">by {event.artist}</p>
+                                            <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1"><MapPin className="w-4 h-4"/>{event.location}</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                    ))}
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="venue" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
@@ -637,3 +711,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
