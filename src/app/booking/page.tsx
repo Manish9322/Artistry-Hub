@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,8 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { Copyright } from "@/components/copyright";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 const bookingSchema = z.object({
   serviceType: z.string({ required_error: "Please select a service type." }),
@@ -91,6 +92,10 @@ export default function BookingPage() {
       description: "We have received your request and will be in touch shortly.",
     });
   }
+  
+  const progressValue = step === 1 ? 33 : step === 2 ? 66 : 100;
+  const stepTitles = ["Select Service & Time", "Your Contact Details", "Booking Confirmed!"];
+
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -159,16 +164,20 @@ export default function BookingPage() {
             <Card className="shadow-lg">
               <CardHeader>
                 <CardTitle className="text-center text-2xl font-headline">
-                  {step === 1 && "Step 1: Select Service & Time"}
-                  {step === 2 && "Step 2: Your Details"}
-                  {step === 3 && "Booking Confirmed!"}
+                  Book an Appointment
                 </CardTitle>
+                {step < 3 && (
+                    <CardDescription className="text-center">
+                        Step {step} of 2: {stepTitles[step-1]}
+                    </CardDescription>
+                )}
               </CardHeader>
               <CardContent>
+                {step < 3 && <Progress value={progressValue} className="mb-8 h-2" />}
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     {step === 1 && (
-                      <div className="space-y-4">
+                      <div className="space-y-6 animate-in fade-in-0 duration-500">
                         <FormField
                           control={form.control}
                           name="serviceType"
@@ -192,99 +201,103 @@ export default function BookingPage() {
                             </FormItem>
                           )}
                         />
-                        <FormField
-                          control={form.control}
-                          name="bookingDate"
-                          render={({ field }) => (
-                            <FormItem className="flex flex-col">
-                              <FormLabel>Date</FormLabel>
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <FormControl>
-                                    <Button
-                                      variant={"outline"}
-                                      className={cn(
-                                        "w-full pl-3 text-left font-normal",
-                                        !field.value && "text-muted-foreground"
-                                      )}
-                                    >
-                                      {field.value ? (
-                                        format(field.value, "PPP")
-                                      ) : (
-                                        <span>Pick a date</span>
-                                      )}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                    </Button>
-                                  </FormControl>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar
-                                    mode="single"
-                                    selected={field.value}
-                                    onSelect={field.onChange}
-                                    disabled={(date) => date < new Date() || date < new Date("1900-01-01")}
-                                    initialFocus
-                                  />
-                                </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="bookingTime"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Time Slot</FormLabel>
-                               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a time" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {timeSlots.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <FormField
+                            control={form.control}
+                            name="bookingDate"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                <FormLabel>Date</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-full pl-3 text-left font-normal",
+                                            !field.value && "text-muted-foreground"
+                                        )}
+                                        >
+                                        {field.value ? (
+                                            format(field.value, "PPP")
+                                        ) : (
+                                            <span>Pick a date</span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
+                                        initialFocus
+                                    />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                            <FormField
+                            control={form.control}
+                            name="bookingTime"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel>Time Slot</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select a time" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    {timeSlots.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        </div>
                       </div>
                     )}
                     
                     {step === 2 && (
-                       <div className="space-y-4">
-                          <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Full Name</FormLabel>
-                                <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl><Input placeholder="Your Email" {...field} /></FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
+                       <div className="space-y-6 animate-in fade-in-0 duration-500">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Full Name</FormLabel>
+                                        <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl><Input type="email" placeholder="Your Email" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                           </div>
                            <FormField
                             control={form.control}
                             name="phone"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Phone (Optional)</FormLabel>
-                                <FormControl><Input placeholder="Your Phone Number" {...field} /></FormControl>
+                                <FormLabel>Phone <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -294,8 +307,8 @@ export default function BookingPage() {
                             name="notes"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Notes (Optional)</FormLabel>
-                                <FormControl><Textarea placeholder="Any special requests or details..." {...field} /></FormControl>
+                                <FormLabel>Special Requests <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} /></FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -304,19 +317,42 @@ export default function BookingPage() {
                     )}
 
                     {step === 3 && (
-                      <div className="text-center space-y-4">
-                          <p className="text-lg">Thank you for your booking!</p>
-                          <p className="text-muted-foreground">We've received your request and will contact you shortly to confirm the details. A confirmation email has been sent to <span className="font-semibold text-primary">{form.getValues("email")}</span>.</p>
-                          <Button asChild><Link href="/">Back to Home</Link></Button>
+                      <div className="text-center space-y-6 animate-in fade-in-0 duration-500 p-8 rounded-lg bg-primary/5">
+                          <div className="flex justify-center">
+                            <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
+                                <div className="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center">
+                                    <Star className="w-10 h-10 text-green-600"/>
+                                </div>
+                            </div>
+                          </div>
+                          <h2 className="text-2xl font-bold font-headline">Booking Submitted!</h2>
+                          <p className="text-muted-foreground max-w-md mx-auto">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
+                          <div className="flex justify-center gap-4">
+                            <Button asChild><Link href="/">Back to Home</Link></Button>
+                            <Button asChild variant="outline"><Link href="/#categories">Explore More Art</Link></Button>
+                          </div>
                       </div>
                     )}
-
-                    <div className="flex justify-between">
-                      {step > 1 && step < 3 && <Button type="button" variant="outline" onClick={handlePreviousStep}>Back</Button>}
-                      {step === 1 && <Button type="button" onClick={handleNextStep}>Next</Button>}
-                      {step === 2 && <Button type="submit">Submit Booking</Button>}
-                      {step === 1 && <div />}
-                    </div>
+                    
+                    {step < 3 && (
+                        <div className="flex justify-between items-center pt-4 border-t">
+                            {step > 1 ? (
+                                <Button type="button" variant="outline" onClick={handlePreviousStep}>
+                                Back
+                                </Button>
+                            ) : <div />}
+                            
+                            {step === 1 && (
+                                <Button type="button" onClick={handleNextStep}>
+                                Next Step <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            )}
+                            
+                            {step === 2 && (
+                                <Button type="submit">Submit Booking</Button>
+                            )}
+                        </div>
+                    )}
                   </form>
                 </Form>
               </CardContent>
