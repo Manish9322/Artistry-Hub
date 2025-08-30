@@ -128,7 +128,7 @@ export default function BookingPage() {
       </header>
 
       <main className="flex-1">
-         <section className="py-20 md:py-32 bg-background">
+         <section className="py-12 md:py-5 bg-background">
             <div className="container text-center">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
