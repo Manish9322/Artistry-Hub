@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -444,7 +444,40 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section id="venue" className="py-16 sm:py-24 bg-background">
+        <section id="artist-stories" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Behind the Art</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Discover the inspiration and stories behind the masterpieces in our collection.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <h3 className="text-2xl font-bold font-headline mb-4">The Making of 'Azure Dream'</h3>
+                <p className="text-muted-foreground mb-4">
+                  Go behind the scenes with Emily White as she shares the journey of creating her iconic 'Azure Dream' necklace. From the initial sketch inspired by ocean waves to the final polished piece, learn about the meticulous process and passion poured into every detail.
+                </p>
+                <p className="text-muted-foreground mb-6">
+                  "I wanted to capture the feeling of looking into the deep sea, with all its mystery and beauty. Each swirl of color is intentional, representing the currents and life within the ocean," says Emily.
+                </p>
+                <Button variant="outline" asChild><Link href="/about">Meet the Artists <BookOpen className="ml-2 h-4 w-4" /></Link></Button>
+              </div>
+              <div>
+                <Image
+                  src="https://placehold.co/600x400.png"
+                  alt="Artist working on a piece"
+                  width={600}
+                  height={400}
+                  className="rounded-lg shadow-xl"
+                  data-ai-hint="artist at work"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
@@ -711,5 +744,7 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
 
     
