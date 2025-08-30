@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -37,7 +37,7 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { Copyright } from "@/components/copyright";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -81,6 +81,45 @@ export default function BookingPage() {
     { src: 'https://placehold.co/400x500.png', hint: 'peacock henna', title: 'Peacock Motif' },
     { src: 'https://placehold.co/400x500.png', hint: 'floating rangoli', title: 'Floating Blooms' },
     { src: 'https://placehold.co/400x500.png', hint: 'chrome nails', title: 'Chrome Finish' },
+  ];
+
+    const ticketTiers = [
+    {
+      title: "General Admission",
+      price: "$25",
+      period: "/person",
+      description: "Access to all our stunning art exhibits.",
+      features: ["Full Exhibition Access", "Digital Guidebook", "All-Day Entry"],
+      buttonText: "Select Plan",
+      variant: "outline",
+    },
+    {
+      title: "VIP Access",
+      price: "$50",
+      period: "/person",
+      description: "An enhanced experience with exclusive perks.",
+      features: [
+        "All General Admission Benefits",
+        "Guided Tour with an Artist",
+        "Complimentary Drink",
+        "Priority Entry",
+      ],
+      buttonText: "Select Plan",
+      variant: "default",
+    },
+    {
+      title: "Group Pass",
+      price: "$20",
+      period: "/person",
+      description: "Perfect for groups of 5 or more.",
+      features: [
+        "Discounted General Admission",
+        "Reserved Seating for Talks",
+        "Flexible Entry Time",
+      ],
+      buttonText: "Select Plan",
+      variant: "outline",
+    },
   ];
 
   async function handleNextStep() {
@@ -207,7 +246,47 @@ export default function BookingPage() {
             </div>
           </section>
 
-        <section id="booking-form" className="py-16 sm:py-24 bg-background">
+        <section id="pricing" className="py-16 sm:py-24 bg-background">
+            <div className="container">
+                <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold font-headline text-primary">Pricing & Ticket Options</h2>
+                <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                    Choose the perfect ticket to experience the world of art. We offer a range of options to suit every visitor.
+                </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                {ticketTiers.map((tier) => (
+                    <Card key={tier.title} className={`flex flex-col shadow-lg hover:shadow-2xl transition-shadow duration-300 ${tier.variant === 'default' ? 'border-primary border-2' : ''}`}>
+                    <CardHeader className="text-center">
+                        <CardTitle className="text-2xl font-headline">{tier.title}</CardTitle>
+                        <CardDescription>{tier.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                        <div className="text-center mb-6">
+                        <span className="text-4xl font-bold">{tier.price}</span>
+                        <span className="text-muted-foreground">{tier.period}</span>
+                        </div>
+                        <ul className="space-y-3 text-muted-foreground">
+                        {tier.features.map((feature) => (
+                            <li key={feature} className="flex items-center gap-3">
+                            <Check className="h-5 w-5 text-green-500" />
+                            <span>{feature}</span>
+                            </li>
+                        ))}
+                        </ul>
+                    </CardContent>
+                    <CardFooter>
+                        <Button className="w-full" variant={tier.variant as "default" | "outline"} onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                            {tier.buttonText}
+                        </Button>
+                    </CardFooter>
+                    </Card>
+                ))}
+                </div>
+            </div>
+        </section>
+
+        <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container max-w-2xl">
             <Card className="shadow-lg">
               <CardHeader>
