@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -6,8 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette } from "lucide-react";
-import Image from "next/image";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -110,29 +110,51 @@ export default function BookingPage() {
       </header>
 
       <main className="flex-1">
-         <section className="relative h-[60vh] flex items-center justify-center text-center text-white">
-          <Image
-            src="https://placehold.co/1920x1080.png"
-            alt="Art exhibition"
-            fill
-            className="object-cover"
-            data-ai-hint="art gallery"
-          />
-          <div className="absolute inset-0 bg-black/60"></div>
-          <div className="relative z-10 p-4">
-            <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tighter">
-              Reserve Your Spot at the Art Exhibition
-            </h1>
-            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
-              Experience exclusive art from world-renowned artists in an intimate setting.
-            </p>
-            <Button size="lg" className="mt-8" onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}>
-              Book Now
-            </Button>
-          </div>
-        </section>
+         <section className="py-20 md:py-32 bg-background">
+            <div className="container text-center">
+              <div className="flex justify-center mb-6">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Ticket className="w-8 h-8 text-primary"/>
+                </div>
+              </div>
+              <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary tracking-tight">
+                Reserve Your Spot
+              </h1>
+              <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground">
+                Book a session with our talented artists. Secure your appointment for a personalized and unforgettable artistic experience.
+              </p>
+              <div className="mt-8 flex justify-center">
+                <Button size="lg" onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}>
+                  Book Your Appointment
+                </Button>
+              </div>
+               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-left max-w-4xl mx-auto">
+                    <div className="flex items-start gap-4">
+                        <ShieldCheck className="w-8 h-8 text-primary flex-shrink-0 mt-1"/>
+                        <div>
+                            <h3 className="font-bold text-lg">Easy & Secure</h3>
+                            <p className="text-muted-foreground text-sm">Our booking process is simple, fast, and secure. Your information is always protected.</p>
+                        </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                        <CalendarIcon className="w-8 h-8 text-primary flex-shrink-0 mt-1"/>
+                        <div>
+                            <h3 className="font-bold text-lg">Instant Confirmation</h3>
+                            <p className="text-muted-foreground text-sm">Receive immediate confirmation of your appointment slot via email. No waiting, no uncertainty.</p>
+                        </div>
+                    </div>
+                     <div className="flex items-start gap-4">
+                        <Star className="w-8 h-8 text-primary flex-shrink-0 mt-1"/>
+                        <div>
+                            <h3 className="font-bold text-lg">Expert Artists</h3>
+                            <p className="text-muted-foreground text-sm">Choose from our roster of highly-rated, professional artists to bring your vision to life.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </section>
 
-        <section id="booking-form" className="py-16 sm:py-24">
+        <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container max-w-2xl">
             <Card className="shadow-lg">
               <CardHeader>
