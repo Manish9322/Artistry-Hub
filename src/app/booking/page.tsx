@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -174,6 +174,15 @@ export default function BookingPage() {
       icon: Mic,
     },
   ];
+  
+  const photoGallery = [
+      { image: 'https://placehold.co/400x600.png', hint: 'visitor enjoying art', className: 'w-80' },
+      { image: 'https://placehold.co/600x400.png', hint: 'group photo exhibition', className: 'w-[30rem]'},
+      { image: 'https://placehold.co/400x500.png', hint: 'live art demonstration', className: 'w-72' },
+      { image: 'https://placehold.co/400x600.png', hint: 'child interacting with art', className: 'w-80' },
+      { image: 'https://placehold.co/600x400.png', hint: 'artist talk session', className: 'w-[30rem]' },
+      { image: 'https://placehold.co/400x500.png', hint: 'close-up artwork', className: 'w-72' },
+    ];
 
 
   async function handleNextStep() {
@@ -300,7 +309,39 @@ export default function BookingPage() {
             </div>
           </section>
 
-        <section id="art-spotlight" className="py-16 sm:py-24 bg-background">
+        <section id="photo-gallery" className="py-16 sm:py-24 bg-background overflow-hidden">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">From Our Visitors</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                See the joy and wonder captured at our exhibitions. A gallery of moments from our vibrant community of art lovers.
+              </p>
+            </div>
+          </div>
+          <div className="relative">
+            <ScrollArea className="w-full whitespace-nowrap">
+              <div className="flex w-max space-x-8 p-4">
+                {photoGallery.map((item, index) => (
+                  <figure key={index} className={`shrink-0 rounded-xl overflow-hidden shadow-xl group ${item.className}`}>
+                    <Image
+                      src={item.image}
+                      alt="Visitor photo"
+                      width={600}
+                      height={600}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      data-ai-hint={item.hint}
+                    />
+                  </figure>
+                ))}
+              </div>
+              <ScrollBar orientation="horizontal" className="mt-4" />
+            </ScrollArea>
+             <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
+             <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
+          </div>
+        </section>
+
+        <section id="art-spotlight" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Art Piece Spotlight</h2>
@@ -334,7 +375,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="pricing" className="py-16 sm:py-24 bg-background">
             <div className="container">
                 <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold font-headline text-primary">Pricing & Ticket Options</h2>
@@ -374,7 +415,7 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section className="py-16 sm:py-24 bg-background">
+        <section className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -402,7 +443,7 @@ export default function BookingPage() {
           </div>
         </section>
         
-        <section id="schedule" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="schedule" className="py-16 sm:py-24 bg-background">
             <div className="container">
                 <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold font-headline text-primary">Event Schedule</h2>
@@ -444,7 +485,7 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section id="artist-stories" className="py-16 sm:py-24 bg-background">
+        <section id="artist-stories" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Behind the Art</h2>
@@ -477,7 +518,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="venue" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
