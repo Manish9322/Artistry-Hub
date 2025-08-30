@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Copyright } from "@/components/copyright";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+
 
 const bookingSchema = z.object({
   serviceType: z.string({ required_error: "Please select a service type." }),
@@ -68,6 +71,16 @@ export default function BookingPage() {
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
     "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
+  ];
+  
+  const exhibitionHighlights = [
+    { src: 'https://placehold.co/400x500.png', hint: 'bridal mehndi', title: 'Bridal Elegance' },
+    { src: 'https://placehold.co/400x500.png', hint: 'geometric rangoli', title: 'Geometric Harmony' },
+    { src: 'https://placehold.co/400x500.png', hint: 'glitter nails', title: 'Midnight Glitter' },
+    { src: 'https://placehold.co/400x500.png', hint: 'custom necklace', title: 'Statement Necklace' },
+    { src: 'https://placehold.co/400x500.png', hint: 'peacock henna', title: 'Peacock Motif' },
+    { src: 'https://placehold.co/400x500.png', hint: 'floating rangoli', title: 'Floating Blooms' },
+    { src: 'https://placehold.co/400x500.png', hint: 'chrome nails', title: 'Chrome Finish' },
   ];
 
   async function handleNextStep() {
@@ -159,7 +172,42 @@ export default function BookingPage() {
             </div>
           </section>
 
-        <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
+          <section id="exhibition-overview" className="py-16 sm:py-24 bg-secondary/30">
+            <div className="container">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold font-headline text-primary">Exhibition Highlights</h2>
+                <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                  A curated selection from our diverse collection, showcasing the pinnacle of creativity and craftsmanship from our featured artists in Mehndi, Rangoli, Nail Art, and Custom Jewelry.
+                </p>
+              </div>
+              <div className="relative">
+                <ScrollArea className="w-full whitespace-nowrap">
+                  <div className="flex w-max space-x-6 p-4">
+                    {exhibitionHighlights.map((item, index) => (
+                      <div key={index} className="shrink-0 w-[280px] group">
+                        <div className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                          <Image
+                            src={item.src}
+                            alt={item.title}
+                            width={400}
+                            height={500}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            data-ai-hint={item.hint}
+                          />
+                        </div>
+                        <h3 className="mt-4 text-lg font-semibold text-center">{item.title}</h3>
+                      </div>
+                    ))}
+                  </div>
+                  <ScrollBar orientation="horizontal" className="mt-4" />
+                </ScrollArea>
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-secondary/30 to-transparent"></div>
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-secondary/30 to-transparent"></div>
+              </div>
+            </div>
+          </section>
+
+        <section id="booking-form" className="py-16 sm:py-24 bg-background">
           <div className="container max-w-2xl">
             <Card className="shadow-lg">
               <CardHeader>
