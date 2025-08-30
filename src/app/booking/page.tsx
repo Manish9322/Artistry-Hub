@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -331,6 +331,63 @@ export default function BookingPage() {
             </div>
              <div className="text-center mt-12">
                 <Button variant="outline" asChild><Link href="/about">More About Our Team</Link></Button>
+            </div>
+          </div>
+        </section>
+        
+        <section id="venue" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Find us at the heart of the city's art district. Here’s how you can get to the exhibition.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold font-headline flex items-center gap-3 mb-2"><MapPin className="text-primary w-6 h-6" /> Location</h3>
+                  <p className="text-muted-foreground">123 Art Gallery Lane, Creativity City, 12345</p>
+                </div>
+                <div className="grid sm:grid-cols-3 gap-6">
+                   <div className="flex items-start gap-3">
+                      <Car className="w-6 h-6 text-primary flex-shrink-0 mt-1"/>
+                      <div>
+                          <h4 className="font-bold">Parking</h4>
+                          <p className="text-muted-foreground text-sm">Ample street and garage parking available nearby.</p>
+                      </div>
+                   </div>
+                   <div className="flex items-start gap-3">
+                      <Train className="w-6 h-6 text-primary flex-shrink-0 mt-1"/>
+                      <div>
+                          <h4 className="font-bold">Public Transit</h4>
+                          <p className="text-muted-foreground text-sm">Accessible via the City Art Line, stop "Gallery Central".</p>
+                      </div>
+                   </div>
+                   <div className="flex items-start gap-3">
+                      <Accessibility className="w-6 h-6 text-primary flex-shrink-0 mt-1"/>
+                      <div>
+                          <h4 className="font-bold">Accessibility</h4>
+                          <p className="text-muted-foreground text-sm">The venue is fully wheelchair accessible.</p>
+                      </div>
+                   </div>
+                </div>
+                 <Button variant="outline" asChild>
+                  <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
+                    Get Directions
+                  </a>
+                </Button>
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-xl">
+                 <Image
+                  src="https://placehold.co/600x400.png"
+                  alt="Map to Artistry Hub"
+                  width={600}
+                  height={400}
+                  className="w-full object-cover"
+                  data-ai-hint="city map"
+                />
+              </div>
             </div>
           </div>
         </section>
