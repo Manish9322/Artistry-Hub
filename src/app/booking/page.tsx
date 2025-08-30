@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { CalendarIcon, Palette } from "lucide-react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -109,16 +110,29 @@ export default function BookingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="py-12 bg-primary/10">
-          <div className="container text-center">
-            <h1 className="text-4xl md:text-5xl font-bold font-headline text-primary">Book an Appointment</h1>
-            <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-              Schedule your session with our talented artists.
+         <section className="relative h-[60vh] flex items-center justify-center text-center text-white">
+          <Image
+            src="https://placehold.co/1920x1080.png"
+            alt="Art exhibition"
+            fill
+            className="object-cover"
+            data-ai-hint="art gallery"
+          />
+          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="relative z-10 p-4">
+            <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tighter">
+              Reserve Your Spot at the Art Exhibition
+            </h1>
+            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-white/90">
+              Experience exclusive art from world-renowned artists in an intimate setting.
             </p>
+            <Button size="lg" className="mt-8" onClick={() => document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth' })}>
+              Book Now
+            </Button>
           </div>
         </section>
 
-        <section className="py-16 sm:py-24">
+        <section id="booking-form" className="py-16 sm:py-24">
           <div className="container max-w-2xl">
             <Card className="shadow-lg">
               <CardHeader>
