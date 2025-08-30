@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -41,6 +41,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 const bookingSchema = z.object({
@@ -183,6 +184,66 @@ export default function BookingPage() {
       { image: 'https://placehold.co/600x400.png', hint: 'artist talk session', className: 'w-[30rem]' },
       { image: 'https://placehold.co/400x500.png', hint: 'close-up artwork', className: 'w-72' },
     ];
+
+    const quizQuestions = [
+    {
+      question: "Which of these is a traditional Indian art form using colored powders?",
+      options: ["Mehndi", "Rangoli", "Nail Art", "Origami"],
+      answer: "Rangoli",
+      explanation: "Rangoli is an art form in which patterns are created on the floor or a tabletop using materials such as powdered lime stone, red ochre, dry rice flour, coloured sand, quartz powder, flower petals, and coloured rocks."
+    },
+    {
+      question: "Mehndi, or Henna, is traditionally used for what purpose?",
+      options: ["Permanent Tattoos", "Celebrations & Weddings", "Wall Painting", "Fabric Dyeing"],
+      answer: "Celebrations & Weddings",
+      explanation: "Mehndi is a form of body art and temporary skin decoration usually drawn on hands or legs, in which decorative designs are created on a person's body, using a paste, created from the powdered dry leaves of the henna plant."
+    },
+    {
+      question: "Which term refers to the overall visual arrangement of elements in a work of art?",
+      options: ["Texture", "Composition", "Palette", "Motif"],
+      answer: "Composition",
+      explanation: "Composition is the placement or arrangement of visual elements in a work of art. It is the organization of the elements of art according to the principles of art."
+    },
+  ];
+
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [showExplanation, setShowExplanation] = useState(false);
+  const [score, setScore] = useState(0);
+  const [quizFinished, setQuizFinished] = useState(false);
+
+  const handleAnswerSelect = (answer: string) => {
+    if (showExplanation) return;
+
+    setSelectedAnswer(answer);
+    const correct = answer === quizQuestions[currentQuestionIndex].answer;
+    setIsCorrect(correct);
+    setShowExplanation(true);
+    if (correct) {
+      setScore(prev => prev + 1);
+    }
+  };
+
+  const handleNextQuestion = () => {
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+    setShowExplanation(false);
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      setQuizFinished(true);
+    }
+  };
+
+  const handleRestartQuiz = () => {
+    setCurrentQuestionIndex(0);
+    setSelectedAnswer(null);
+    setIsCorrect(null);
+    setShowExplanation(false);
+    setScore(0);
+    setQuizFinished(false);
+  };
 
 
   async function handleNextStep() {
@@ -341,7 +402,70 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="art-spotlight" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="quiz" className="py-16 sm:py-24 bg-secondary/30">
+          <div className="container max-w-2xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Art Lover's Quiz</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Test your knowledge and have some fun with our quick art quiz!
+              </p>
+            </div>
+            <Card className="shadow-lg">
+              <CardContent className="p-8">
+                {!quizFinished ? (
+                  <div>
+                    <p className="text-sm text-muted-foreground mb-4">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
+                    <h3 className="text-xl font-semibold mb-6">{quizQuestions[currentQuestionIndex].question}</h3>
+                    <RadioGroup onValueChange={handleAnswerSelect} value={selectedAnswer || undefined} className="space-y-4">
+                      {quizQuestions[currentQuestionIndex].options.map(option => (
+                        <div key={option} className={cn(
+                          "flex items-center space-x-3 p-4 rounded-lg border transition-all duration-300",
+                          selectedAnswer === option && isCorrect === true && "bg-green-100 border-green-500",
+                          selectedAnswer === option && isCorrect === false && "bg-red-100 border-red-500",
+                          selectedAnswer && selectedAnswer !== option && "opacity-60"
+                        )}>
+                          <RadioGroupItem value={option} id={option} disabled={showExplanation} />
+                          <FormLabel htmlFor={option} className="font-normal text-base flex-1 cursor-pointer">{option}</FormLabel>
+                          {selectedAnswer === option && isCorrect === true && <Check className="w-5 h-5 text-green-600" />}
+                          {selectedAnswer === option && isCorrect === false && <X className="w-5 h-5 text-red-600" />}
+                        </div>
+                      ))}
+                    </RadioGroup>
+                    {showExplanation && (
+                      <div className="mt-6 p-4 rounded-lg bg-primary/10 animate-in fade-in-0 duration-500">
+                        <div className="flex items-start gap-3">
+                           <Lightbulb className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                           <div>
+                              <h4 className="font-bold">{isCorrect ? "Correct!" : "Not quite!"}</h4>
+                              <p className="text-muted-foreground text-sm">{quizQuestions[currentQuestionIndex].explanation}</p>
+                           </div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="mt-8 text-right">
+                       <Button onClick={handleNextQuestion} disabled={!showExplanation}>
+                        {currentQuestionIndex < quizQuestions.length - 1 ? "Next Question" : "Finish Quiz"}
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                       </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center animate-in fade-in-0 duration-500">
+                    <Award className="w-16 h-16 text-primary mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold font-headline">Quiz Complete!</h3>
+                    <p className="text-lg text-muted-foreground mt-2">You scored {score} out of {quizQuestions.length}!</p>
+                    <div className="mt-8 flex justify-center gap-4">
+                        <Button onClick={handleRestartQuiz}><RefreshCw className="mr-2 h-4 w-4"/>Play Again</Button>
+                        <Button variant="outline" asChild><Link href="#booking-form">Book Now</Link></Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        <section id="art-spotlight" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Art Piece Spotlight</h2>
@@ -375,7 +499,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="pricing" className="py-16 sm:py-24 bg-background">
+        <section id="pricing" className="py-16 sm:py-24 bg-secondary/30">
             <div className="container">
                 <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold font-headline text-primary">Pricing & Ticket Options</h2>
@@ -415,7 +539,7 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section className="py-16 sm:py-24 bg-secondary/30">
+        <section className="py-16 sm:py-24 bg-background">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -443,7 +567,7 @@ export default function BookingPage() {
           </div>
         </section>
         
-        <section id="schedule" className="py-16 sm:py-24 bg-background">
+        <section id="schedule" className="py-16 sm:py-24 bg-secondary/30">
             <div className="container">
                 <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold font-headline text-primary">Event Schedule</h2>
@@ -485,7 +609,7 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section id="artist-stories" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="artist-stories" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Behind the Art</h2>
@@ -518,7 +642,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="venue" className="py-16 sm:py-24 bg-background">
+        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
@@ -785,7 +909,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
-    
-
-    
