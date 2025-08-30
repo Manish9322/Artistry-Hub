@@ -40,6 +40,7 @@ import { Copyright } from "@/components/copyright";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 
 const bookingSchema = z.object({
@@ -267,7 +268,41 @@ export default function BookingPage() {
             </div>
           </section>
 
-        <section id="pricing" className="py-16 sm:py-24 bg-background">
+        <section id="art-spotlight" className="py-16 sm:py-24 bg-background">
+          <div className="container">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline text-primary">Art Piece Spotlight</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                A closer look at one of the masterpieces from our collection.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="rounded-lg overflow-hidden shadow-xl">
+                <Image
+                  src="https://placehold.co/600x700.png"
+                  alt="Spotlight Art Piece"
+                  width={600}
+                  height={700}
+                  className="w-full object-cover"
+                  data-ai-hint="elegant jewelry piece"
+                />
+              </div>
+              <div>
+                <Badge>Editor's Pick</Badge>
+                <h3 className="text-4xl font-bold font-headline mt-4">The 'Azure Dream' Necklace</h3>
+                <p className="text-lg text-muted-foreground mt-2">by Emily White</p>
+                <p className="mt-6 text-muted-foreground leading-relaxed">
+                  The 'Azure Dream' is a stunning example of modern artistry, blending vibrant acrylics with a fluid, organic design. This statement piece captures the essence of a tranquil ocean, with deep blues and shimmering highlights that dance in the light. Handcrafted with meticulous care, it's more than just jewelry—it's a wearable sculpture.
+                </p>
+                <Button size="lg" className="mt-8" asChild>
+                  <Link href="/custom-plastic-jewelry">Explore The Collection <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="pricing" className="py-16 sm:py-24 bg-secondary/30">
             <div className="container">
                 <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold font-headline text-primary">Pricing & Ticket Options</h2>
@@ -307,7 +342,7 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section className="py-16 sm:py-24 bg-primary/10">
+        <section className="py-16 sm:py-24 bg-background">
           <div className="container">
             <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -335,7 +370,7 @@ export default function BookingPage() {
           </div>
         </section>
         
-        <section id="venue" className="py-16 sm:py-24 bg-background">
+        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
@@ -392,7 +427,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="booking-form" className="py-16 sm:py-24 bg-primary/10">
           <div className="container max-w-2xl">
             <Card className="shadow-lg">
               <CardHeader>
