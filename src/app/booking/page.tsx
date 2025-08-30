@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState } from "react";
@@ -7,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 
 const bookingSchema = z.object({
@@ -425,7 +427,7 @@ export default function BookingPage() {
                           selectedAnswer && selectedAnswer !== option && "opacity-60"
                         )}>
                           <RadioGroupItem value={option} id={option} disabled={showExplanation} />
-                          <FormLabel htmlFor={option} className="font-normal text-base flex-1 cursor-pointer">{option}</FormLabel>
+                          <Label htmlFor={option} className="font-normal text-base flex-1 cursor-pointer">{option}</Label>
                           {selectedAnswer === option && isCorrect === true && <Check className="w-5 h-5 text-green-600" />}
                           {selectedAnswer === option && isCorrect === false && <X className="w-5 h-5 text-red-600" />}
                         </div>
