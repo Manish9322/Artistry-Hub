@@ -19,7 +19,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -293,7 +292,7 @@ export default function BookingPage() {
       </header>
 
       <main className="flex-1">
-         <section className="py-12 md:py-5 bg-background">
+         <section className="py-16 md:py-24 bg-background">
             <div className="container text-center">
               <div className="flex justify-center mb-6">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
@@ -725,7 +724,7 @@ export default function BookingPage() {
                           name="serviceType"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Service Type</FormLabel>
+                              <Label>Service Type</Label>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                   <SelectTrigger>
@@ -749,7 +748,7 @@ export default function BookingPage() {
                             name="bookingDate"
                             render={({ field }) => (
                                 <FormItem className="flex flex-col">
-                                <FormLabel>Date</FormLabel>
+                                <Label>Date</Label>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                     <FormControl>
@@ -788,7 +787,7 @@ export default function BookingPage() {
                             name="bookingTime"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel>Time Slot</FormLabel>
+                                <Label>Time Slot</Label>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
@@ -815,7 +814,7 @@ export default function BookingPage() {
                                     name="name"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Full Name</FormLabel>
+                                        <Label>Full Name</Label>
                                         <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -826,7 +825,7 @@ export default function BookingPage() {
                                     name="email"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <Label>Email</Label>
                                         <FormControl><Input type="email" placeholder="Your Email" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -838,7 +837,7 @@ export default function BookingPage() {
                             name="phone"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Phone <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <Label>Phone <span className="text-muted-foreground">(Optional)</span></Label>
                                 <FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -849,7 +848,7 @@ export default function BookingPage() {
                             name="notes"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Special Requests <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <Label>Special Requests <span className="text-muted-foreground">(Optional)</span></Label>
                                 <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} /></FormControl>
                                 <FormMessage />
                               </FormItem>
