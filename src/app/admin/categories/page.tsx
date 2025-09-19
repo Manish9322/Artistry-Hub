@@ -278,7 +278,6 @@ export default function CategoriesPage() {
                                             <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                         </div>
                                         <Input placeholder="Title" defaultValue="Classic Bridal Design" />
-                                        <Input placeholder="Artist" defaultValue="Jane Doe" />
                                         <Input type="number" placeholder="Price" defaultValue="250" />
                                         <Input placeholder="Tags (comma separated)" defaultValue="Bridal, Traditional" />
                                         <Input type="file" />
@@ -289,7 +288,6 @@ export default function CategoriesPage() {
                                             <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                         </div>
                                         <Input placeholder="Title" defaultValue="Floral Elegance" />
-                                        <Input placeholder="Artist" defaultValue="Jane Doe" />
                                         <Input type="number" placeholder="Price" defaultValue="150" />
                                         <Input placeholder="Tags (comma separated)" defaultValue="Festival, Modern" />
                                         <Input type="file" />
@@ -449,5 +447,7 @@ export default function CategoriesPage() {
     </>
   );
 }
+
+    
 
     

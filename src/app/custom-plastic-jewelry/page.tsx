@@ -252,8 +252,7 @@ export default function CustomJewelryPage() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                         <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
-                        <p className="text-sm text-white/90 mb-2">by {piece.artist}</p>
-                         <div className="flex flex-wrap gap-1 mb-3">
+                        <div className="flex flex-wrap gap-1 mb-3">
                           {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
                         </div>
                         <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
@@ -281,8 +280,7 @@ export default function CustomJewelryPage() {
                       />
                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                         <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
-                        <p className="text-sm text-white/90 mb-2">by {piece.artist}</p>
-                         <div className="flex flex-wrap gap-1 mb-3">
+                        <div className="flex flex-wrap gap-1 mb-3">
                           {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
                         </div>
                         <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
@@ -496,3 +494,5 @@ export default function CustomJewelryPage() {
     </div>
   );
 }
+
+    
