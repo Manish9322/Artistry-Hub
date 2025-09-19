@@ -17,6 +17,7 @@ import {
   Menu,
   CircleUser,
   Search,
+  GalleryHorizontal,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -132,6 +133,12 @@ function AdminSidebar() {
               <Paintbrush />
                <span className="group-data-[collapsible=icon]:hidden">Art Pieces</span>
               <SidebarMenuBadge className="group-data-[collapsible=icon]:hidden">12</SidebarMenuBadge>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton href="/admin/gallery" tooltip="Gallery" isActive={pathname === '/admin/gallery'}>
+              <GalleryHorizontal />
+               <span className="group-data-[collapsible=icon]:hidden">Gallery</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
