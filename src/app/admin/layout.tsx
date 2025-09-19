@@ -18,6 +18,7 @@ import {
   CircleUser,
   Search,
   GalleryHorizontal,
+  Shapes,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -126,6 +127,12 @@ function AdminSidebar() {
             <SidebarMenuButton href="/admin/dashboard" tooltip="Dashboard" isActive={pathname === '/admin/dashboard'}>
               <Home />
               <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <SidebarMenuButton href="/admin/categories" tooltip="Categories" isActive={pathname === '/admin/categories'}>
+              <Shapes />
+               <span className="group-data-[collapsible=icon]:hidden">Categories</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
