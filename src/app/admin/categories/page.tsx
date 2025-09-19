@@ -8,6 +8,7 @@ import {
   MoreHorizontal,
   Shapes,
   Link as LinkIcon,
+  Trash2,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const categoriesData = [
   {
@@ -226,54 +229,195 @@ export default function CategoriesPage() {
 
       {/* Add/Edit Modal */}
       <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={handleCloseModals}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-4xl h-[90vh]">
           <DialogHeader>
             <DialogTitle>{isEditModalOpen ? 'Edit' : 'Add'} Category</DialogTitle>
             <DialogDescription>
-              {isEditModalOpen ? 'Make changes to your category here.' : 'Add a new category to your website.'} Click save when you're done.
+              {isEditModalOpen ? 'Make changes to your category page here.' : 'Add a new category and all its page content.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input id="name" defaultValue={selectedCategory?.name || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
-              <Textarea id="description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="href" className="text-right">
-                Link (URL)
-              </Label>
-              <Input id="href" placeholder="/page-name" defaultValue={selectedCategory?.href || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="hint" className="text-right">
-                AI Hint
-              </Label>
-              <Input id="hint" placeholder="e.g. 'bridal mehndi'" defaultValue={selectedCategory?.hint || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="image-upload" className="text-right">
-                    Image
-                </Label>
-                <Input id="image-upload" type="file" className="col-span-3" />
-            </div>
-            {selectedCategory?.image && (
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Current</Label>
-                    <div className="col-span-3">
-                        <Image src={selectedCategory.image} alt="Current image" width={80} height={80} className="rounded-md" />
+          <Tabs defaultValue="general" className="flex-grow flex flex-col">
+            <TabsList className="grid w-full grid-cols-5">
+              <TabsTrigger value="general">General</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
+              <TabsTrigger value="process">Process</TabsTrigger>
+              <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
+            </TabsList>
+            <ScrollArea className="flex-grow mt-4 pr-6">
+                <TabsContent value="general" className="mt-0">
+                    <div className="space-y-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">Name</Label>
+                            <Input id="name" defaultValue={selectedCategory?.name || ""} className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-start gap-4">
+                            <Label htmlFor="description" className="text-right pt-2">Description</Label>
+                            <Textarea id="description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="href" className="text-right">Link (URL)</Label>
+                            <Input id="href" placeholder="/page-name" defaultValue={selectedCategory?.href || ""} className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="image-upload" className="text-right">Hero Image</Label>
+                            <Input id="image-upload" type="file" className="col-span-3" />
+                        </div>
                     </div>
-                </div>
-            )}
-          </div>
-          <DialogFooter>
+                </TabsContent>
+                <TabsContent value="gallery">
+                     <div className="space-y-4 py-4">
+                        <Label>Gallery Items</Label>
+                        <Card>
+                            <CardContent className="p-4 space-y-4">
+                                {/* Example Gallery Item */}
+                                <div className="p-4 border rounded-lg space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <Label>Item 1</Label>
+                                        <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                    </div>
+                                    <Input placeholder="Title" defaultValue="Classic Bridal Design" />
+                                    <Input placeholder="Artist" defaultValue="Jane Doe" />
+                                    <Input type="number" placeholder="Price" defaultValue="250" />
+                                    <Input placeholder="Tags (comma separated)" defaultValue="Bridal, Traditional" />
+                                    <Input type="file" />
+                                </div>
+                                 <div className="p-4 border rounded-lg space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <Label>Item 2</Label>
+                                        <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                    </div>
+                                    <Input placeholder="Title" defaultValue="Floral Elegance" />
+                                    <Input placeholder="Artist" defaultValue="Jane Doe" />
+                                    <Input type="number" placeholder="Price" defaultValue="150" />
+                                    <Input placeholder="Tags (comma separated)" defaultValue="Festival, Modern" />
+                                    <Input type="file" />
+                                </div>
+                                <Button variant="outline" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/> Add Gallery Item</Button>
+                            </CardContent>
+                        </Card>
+                     </div>
+                </TabsContent>
+                <TabsContent value="process">
+                    <div className="space-y-4 py-4">
+                        <Label>Process Steps</Label>
+                        <Card>
+                            <CardContent className="p-4 space-y-4">
+                                <div className="p-4 border rounded-lg space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <Label>Step 1</Label>
+                                        <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                    </div>
+                                    <Input placeholder="Step Title" defaultValue="Consultation" />
+                                    <Textarea placeholder="Step Description" defaultValue="Share your vision, event details, and inspiration with us." />
+                                </div>
+                                 <div className="p-4 border rounded-lg space-y-3">
+                                    <div className="flex justify-between items-center">
+                                        <Label>Step 2</Label>
+                                        <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                    </div>
+                                    <Input placeholder="Step Title" defaultValue="Design Finalization" />
+                                    <Textarea placeholder="Step Description" defaultValue="Our artists will sketch a custom design or help you select from our extensive portfolio." />
+                                </div>
+                                <Button variant="outline" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/> Add Process Step</Button>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+                <TabsContent value="content">
+                    <div className="space-y-6 py-4">
+                        <div>
+                            <Label>Commitment Section</Label>
+                            <Card>
+                                <CardContent className="p-4 space-y-2">
+                                     <div className="p-2 border rounded-lg space-y-2">
+                                        <Input placeholder="Commitment Title" defaultValue="Authentic Designs" />
+                                        <Textarea placeholder="Commitment Description" defaultValue="We honor the rich traditions of Mehndi, offering authentic and culturally significant patterns." />
+                                     </div>
+                                    <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Commitment Item</Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div>
+                            <Label>Bespoke Creations Gallery</Label>
+                             <Card>
+                                <CardContent className="p-4 space-y-2">
+                                    <Input type="file" multiple />
+                                    <p className="text-xs text-muted-foreground">Upload multiple images for the bespoke creations gallery.</p>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div>
+                            <Label>Testimonials</Label>
+                             <Card>
+                                <CardContent className="p-4 space-y-2">
+                                    <div className="p-2 border rounded-lg space-y-2">
+                                        <Input placeholder="Author Name" defaultValue="Aaradhya S." />
+                                        <Textarea placeholder="Comment" defaultValue="The bridal Mehndi was a dream come true!" />
+                                        <Input type="file" />
+                                     </div>
+                                    <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Testimonial</Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                         <div>
+                            <Label>Blog Posts</Label>
+                             <Card>
+                                <CardContent className="p-4 space-y-2">
+                                    <div className="p-2 border rounded-lg space-y-2">
+                                        <Input placeholder="Post Title" defaultValue="The Meaning Behind Mehndi Motifs" />
+                                        <Textarea placeholder="Post Description" defaultValue="Explore the rich symbolism of common Mehndi patterns..." />
+                                        <Input type="file" />
+                                     </div>
+                                    <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Blog Post</Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div>
+                            <Label>Care Tips</Label>
+                             <Card>
+                                <CardContent className="p-4 space-y-2">
+                                    <div className="p-2 border rounded-lg space-y-2">
+                                        <Input placeholder="Tip Title" defaultValue="Avoid Water" />
+                                        <Textarea placeholder="Tip Description" defaultValue="Keep the henna paste away from water for at least 12-24 hours." />
+                                     </div>
+                                    <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Care Tip</Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div>
+                            <Label>FAQs</Label>
+                            <Card>
+                                <CardContent className="p-4 space-y-2">
+                                     <div className="p-2 border rounded-lg space-y-2">
+                                        <Input placeholder="Question" defaultValue="How long does the Mehndi stain last?" />
+                                        <Textarea placeholder="Answer" defaultValue="Our natural henna stain can last from one to three weeks, depending on your skin type and aftercare." />
+                                     </div>
+                                    <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add FAQ</Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </TabsContent>
+                 <TabsContent value="seo">
+                    <div className="space-y-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="meta-title" className="text-right">Meta Title</Label>
+                            <Input id="meta-title" defaultValue={selectedCategory ? `Stunning ${selectedCategory.name} Designs` : ""} className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-start gap-4">
+                            <Label htmlFor="meta-description" className="text-right pt-2">Meta Description</Label>
+                            <Textarea id="meta-description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="meta-keywords" className="text-right">Meta Keywords</Label>
+                            <Input id="meta-keywords" placeholder="e.g. bridal mehndi, henna art" className="col-span-3" />
+                        </div>
+                    </div>
+                </TabsContent>
+            </ScrollArea>
+          </Tabs>
+          <DialogFooter className="mt-4 pt-4 border-t">
             <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
             </DialogClose>
@@ -303,3 +447,5 @@ export default function CategoriesPage() {
     </>
   );
 }
+
+    
