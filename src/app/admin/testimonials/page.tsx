@@ -8,6 +8,8 @@ import {
   MoreHorizontal,
   Quote,
   Star,
+  MessageSquare,
+  TrendingUp,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -105,13 +107,15 @@ export default function TestimonialsPage() {
         setIsDeleteModalOpen(false);
         setSelectedTestimonial(null);
     }
+    
+    const averageRating = (testimonialsData.reduce((acc, t) => acc + t.rating, 0) / testimonialsData.length).toFixed(1);
 
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center">
           <div className="flex-1">
-             <h1 className="font-semibold text-lg flex items-center gap-2"><Quote className="h-5 w-5"/>Testimonials</h1>
+             <h1 className="font-semibold text-2xl flex items-center gap-2"><Quote className="h-6 w-6"/>Testimonials</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -128,6 +132,28 @@ export default function TestimonialsPage() {
             </Button>
           </div>
         </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Testimonials</CardTitle>
+                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{testimonialsData.length}</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Average Rating</CardTitle>
+                    <Star className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{averageRating}</div>
+                </CardContent>
+            </Card>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Testimonial Management</CardTitle>

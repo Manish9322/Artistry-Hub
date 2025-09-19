@@ -7,6 +7,8 @@ import {
   PlusCircle,
   MoreHorizontal,
   HelpCircle,
+  MessageSquareQuestion,
+  BookCopy,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -52,21 +54,25 @@ const faqsData = [
       id: 'faq001',
       question: "How do I book an appointment?",
       answer: "You can easily book an appointment through our website's booking page. Simply select your desired service, artist, date, and time, and we'll confirm your session via email.",
+      category: 'Booking'
     },
     {
       id: 'faq002',
       question: "Do you offer services for events and weddings?",
       answer: "Absolutely! We specialize in providing artistic services for weddings, parties, corporate events, and other special occasions. Contact us to discuss your event needs.",
+      category: 'Services'
     },
     {
       id: 'faq003',
       question: "How long does a Mehndi/Henna design last?",
       answer: "Our natural henna designs typically last for 1-3 weeks, depending on your skin type and aftercare. We provide detailed aftercare instructions to help you prolong the life of your design.",
+      category: 'Mehndi'
     },
      {
       id: 'faq004',
       question: "Can I request a custom design?",
       answer: "Yes, we love creating custom designs! You can provide us with inspiration, or our artists can create a unique design for you based on your preferences.",
+      category: 'Customization'
     },
 ];
 
@@ -94,13 +100,15 @@ export default function FaqPage() {
         setIsDeleteModalOpen(false);
         setSelectedFaq(null);
     }
+    
+    const faqCategories = [...new Set(faqsData.map(faq => faq.category))];
 
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center">
           <div className="flex-1">
-             <h1 className="font-semibold text-lg flex items-center gap-2"><HelpCircle className="h-5 w-5"/>FAQ Management</h1>
+             <h1 className="font-semibold text-2xl flex items-center gap-2"><HelpCircle className="h-6 w-6"/>FAQ Management</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -117,6 +125,29 @@ export default function FaqPage() {
             </Button>
           </div>
         </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total FAQs</CardTitle>
+                    <MessageSquareQuestion className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{faqsData.length}</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">FAQ Categories</CardTitle>
+                    <BookCopy className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{faqCategories.length}</div>
+                </CardContent>
+            </Card>
+        </div>
+
+
         <Card>
           <CardHeader>
             <CardTitle>Frequently Asked Questions</CardTitle>
@@ -179,17 +210,23 @@ export default function FaqPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="question" className="text-right">
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="question" className="text-right pt-2">
                 Question
               </Label>
               <Textarea id="question" defaultValue={selectedFaq?.question || ""} className="col-span-3" />
             </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="answer" className="text-right">
+             <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="answer" className="text-right pt-2">
                 Answer
               </Label>
               <Textarea id="answer" defaultValue={selectedFaq?.answer || ""} className="col-span-3" rows={5} />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="category" className="text-right">
+                Category
+              </Label>
+              <Input id="category" defaultValue={selectedFaq?.category || ""} className="col-span-3" placeholder="e.g., Booking, Services" />
             </div>
           </div>
           <DialogFooter>

@@ -7,6 +7,9 @@ import {
   PlusCircle,
   MoreHorizontal,
   BookOpen,
+  CalendarCheck,
+  CalendarClock,
+  Archive,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -106,13 +109,19 @@ export default function WorkshopsPage() {
         setIsDeleteModalOpen(false);
         setSelectedWorkshop(null);
     }
+    
+    const stats = {
+        total: workshopsData.length,
+        published: workshopsData.filter(w => w.status === 'Published').length,
+        upcoming: workshopsData.filter(w => new Date(w.date) >= new Date()).length
+    };
 
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center">
           <div className="flex-1">
-             <h1 className="font-semibold text-lg flex items-center gap-2"><BookOpen className="h-5 w-5"/>Workshop Management</h1>
+             <h1 className="font-semibold text-2xl flex items-center gap-2"><BookOpen className="h-6 w-6"/>Workshop Management</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -129,6 +138,38 @@ export default function WorkshopsPage() {
             </Button>
           </div>
         </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Workshops</CardTitle>
+                    <BookOpen className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.total}</div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Published</CardTitle>
+                    <CalendarCheck className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.published}</div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Upcoming</CardTitle>
+                    <CalendarClock className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.upcoming}</div>
+                </CardContent>
+            </Card>
+        </div>
+
+
         <Card>
           <CardHeader>
             <CardTitle>Workshops</CardTitle>

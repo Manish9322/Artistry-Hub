@@ -6,7 +6,10 @@ import {
   File,
   PlusCircle,
   MoreHorizontal,
-  Image as ImageIcon,
+  ImageIcon,
+  CheckCircle,
+  Archive,
+  Draft,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -117,12 +120,19 @@ export default function GalleryPage() {
         setIsDeleteModalOpen(true);
     };
 
+    const stats = {
+        total: galleryImagesData.length,
+        published: galleryImagesData.filter(img => img.status === 'Published').length,
+        drafts: galleryImagesData.filter(img => img.status === 'Draft').length,
+        archived: galleryImagesData.filter(img => img.status === 'Archived').length,
+    }
+
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center">
           <div className="flex-1">
-             <h1 className="font-semibold text-lg flex items-center gap-2"><ImageIcon className="h-5 w-5"/>Gallery Management</h1>
+             <h1 className="font-semibold text-2xl flex items-center gap-2"><ImageIcon className="h-6 w-6"/>Gallery Management</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -139,6 +149,47 @@ export default function GalleryPage() {
             </Button>
           </div>
         </div>
+
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Images</CardTitle>
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.total}</div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Published</CardTitle>
+                    <CheckCircle className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.published}</div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Drafts</CardTitle>
+                    <Draft className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.drafts}</div>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Archived</CardTitle>
+                    <Archive className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{stats.archived}</div>
+                </CardContent>
+            </Card>
+        </div>
+
+
         <Card>
           <CardHeader>
             <CardTitle>Gallery Images</CardTitle>

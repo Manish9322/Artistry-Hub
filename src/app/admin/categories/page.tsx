@@ -7,6 +7,8 @@ import {
   PlusCircle,
   MoreHorizontal,
   Shapes,
+  Eye,
+  Link as LinkIcon,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -109,7 +111,7 @@ export default function CategoriesPage() {
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center">
           <div className="flex-1">
-             <h1 className="font-semibold text-lg flex items-center gap-2"><Shapes className="h-5 w-5"/>Category Management</h1>
+             <h1 className="font-semibold text-2xl flex items-center gap-2"><Shapes className="h-6 w-6"/>Category Management</h1>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -126,6 +128,29 @@ export default function CategoriesPage() {
             </Button>
           </div>
         </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Categories</CardTitle>
+                    <Shapes className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{categoriesData.length}</div>
+                </CardContent>
+            </Card>
+             <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Linked Pages</CardTitle>
+                    <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{categoriesData.filter(c => c.href).length}</div>
+                </CardContent>
+            </Card>
+        </div>
+
+
         <Card>
           <CardHeader>
             <CardTitle>Art Categories</CardTitle>
@@ -163,7 +188,7 @@ export default function CategoriesPage() {
                     </TableCell>
                     <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell>{category.description}</TableCell>
-                    <TableCell>{category.href}</TableCell>
+                    <TableCell><a href={category.href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{category.href}</a></TableCell>
                     <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
