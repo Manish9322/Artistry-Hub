@@ -19,7 +19,6 @@ export default function CustomJewelryPage() {
   const artPieces = [
     {
       title: "Geometric Earrings",
-      artist: "Emily White",
       price: 45,
       image: "https://placehold.co/600x400.png",
       tags: ["Modern", "Statement"],
@@ -27,7 +26,6 @@ export default function CustomJewelryPage() {
     },
     {
       title: "Chunky Neon Necklace",
-      artist: "Emily White",
       price: 80,
       image: "https://placehold.co/600x400.png",
       tags: ["Bold", "Colorful"],
@@ -35,7 +33,6 @@ export default function CustomJewelryPage() {
     },
     {
       title: "Minimalist Rings",
-      artist: "Creative Studio",
       price: 30,
       image: "https://placehold.co/600x400.png",
       tags: ["Minimalist", "Set"],
@@ -43,7 +40,6 @@ export default function CustomJewelryPage() {
     },
     {
       title: "Custom Nameplate",
-      artist: "Emily White",
       price: 55,
       image: "https://placehold.co/600x400.png",
       tags: ["Personalized", "Modern"],
@@ -51,7 +47,6 @@ export default function CustomJewelryPage() {
     },
     {
       title: "Layered Bracelet Set",
-      artist: "Creative Studio",
       price: 65,
       image: "https://placehold.co/600x400.png",
       tags: ["Colorful", "Set"],
@@ -59,7 +54,6 @@ export default function CustomJewelryPage() {
     },
     {
       title: "Statement Brooch",
-      artist: "Emily White",
       price: 50,
       image: "https://placehold.co/600x400.png",
       tags: ["Bold", "Statement"],
@@ -67,7 +61,6 @@ export default function CustomJewelryPage() {
     },
     {
       title: "Transparent Hoops",
-      artist: "Creative Studio",
       price: 40,
       image: "https://placehold.co/600x400.png",
       tags: ["Minimalist", "Modern"],
@@ -75,7 +68,6 @@ export default function CustomJewelryPage() {
     },
      {
       title: "Personalized Keychain",
-      artist: "Emily White",
       price: 25,
       image: "https://placehold.co/600x400.png",
       tags: ["Personalized"],
@@ -305,31 +297,33 @@ export default function CustomJewelryPage() {
                 From an idea to a wearable piece of art, here’s how we create your custom jewelry.
               </p>
             </div>
-            <div className="relative">
-              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 hidden md:block" aria-hidden="true"></div>
-              <div className="space-y-16 md:space-y-0">
-                {processSteps.map((step, index) => (
-                  <div key={step.title} className="md:grid md:grid-cols-2 md:items-center md:gap-16">
-                    <div className={`flex flex-col items-center text-center md:items-start md:text-left ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
-                      <div className="flex items-center justify-center w-20 h-20 rounded-full bg-background shadow-lg mb-6">
-                        <step.icon className="w-10 h-10 text-primary" />
-                      </div>
-                      <h3 className="text-xl font-bold font-headline mb-2">{index + 1}. {step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                     <div className={`h-48 w-48 hidden md:flex items-center justify-center ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
-                       <Image
-                        src="https://placehold.co/400x400.png"
-                        alt={step.title}
-                        width={400}
-                        height={400}
-                        className="rounded-lg shadow-lg"
-                        data-ai-hint="art process"
-                      />
-                    </div>
+            <div className="space-y-16">
+              {processSteps.map((step, index) => (
+                <div key={step.title} className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                  <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
+                    <Image
+                      src="https://placehold.co/600x400.png"
+                      alt={step.title}
+                      width={600}
+                      height={400}
+                      className="rounded-lg shadow-xl"
+                      data-ai-hint="art process"
+                    />
                   </div>
-                ))}
-              </div>
+                  <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
+                     <div className="flex items-center gap-4 mb-4">
+                       <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full bg-background text-primary shadow-lg">
+                         <step.icon className="w-8 h-8" />
+                       </div>
+                       <div>
+                        <Badge variant="outline">Step {index + 1}</Badge>
+                        <h3 className="text-2xl font-bold font-headline mt-1">{step.title}</h3>
+                       </div>
+                    </div>
+                    <p className="text-muted-foreground text-lg">{step.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -494,5 +488,3 @@ export default function CustomJewelryPage() {
     </div>
   );
 }
-
-    

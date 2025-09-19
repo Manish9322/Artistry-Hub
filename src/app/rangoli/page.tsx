@@ -18,7 +18,6 @@ export default function RangoliPage() {
   const artPieces = [
     {
       title: "Diwali Special",
-      artist: "John Smith",
       price: 120,
       image: "https://placehold.co/600x400.png",
       tags: ["Festival", "Traditional"],
@@ -26,7 +25,6 @@ export default function RangoliPage() {
     },
     {
       title: "Geometric Harmony",
-      artist: "Ravi Verma",
       price: 90,
       image: "https://placehold.co/600x400.png",
       tags: ["Modern", "Geometric"],
@@ -34,7 +32,6 @@ export default function RangoliPage() {
     },
     {
       title: "Sanskar Bharti",
-      artist: "John Smith",
       price: 150,
       image: "https://placehold.co/600x400.png",
       tags: ["Traditional", "Large"],
@@ -42,7 +39,6 @@ export default function RangoliPage() {
     },
     {
       title: "Floating Rangoli",
-      artist: "Ravi Verma",
       price: 75,
       image: "https://placehold.co/600x400.png",
       tags: ["Modern", "Water"],
@@ -50,7 +46,6 @@ export default function RangoliPage() {
     },
      {
       title: "Peacock Grandeur",
-      artist: "John Smith",
       price: 180,
       image: "https://placehold.co/600x400.png",
       tags: ["Traditional", "Festival"],
@@ -58,7 +53,6 @@ export default function RangoliPage() {
     },
     {
       title: "Minimalist Corner",
-      artist: "Ravi Verma",
       price: 60,
       image: "https://placehold.co/600x400.png",
       tags: ["Modern", "Minimalist"],
@@ -66,19 +60,17 @@ export default function RangoliPage() {
     },
     {
       title: "Wedding Aisle",
-      artist: "John Smith",
       price: 250,
       image: "https://placehold.co/600x400.png",
       tags: ["Large", "Festival"],
-      hint: "wedding rangoli",
+      hint: "wedding rangoli"
     },
     {
       title: "Flower Petal Art",
-      artist: "Ravi Verma",
       price: 100,
       image: "https://placehold.co/600x400.png",
       tags: ["Traditional", "Water"],
-      hint: "flower rangoli",
+      hint: "flower rangoli"
     }
   ];
   
@@ -298,31 +290,33 @@ export default function RangoliPage() {
                 A seamless flow from concept to a stunning floor masterpiece for your event.
               </p>
             </div>
-             <div className="relative">
-              <div className="absolute left-1/2 top-0 bottom-0 w-px bg-border -translate-x-1/2 hidden md:block" aria-hidden="true"></div>
-              <div className="space-y-16 md:space-y-0">
-                {processSteps.map((step, index) => (
-                  <div key={step.title} className="md:grid md:grid-cols-2 md:items-center md:gap-16">
-                    <div className={`flex flex-col items-center text-center md:items-start md:text-left ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
-                      <div className="flex items-center justify-center w-20 h-20 rounded-full bg-background shadow-lg mb-6">
-                        <step.icon className="w-10 h-10 text-primary" />
-                      </div>
-                      <h3 className="text-xl font-bold font-headline mb-2">{index + 1}. {step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                     <div className={`h-48 w-48 hidden md:flex items-center justify-center ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
-                       <Image
-                        src="https://placehold.co/400x400.png"
-                        alt={step.title}
-                        width={400}
-                        height={400}
-                        className="rounded-lg shadow-lg"
-                        data-ai-hint="art process"
-                      />
-                    </div>
+            <div className="space-y-16">
+              {processSteps.map((step, index) => (
+                <div key={step.title} className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                  <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
+                    <Image
+                      src="https://placehold.co/600x400.png"
+                      alt={step.title}
+                      width={600}
+                      height={400}
+                      className="rounded-lg shadow-xl"
+                      data-ai-hint="art process"
+                    />
                   </div>
-                ))}
-              </div>
+                  <div className={`md:w-1/2 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
+                     <div className="flex items-center gap-4 mb-4">
+                       <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full bg-background text-primary shadow-lg">
+                         <step.icon className="w-8 h-8" />
+                       </div>
+                       <div>
+                        <Badge variant="outline">Step {index + 1}</Badge>
+                        <h3 className="text-2xl font-bold font-headline mt-1">{step.title}</h3>
+                       </div>
+                    </div>
+                    <p className="text-muted-foreground text-lg">{step.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -487,5 +481,3 @@ export default function RangoliPage() {
     </div>
   );
 }
-
-    
