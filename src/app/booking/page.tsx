@@ -488,7 +488,6 @@ export default function BookingPage() {
               <div>
                 <Badge>Editor's Pick</Badge>
                 <h3 className="text-4xl font-bold font-headline mt-4">The 'Azure Dream' Necklace</h3>
-                <p className="text-lg text-muted-foreground mt-2">by Emily White</p>
                 <p className="mt-6 text-muted-foreground leading-relaxed">
                   The 'Azure Dream' is a stunning example of modern artistry, blending vibrant acrylics with a fluid, organic design. This statement piece captures the essence of a tranquil ocean, with deep blues and shimmering highlights that dance in the light. Handcrafted with meticulous care, it's more than just jewelry—it's a wearable sculpture.
                 </p>

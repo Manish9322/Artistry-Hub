@@ -50,6 +50,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const artPiecesData = [
   {
@@ -120,7 +121,7 @@ export default function ArtPiecesPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-4">
+        <div className="flex items-center pt-6">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl">Art Piece Management</h1>
              <p className="text-muted-foreground mt-1">Manage your studio's art pieces and designs.</p>
@@ -210,7 +211,7 @@ export default function ArtPiecesPage() {
                         </TableCell>
                         <TableCell className="font-medium">{artPiece.name}</TableCell>
                         <TableCell>
-                          <Badge variant={artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline'}>{artPiece.status}</Badge>
+                          <Badge variant={artPiece.name === "The 'Azure Dream' Necklace" ? "default" : (artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline')}>{artPiece.name === "The 'Azure Dream' Necklace" ? "Editor's Pick" : artPiece.status}</Badge>
                         </TableCell>
                         <TableCell>{artPiece.price}</TableCell>
                         <TableCell className="hidden md:table-cell">
@@ -277,16 +278,24 @@ export default function ArtPiecesPage() {
               <Input id="price" defaultValue={selectedArtPiece?.price || ""} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="artist" className="text-right">
-                Artist
-              </Label>
-              <Input id="artist" defaultValue={selectedArtPiece?.artist || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="image" className="text-right">
                     Image
                 </Label>
                 <Input id="image" type="file" className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="editors-pick" className="text-right">
+                Editor's Pick
+              </Label>
+              <div className="col-span-3 flex items-center">
+                <Checkbox id="editors-pick" defaultChecked={selectedArtPiece?.name === "The 'Azure Dream' Necklace"} />
+                <label
+                  htmlFor="editors-pick"
+                  className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Mark as Editor's Pick
+                </label>
+              </div>
             </div>
           </div>
           <DialogFooter>
