@@ -21,6 +21,7 @@ import {
   Shapes,
   Quote,
   BookOpen,
+  HelpCircle,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -160,6 +161,12 @@ function AdminSidebar() {
             <SidebarMenuButton href="/admin/workshops" tooltip="Workshops" isActive={pathname === '/admin/workshops'}>
               <BookOpen />
                <span className="group-data-[collapsible=icon]:hidden">Workshops</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <SidebarMenuButton href="/admin/faq" tooltip="FAQs" isActive={pathname === '/admin/faq'}>
+              <HelpCircle />
+               <span className="group-data-[collapsible=icon]:hidden">FAQs</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
