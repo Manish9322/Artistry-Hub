@@ -9,7 +9,6 @@ import {
   BookOpen,
   CalendarCheck,
   CalendarClock,
-  Archive,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -119,9 +118,10 @@ export default function WorkshopsPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center">
+        <div className="flex items-center pt-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><BookOpen className="h-6 w-6"/>Workshop Management</h1>
+             <p className="text-muted-foreground mt-1">Create, manage, and publish workshops.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -147,6 +147,9 @@ export default function WorkshopsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.total}</div>
+                     <p className="text-xs text-muted-foreground">
+                        All scheduled workshops
+                    </p>
                 </CardContent>
             </Card>
             <Card>
@@ -156,6 +159,9 @@ export default function WorkshopsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.published}</div>
+                     <p className="text-xs text-muted-foreground">
+                        Live on the website
+                    </p>
                 </CardContent>
             </Card>
             <Card>
@@ -165,6 +171,9 @@ export default function WorkshopsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.upcoming}</div>
+                     <p className="text-xs text-muted-foreground">
+                        Future workshops
+                    </p>
                 </CardContent>
             </Card>
         </div>

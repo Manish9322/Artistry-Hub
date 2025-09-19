@@ -9,7 +9,6 @@ import {
   Quote,
   Star,
   MessageSquare,
-  TrendingUp,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -49,7 +48,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Select,
@@ -113,9 +111,10 @@ export default function TestimonialsPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center">
+        <div className="flex items-center pt-4">
           <div className="flex-1">
-             <h1 className="font-semibold text-2xl flex items-center gap-2"><Quote className="h-6 w-6"/>Testimonials</h1>
+             <h1 className="font-semibold text-2xl flex items-center gap-2"><Quote className="h-6 w-6"/>Testimonial Management</h1>
+             <p className="text-muted-foreground mt-1">Manage your client testimonials and reviews.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -141,6 +140,9 @@ export default function TestimonialsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{testimonialsData.length}</div>
+                    <p className="text-xs text-muted-foreground">
+                        All client reviews
+                    </p>
                 </CardContent>
             </Card>
              <Card>
@@ -150,6 +152,9 @@ export default function TestimonialsPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{averageRating}</div>
+                    <p className="text-xs text-muted-foreground">
+                        Based on all testimonials
+                    </p>
                 </CardContent>
             </Card>
         </div>

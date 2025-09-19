@@ -6,6 +6,7 @@ import {
   File,
   PlusCircle,
   MoreHorizontal,
+  ListFilter,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +25,8 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Table,
@@ -46,6 +49,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const artPiecesData = [
   {
@@ -116,17 +120,12 @@ export default function ArtPiecesPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center">
+        <div className="flex items-center pt-4">
           <div className="flex-1">
-             <h1 className="font-semibold text-lg">Art Pieces</h1>
+             <h1 className="font-semibold text-2xl">Art Piece Management</h1>
+             <p className="text-muted-foreground mt-1">Manage your studio's art pieces and designs.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button size="sm" variant="outline" className="h-8 gap-1">
-              <File className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Export
-              </span>
-            </Button>
             <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -135,78 +134,118 @@ export default function ArtPiecesPage() {
             </Button>
           </div>
         </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Art Pieces</CardTitle>
-            <CardDescription>
-              Manage your art pieces and view their sales performance.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="hidden w-[100px] sm:table-cell">
-                    <span className="sr-only">Image</span>
-                  </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead className="hidden md:table-cell">Artist</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {artPiecesData.map((artPiece) => (
-                  <TableRow key={artPiece.name}>
-                    <TableCell className="hidden sm:table-cell">
-                      <Image
-                        alt={artPiece.name}
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={artPiece.image}
-                        width="64"
-                        data-ai-hint={artPiece.hint}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{artPiece.name}</TableCell>
-                    <TableCell>
-                      <Badge variant={artPiece.status === 'Active' ? 'default' : 'outline'}>{artPiece.status}</Badge>
-                    </TableCell>
-                    <TableCell>{artPiece.price}</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {artPiece.artist}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
-                          <DropdownMenuItem>View</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-          <CardFooter>
-            <div className="text-xs text-muted-foreground">
-              Showing <strong>1-5</strong> of <strong>{artPiecesData.length}</strong> products
+        <Tabs defaultValue="all">
+          <div className="flex items-center">
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="active">Active</TabsTrigger>
+              <TabsTrigger value="draft">Draft</TabsTrigger>
+              <TabsTrigger value="archived" className="hidden sm:flex">
+                Archived
+              </TabsTrigger>
+            </TabsList>
+            <div className="ml-auto flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 gap-1">
+                    <ListFilter className="h-3.5 w-3.5" />
+                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                      Filter
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem checked>
+                    Category
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem>Artist</DropdownMenuCheckboxItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button size="sm" variant="outline" className="h-8 gap-1">
+                <File className="h-3.5 w-3.5" />
+                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                  Export
+                </span>
+              </Button>
             </div>
-          </CardFooter>
-        </Card>
+          </div>
+          <TabsContent value="all">
+            <Card>
+              <CardHeader>
+                <CardTitle>Art Pieces</CardTitle>
+                <CardDescription>
+                  Manage your art pieces and view their sales performance.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="hidden w-[100px] sm:table-cell">
+                        <span className="sr-only">Image</span>
+                      </TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead className="hidden md:table-cell">Artist</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Actions</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {artPiecesData.map((artPiece) => (
+                      <TableRow key={artPiece.name}>
+                        <TableCell className="hidden sm:table-cell">
+                          <Image
+                            alt={artPiece.name}
+                            className="aspect-square rounded-md object-cover"
+                            height="64"
+                            src={artPiece.image}
+                            width="64"
+                            data-ai-hint={artPiece.hint}
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium">{artPiece.name}</TableCell>
+                        <TableCell>
+                          <Badge variant={artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline'}>{artPiece.status}</Badge>
+                        </TableCell>
+                        <TableCell>{artPiece.price}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {artPiece.artist}
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button aria-haspopup="true" size="icon" variant="ghost">
+                                <MoreHorizontal className="h-4 w-4" />
+                                <span className="sr-only">Toggle menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>View</DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+              <CardFooter>
+                <div className="text-xs text-muted-foreground">
+                  Showing <strong>1-5</strong> of <strong>{artPiecesData.length}</strong> products
+                </div>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
 
       {/* Add/Edit Modal */}

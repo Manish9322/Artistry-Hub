@@ -10,6 +10,8 @@ import {
   CheckCircle,
   Archive,
   FilePen,
+  Upload,
+  Video,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -130,34 +132,52 @@ export default function GalleryPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center">
+        <div className="flex items-center pt-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><ImageIcon className="h-6 w-6"/>Gallery Management</h1>
+             <p className="text-muted-foreground mt-1">Manage images and videos for your website's galleries.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
-              <File className="h-3.5 w-3.5" />
+              <Upload className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Export
+                Upload Media
               </span>
             </Button>
-            <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
-              <PlusCircle className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Add Image
-              </span>
-            </Button>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button size="sm" className="h-8 gap-1">
+                        <PlusCircle className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Add New
+                        </span>
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => setIsAddModalOpen(true)}>
+                        <ImageIcon className="mr-2 h-4 w-4" />
+                        <span>Add Image</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <Video className="mr-2 h-4 w-4" />
+                        <span>Add Video</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Images</CardTitle>
+                    <CardTitle className="text-sm font-medium">Total Media</CardTitle>
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.total}</div>
+                    <p className="text-xs text-muted-foreground">
+                        Images and videos in your galleries
+                    </p>
                 </CardContent>
             </Card>
             <Card>
@@ -167,6 +187,9 @@ export default function GalleryPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.published}</div>
+                     <p className="text-xs text-muted-foreground">
+                        Currently live on the website
+                    </p>
                 </CardContent>
             </Card>
             <Card>
@@ -176,6 +199,9 @@ export default function GalleryPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.drafts}</div>
+                     <p className="text-xs text-muted-foreground">
+                        Not yet published
+                    </p>
                 </CardContent>
             </Card>
             <Card>
@@ -185,6 +211,9 @@ export default function GalleryPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.archived}</div>
+                     <p className="text-xs text-muted-foreground">
+                        Removed from public view
+                    </p>
                 </CardContent>
             </Card>
         </div>

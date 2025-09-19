@@ -105,9 +105,10 @@ export default function FaqPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center">
+        <div className="flex items-center pt-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><HelpCircle className="h-6 w-6"/>FAQ Management</h1>
+             <p className="text-muted-foreground mt-1">Manage the frequently asked questions for your website.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -133,6 +134,9 @@ export default function FaqPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{faqsData.length}</div>
+                     <p className="text-xs text-muted-foreground">
+                        All questions and answers
+                    </p>
                 </CardContent>
             </Card>
              <Card>
@@ -142,6 +146,9 @@ export default function FaqPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{faqCategories.length}</div>
+                    <p className="text-xs text-muted-foreground">
+                        Unique categories
+                    </p>
                 </CardContent>
             </Card>
         </div>

@@ -7,7 +7,6 @@ import {
   PlusCircle,
   MoreHorizontal,
   Shapes,
-  Eye,
   Link as LinkIcon,
 } from 'lucide-react';
 
@@ -109,9 +108,10 @@ export default function CategoriesPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center">
+        <div className="flex items-center pt-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><Shapes className="h-6 w-6"/>Category Management</h1>
+             <p className="text-muted-foreground mt-1">Organize and manage your art categories.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -137,6 +137,9 @@ export default function CategoriesPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{categoriesData.length}</div>
+                    <p className="text-xs text-muted-foreground">
+                        All art categories
+                    </p>
                 </CardContent>
             </Card>
              <Card>
@@ -146,6 +149,9 @@ export default function CategoriesPage() {
                 </CardHeader>
                 <CardContent>
                     <div className="text-2xl font-bold">{categoriesData.filter(c => c.href).length}</div>
+                    <p className="text-xs text-muted-foreground">
+                        Categories with dedicated pages
+                    </p>
                 </CardContent>
             </Card>
         </div>
