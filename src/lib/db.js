@@ -27,13 +27,21 @@ async function _db() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      dbName: 'artistry-hub' // Explicitly set the database name here
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("Successfully connected to MongoDB database: artistry-hub");
       return mongoose;
     });
   }
-  cached.conn = await cached.promise;
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+  
   return cached.conn;
 }
 
