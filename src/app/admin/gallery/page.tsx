@@ -242,14 +242,16 @@ export default function GalleryPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {galleryImagesData.map((image) => (
+                {galleryImagesData.map((image) => {
+                  const imageSrc = image.image && image.image.trim() !== '' ? image.image : 'https://placehold.co/100x100.png';
+                  return (
                   <TableRow key={image.id}>
                     <TableCell className="hidden sm:table-cell">
                       <Image
                         alt={image.title}
                         className="aspect-square rounded-md object-cover"
                         height="64"
-                        src={image.image}
+                        src={imageSrc}
                         width="64"
                         data-ai-hint={image.hint}
                       />
@@ -278,7 +280,8 @@ export default function GalleryPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
+                  );
+                })}
               </TableBody>
             </Table>
           </CardContent>
