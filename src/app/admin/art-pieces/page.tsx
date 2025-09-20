@@ -51,6 +51,7 @@ import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Separator } from '@/components/ui/separator';
 
 const artPiecesData = [
   {
@@ -107,6 +108,7 @@ export default function ArtPiecesPage() {
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
 
     const handleEditClick = (artPiece: ArtPiece) => {
         setSelectedArtPiece(artPiece);
@@ -116,6 +118,19 @@ export default function ArtPiecesPage() {
     const handleDeleteClick = (artPiece: ArtPiece) => {
         setSelectedArtPiece(artPiece);
         setIsDeleteModalOpen(true);
+    };
+
+    const handleViewClick = (artPiece: ArtPiece) => {
+        setSelectedArtPiece(artPiece);
+        setIsViewModalOpen(true);
+    };
+    
+    const handleCloseModals = () => {
+        setIsAddModalOpen(false);
+        setIsEditModalOpen(false);
+        setIsDeleteModalOpen(false);
+        setIsViewModalOpen(false);
+        setSelectedArtPiece(null);
     };
 
   return (
@@ -228,7 +243,7 @@ export default function ArtPiecesPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>View</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleViewClick(artPiece)}>View</DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
                             </DropdownMenuContent>
@@ -332,6 +347,53 @@ export default function ArtPiecesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* View Modal */}
+       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{selectedArtPiece?.name}</DialogTitle>
+            <DialogDescription>
+                Details for the art piece.
+            </DialogDescription>
+          </DialogHeader>
+           {selectedArtPiece && (
+                <div className="space-y-4 py-4">
+                    <div className="grid grid-cols-3 gap-4">
+                        {selectedArtPiece.images.map((src, index) => (
+                             <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} />
+                        ))}
+                    </div>
+                    <Separator />
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="grid gap-1.5">
+                            <Label>Category</Label>
+                            <p className="text-muted-foreground">{selectedArtPiece.category}</p>
+                        </div>
+                         <div className="grid gap-1.5">
+                            <Label>Price</Label>
+                            <p className="text-muted-foreground">{selectedArtPiece.price}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Creation Time</Label>
+                            <p className="text-muted-foreground">{selectedArtPiece.creationTime}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Status</Label>
+                            <p><Badge variant={selectedArtPiece.name === "The 'Azure Dream' Necklace" ? "default" : (selectedArtPiece.status === 'Active' ? 'default' : selectedArtPiece.status === 'Draft' ? 'secondary' : 'outline')}>{selectedArtPiece.name === "The 'Azure Dream' Necklace" ? "Editor's Pick" : selectedArtPiece.status}</Badge></p>
+                        </div>
+                    </div>
+                </div>
+            )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button>Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
+
+    
