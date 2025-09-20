@@ -7,7 +7,7 @@ import ArtPiece from '@/models/artPiece.model.js';
 export async function GET() {
   await _db();
   try {
-    const artPieces = await ArtPiece.find({});
+    const artPieces = await ArtPiece.find({}).sort({ createdAt: -1 });
     return NextResponse.json(artPieces, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: 'Failed to fetch art pieces', error: error.message }, { status: 500 });
@@ -19,9 +19,25 @@ export async function POST(request) {
   await _db();
   try {
     const body = await request.json();
-    const newArtPiece = await ArtPiece.create(body);
+    const { name, category, price, creationTime, editorsPick, image1, image2, image3 } = body;
+    
+    const images = [image1, image2, image3].filter(Boolean);
+
+    const newArtPieceData = {
+        name,
+        category,
+        price,
+        creationTime,
+        editorsPick: editorsPick || false,
+        status: 'Active', // Default status
+        images
+    };
+
+    const newArtPiece = await ArtPiece.create(newArtPieceData);
     return NextResponse.json(newArtPiece, { status: 201 });
   } catch (error) {
     return NextResponse.json({ message: 'Failed to create art piece', error: error.message }, { status: 400 });
   }
 }
+
+    

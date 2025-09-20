@@ -47,68 +47,91 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 
-const artPiecesData = [
-  {
-    name: 'Classic Bridal Design',
-    category: 'Mehndi',
-    price: '$250.00',
-    creationTime: 300,
-    status: 'Active',
-    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
-    hint: 'bridal mehndi',
-  },
-  {
-    name: 'Geometric Harmony',
-    category: 'Rangoli',
-    price: '$90.00',
-    creationTime: 150,
-    status: 'Active',
-    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
-    hint: 'geometric rangoli',
-  },
-  {
-    name: 'Midnight Glitter',
-    category: 'Nail Art',
-    price: '$60.00',
-    creationTime: 75,
-    status: 'Draft',
-    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
-    hint: 'glitter nails',
-  },
-  {
-    name: 'Geometric Earrings',
-    category: 'Jewelry',
-    price: '$45.00',
-    creationTime: 180,
-    status: 'Active',
-    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
-    hint: 'geometric earrings',
-  },
-  {
-    name: 'Diwali Special',
-    category: 'Rangoli',
-    price: '$120.00',
-    creationTime: 210,
-    status: 'Archived',
-    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
-    hint: 'diwali rangoli',
-  },
-];
-
-type ArtPiece = typeof artPiecesData[0];
+type ArtPiece = {
+  _id: string;
+  name: string;
+  category: string;
+  price: string;
+  creationTime: number;
+  status: string;
+  images: string[];
+  hint: string;
+  editorsPick?: boolean;
+};
 
 export default function ArtPiecesPage() {
+    const [artPieces, setArtPieces] = React.useState<ArtPiece[]>([]);
     const [selectedArtPiece, setSelectedArtPiece] = React.useState<ArtPiece | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+    
+    const fetchArtPieces = async () => {
+        try {
+            const response = await fetch('/api/art-pieces');
+            if (response.ok) {
+                const data = await response.json();
+                setArtPieces(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch art pieces:", error);
+        }
+    };
+
+    React.useEffect(() => {
+        fetchArtPieces();
+    }, []);
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        const method = isEditModalOpen ? 'PUT' : 'POST';
+        const url = isEditModalOpen ? `/api/art-pieces/${selectedArtPiece?._id}` : '/api/art-pieces';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    ...data,
+                    editorsPick: (data.editorsPick === 'on'),
+                }),
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchArtPieces();
+            } else {
+                console.error("Failed to save art piece");
+            }
+        } catch (error) {
+            console.error("Error saving art piece:", error);
+        }
+    };
+    
+    const handleDelete = async () => {
+        if (!selectedArtPiece) return;
+        try {
+            const response = await fetch(`/api/art-pieces/${selectedArtPiece._id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchArtPieces();
+            } else {
+                console.error("Failed to delete art piece");
+            }
+        } catch (error) {
+            console.error("Error deleting art piece:", error);
+        }
+    };
 
     const handleEditClick = (artPiece: ArtPiece) => {
         setSelectedArtPiece(artPiece);
@@ -176,7 +199,6 @@ export default function ArtPiecesPage() {
                   <DropdownMenuCheckboxItem checked>
                     Category
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem>Artist</DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -212,21 +234,23 @@ export default function ArtPiecesPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {artPiecesData.map((artPiece) => (
-                      <TableRow key={artPiece.name}>
+                    {artPieces.map((artPiece) => (
+                      <TableRow key={artPiece._id}>
                         <TableCell className="hidden sm:table-cell">
                           <Image
                             alt={artPiece.name}
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src={artPiece.images[0]}
+                            src={artPiece.images[0] || 'https://placehold.co/100x100.png'}
                             width="64"
                             data-ai-hint={artPiece.hint}
                           />
                         </TableCell>
                         <TableCell className="font-medium">{artPiece.name}</TableCell>
                         <TableCell>
-                          <Badge variant={artPiece.name === "The 'Azure Dream' Necklace" ? "default" : (artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline')}>{artPiece.name === "The 'Azure Dream' Necklace" ? "Editor's Pick" : artPiece.status}</Badge>
+                          <Badge variant={artPiece.editorsPick ? "default" : (artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline')}>
+                            {artPiece.editorsPick ? "Editor's Pick" : artPiece.status}
+                          </Badge>
                         </TableCell>
                         <TableCell>{artPiece.price}</TableCell>
                         <TableCell className="hidden md:table-cell">
@@ -256,7 +280,7 @@ export default function ArtPiecesPage() {
               </CardContent>
               <CardFooter>
                 <div className="text-xs text-muted-foreground">
-                  Showing <strong>1-5</strong> of <strong>{artPiecesData.length}</strong> products
+                  Showing <strong>1-{artPieces.length}</strong> of <strong>{artPieces.length}</strong> products
                 </div>
               </CardFooter>
             </Card>
@@ -265,7 +289,7 @@ export default function ArtPiecesPage() {
       </main>
 
       {/* Add/Edit Modal */}
-      <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={isAddModalOpen ? setIsAddModalOpen : setIsEditModalOpen}>
+      <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={handleCloseModals}>
         <DialogContent className="sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>{isEditModalOpen ? 'Edit' : 'Add'} Art Piece</DialogTitle>
@@ -273,59 +297,64 @@ export default function ArtPiecesPage() {
               {isEditModalOpen ? 'Make changes to your art piece here.' : 'Add a new art piece to your collection.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-6 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Name
-              </Label>
-              <Input id="name" defaultValue={selectedArtPiece?.name || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className="text-right">
-                Category
-              </Label>
-              <Input id="category" defaultValue={selectedArtPiece?.category || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="price" className="text-right">
-                Price
-              </Label>
-              <Input id="price" defaultValue={selectedArtPiece?.price || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="creationTime" className="text-right">
-                Creation Time (in minutes)
-              </Label>
-              <Input id="creationTime" type="number" defaultValue={selectedArtPiece?.creationTime || ""} className="col-span-3" placeholder="e.g., 120"/>
-            </div>
-            <div className="grid grid-cols-4 items-start gap-4">
-                <Label htmlFor="image" className="text-right pt-2">
-                    Images
+          <form onSubmit={handleFormSubmit}>
+            <div className="grid gap-6 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Name
                 </Label>
-                <div className="col-span-3 space-y-2">
-                    <Input id="image1" type="file" placeholder="Image 1" />
-                    <Input id="image2" type="file" placeholder="Image 2" />
-                    <Input id="image3" type="file" placeholder="Image 3" />
+                <Input id="name" name="name" defaultValue={selectedArtPiece?.name || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="category" className="text-right">
+                  Category
+                </Label>
+                <Input id="category" name="category" defaultValue={selectedArtPiece?.category || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="price" className="text-right">
+                  Price
+                </Label>
+                <Input id="price" name="price" defaultValue={selectedArtPiece?.price || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="creationTime" className="text-right">
+                  Creation Time (in minutes)
+                </Label>
+                <Input id="creationTime" name="creationTime" type="number" defaultValue={selectedArtPiece?.creationTime || ""} className="col-span-3" placeholder="e.g., 120"/>
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                  <Label htmlFor="image" className="text-right pt-2">
+                      Images
+                  </Label>
+                  <div className="col-span-3 space-y-2">
+                      <Input name="image1" type="text" placeholder="Image 1 URL" defaultValue={selectedArtPiece?.images?.[0] || ''} />
+                      <Input name="image2" type="text" placeholder="Image 2 URL" defaultValue={selectedArtPiece?.images?.[1] || ''} />
+                      <Input name="image3" type="text" placeholder="Image 3 URL" defaultValue={selectedArtPiece?.images?.[2] || ''} />
+                  </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="editors-pick" className="text-right">
+                  Editor's Pick
+                </Label>
+                <div className="col-span-3 flex items-center">
+                  <Checkbox id="editorsPick" name="editorsPick" defaultChecked={selectedArtPiece?.editorsPick} />
+                  <label
+                    htmlFor="editorsPick"
+                    className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Mark as Editor's Pick
+                  </label>
                 </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="editors-pick" className="text-right">
-                Editor's Pick
-              </Label>
-              <div className="col-span-3 flex items-center">
-                <Checkbox id="editors-pick" defaultChecked={selectedArtPiece?.name === "The 'Azure Dream' Necklace"} />
-                <label
-                  htmlFor="editors-pick"
-                  className="ml-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Mark as Editor's Pick
-                </label>
               </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       
@@ -343,7 +372,7 @@ export default function ArtPiecesPage() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -360,8 +389,8 @@ export default function ArtPiecesPage() {
            {selectedArtPiece && (
                 <div className="space-y-4 py-4">
                     <div className="grid grid-cols-3 gap-4">
-                        {selectedArtPiece.images.map((src, index) => (
-                             <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} />
+                        {(selectedArtPiece.images || []).map((src, index) => (
+                             src ? <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} /> : null
                         ))}
                     </div>
                     <Separator />
@@ -380,7 +409,11 @@ export default function ArtPiecesPage() {
                         </div>
                         <div className="grid gap-1.5">
                             <Label>Status</Label>
-                            <p><Badge variant={selectedArtPiece.name === "The 'Azure Dream' Necklace" ? "default" : (selectedArtPiece.status === 'Active' ? 'default' : selectedArtPiece.status === 'Draft' ? 'secondary' : 'outline')}>{selectedArtPiece.name === "The 'Azure Dream' Necklace" ? "Editor's Pick" : selectedArtPiece.status}</Badge></p>
+                            <p>
+                                <Badge variant={selectedArtPiece.editorsPick ? 'default' : (selectedArtPiece.status === 'Active' ? 'default' : selectedArtPiece.status === 'Draft' ? 'secondary' : 'outline')}>
+                                  {selectedArtPiece.editorsPick ? "Editor's Pick" : selectedArtPiece.status}
+                                </Badge>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -395,3 +428,5 @@ export default function ArtPiecesPage() {
     </>
   );
 }
+
+    

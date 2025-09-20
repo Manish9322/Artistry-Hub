@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -44,6 +44,17 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
+type ArtPiece = {
+    _id: string;
+    name: string;
+    category: string;
+    price: string;
+    creationTime: number;
+    status: string;
+    images: string[];
+    hint: string;
+    editorsPick?: boolean;
+};
 
 const bookingSchema = z.object({
   serviceType: z.string({ required_error: "Please select a service type." }),
@@ -60,6 +71,23 @@ type BookingFormValues = z.infer<typeof bookingSchema>;
 export default function BookingPage() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
+
+  useEffect(() => {
+    async function fetchEditorsPick() {
+      try {
+        const response = await fetch('/api/art-pieces');
+        if (response.ok) {
+          const artPieces: ArtPiece[] = await response.json();
+          const picked = artPieces.find(p => p.editorsPick);
+          setEditorsPick(picked || artPieces[0] || null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch art pieces:", error);
+      }
+    }
+    fetchEditorsPick();
+  }, []);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -471,31 +499,35 @@ export default function BookingPage() {
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Art Piece Spotlight</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                A closer look at one of the masterpieces from our collection.
+                A closer look at one of the masterpieces from our collection, chosen by our editors.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="rounded-lg overflow-hidden shadow-xl">
-                <Image
-                  src="https://placehold.co/600x700.png"
-                  alt="Spotlight Art Piece"
-                  width={600}
-                  height={700}
-                  className="w-full object-cover"
-                  data-ai-hint="elegant jewelry piece"
-                />
-              </div>
-              <div>
-                <Badge>Editor's Pick</Badge>
-                <h3 className="text-4xl font-bold font-headline mt-4">The 'Azure Dream' Necklace</h3>
-                <p className="mt-6 text-muted-foreground leading-relaxed">
-                  The 'Azure Dream' is a stunning example of modern artistry, blending vibrant acrylics with a fluid, organic design. This statement piece captures the essence of a tranquil ocean, with deep blues and shimmering highlights that dance in the light. Handcrafted with meticulous care, it's more than just jewelry—it's a wearable sculpture.
-                </p>
-                <Button size="lg" className="mt-8" asChild>
-                  <Link href="/custom-plastic-jewelry">Explore The Collection <ArrowRight className="ml-2 h-5 w-5" /></Link>
-                </Button>
-              </div>
-            </div>
+            {editorsPick ? (
+                <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="rounded-lg overflow-hidden shadow-xl">
+                        <Image
+                        src={editorsPick.images[0] || 'https://placehold.co/600x700.png'}
+                        alt={editorsPick.name}
+                        width={600}
+                        height={700}
+                        className="w-full object-cover"
+                        data-ai-hint={editorsPick.hint}
+                        />
+                    </div>
+                    <div>
+                        <Badge>Editor's Pick</Badge>
+                        <h3 className="text-4xl font-bold font-headline mt-4">{editorsPick.name}</h3>
+                        <p className="mt-6 text-muted-foreground leading-relaxed">
+                            This piece is a stunning example of modern artistry, blending vibrant colors with a fluid, organic design. Handcrafted with meticulous care, it's more than just an art piece—it's a wearable sculpture that tells a story.
+                        </p>
+                        <Button size="lg" className="mt-8" asChild>
+                            <Link href={`/${editorsPick.category.toLowerCase().replace(/\s+/g, '-')}`}>Explore The Collection <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                        </Button>
+                    </div>
+                </div>
+            ) : (
+                <div className="text-center text-muted-foreground">Loading our featured art piece...</div>
+            )}
           </div>
         </section>
 
@@ -909,3 +941,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
