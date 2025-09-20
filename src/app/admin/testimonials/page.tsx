@@ -56,38 +56,89 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 
-const testimonialsData = [
-  {
-    name: 'Priya S.',
-    comment: 'The bridal mehndi was absolutely breathtaking! The artists are so talented and professional. I received so many compliments.',
-    rating: 5,
-    avatar: 'https://placehold.co/100x100.png',
-    hint: 'woman portrait',
-  },
-  {
-    name: 'Michael B.',
-    comment: 'Ordered a custom necklace and it exceeded all my expectations. The quality is fantastic and it\'s so unique. Highly recommend!',
-    rating: 5,
-    avatar: 'https://placehold.co/100x100.png',
-    hint: 'man portrait',
-  },
-  {
-    name: 'Anjali K.',
-    comment: 'I love getting my nails done here. The artists always come up with the most creative designs. The best nail art in town!',
-    rating: 5,
-    avatar: 'https://placehold.co/100x100.png',
-    hint: 'woman smiling',
-  },
-];
-
-type Testimonial = typeof testimonialsData[0];
+type Testimonial = {
+  _id: string;
+  name: string;
+  comment: string;
+  rating: number;
+  avatar?: string;
+  hint?: string;
+};
 
 export default function TestimonialsPage() {
+    const { toast } = useToast();
+    const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
     const [selectedTestimonial, setSelectedTestimonial] = React.useState<Testimonial | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+
+    const fetchTestimonials = async () => {
+        try {
+            const response = await fetch('/api/testimonials');
+            if (response.ok) {
+                const data = await response.json();
+                setTestimonials(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch testimonials:", error);
+            toast({ variant: "destructive", title: "Error", description: "Failed to fetch testimonials." });
+        }
+    };
+
+    React.useEffect(() => {
+        fetchTestimonials();
+    }, []);
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        const method = isEditModalOpen ? 'PUT' : 'POST';
+        const url = isEditModalOpen ? `/api/testimonials/${selectedTestimonial?._id}` : '/api/testimonials';
+        
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchTestimonials();
+                toast({ title: "Success!", description: `Testimonial has been ${isEditModalOpen ? 'updated' : 'added'}.` });
+            } else {
+                const errorData = await response.json();
+                toast({ variant: "destructive", title: "Error", description: `Failed to save testimonial. ${errorData.message}` });
+            }
+        } catch (error) {
+            console.error("Error saving testimonial:", error);
+            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedTestimonial) return;
+        try {
+            const response = await fetch(`/api/testimonials/${selectedTestimonial._id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchTestimonials();
+                toast({ title: "Success!", description: "Testimonial has been deleted." });
+            } else {
+                const errorData = await response.json();
+                toast({ variant: "destructive", title: "Error", description: `Failed to delete testimonial. ${errorData.message}` });
+            }
+        } catch (error) {
+            console.error("Error deleting testimonial:", error);
+            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+        }
+    };
 
     const handleEditClick = (testimonial: Testimonial) => {
         setSelectedTestimonial(testimonial);
@@ -106,12 +157,14 @@ export default function TestimonialsPage() {
         setSelectedTestimonial(null);
     }
     
-    const averageRating = (testimonialsData.reduce((acc, t) => acc + t.rating, 0) / testimonialsData.length).toFixed(1);
+    const averageRating = testimonials.length > 0 
+        ? (testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length).toFixed(1)
+        : '0.0';
 
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-4">
+        <div className="flex items-center pt-4 sm:pt-6">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><Quote className="h-6 w-6"/>Testimonial Management</h1>
              <p className="text-muted-foreground mt-1">Manage your client testimonials and reviews.</p>
@@ -139,7 +192,7 @@ export default function TestimonialsPage() {
                     <MessageSquare className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{testimonialsData.length}</div>
+                    <div className="text-2xl font-bold">{testimonials.length}</div>
                     <p className="text-xs text-muted-foreground">
                         All client reviews
                     </p>
@@ -179,12 +232,12 @@ export default function TestimonialsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {testimonialsData.map((testimonial) => (
-                  <TableRow key={testimonial.name}>
+                {testimonials.map((testimonial) => (
+                  <TableRow key={testimonial._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
-                              <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />
+                              {testimonial.avatar && <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />}
                               <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <span className="font-medium">{testimonial.name}</span>
@@ -219,7 +272,7 @@ export default function TestimonialsPage() {
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-{testimonialsData.length}</strong> of <strong>{testimonialsData.length}</strong> testimonials
+              Showing <strong>1-{testimonials.length}</strong> of <strong>{testimonials.length}</strong> testimonials
             </div>
           </CardFooter>
         </Card>
@@ -227,63 +280,60 @@ export default function TestimonialsPage() {
 
       {/* Add/Edit Modal */}
       <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={handleCloseModals}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{isEditModalOpen ? 'Edit' : 'Add'} Testimonial</DialogTitle>
             <DialogDescription>
               {isEditModalOpen ? 'Make changes to this testimonial.' : 'Add a new testimonial to your website.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Author
-              </Label>
-              <Input id="name" defaultValue={selectedTestimonial?.name || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="comment" className="text-right">
-                Comment
-              </Label>
-              <Textarea id="comment" defaultValue={selectedTestimonial?.comment || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="rating" className="text-right">
-                Rating
-              </Label>
-              <Select defaultValue={selectedTestimonial?.rating.toString() || '5'}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select a rating" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[1,2,3,4,5].map(r => <SelectItem key={r} value={r.toString()}>{r} Star{r > 1 ? 's' : ''}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="avatar-upload" className="text-right">
-                    Avatar
+          <form onSubmit={handleFormSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Author
                 </Label>
-                <Input id="avatar-upload" type="file" className="col-span-3" />
+                <Input id="name" name="name" defaultValue={selectedTestimonial?.name || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="comment" className="text-right pt-2">
+                  Comment
+                </Label>
+                <Textarea id="comment" name="comment" defaultValue={selectedTestimonial?.comment || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="rating" className="text-right">
+                  Rating
+                </Label>
+                <Select name="rating" defaultValue={selectedTestimonial?.rating.toString() || '5'}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select a rating" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1,2,3,4,5].map(r => <SelectItem key={r} value={r.toString()}>{r} Star{r > 1 ? 's' : ''}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="avatar" className="text-right">
+                      Avatar URL
+                  </Label>
+                  <Input id="avatar" name="avatar" defaultValue={selectedTestimonial?.avatar || ""} className="col-span-3" placeholder="https://example.com/image.png"/>
+              </div>
+               <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="hint" className="text-right">
+                      AI Hint
+                  </Label>
+                  <Input id="hint" name="hint" defaultValue={selectedTestimonial?.hint || ""} className="col-span-3" placeholder="e.g., man smiling"/>
+              </div>
             </div>
-            {selectedTestimonial?.avatar && (
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Current</Label>
-                    <div className="col-span-3">
-                        <Avatar>
-                            <AvatarImage src={selectedTestimonial.avatar} alt="Current avatar" />
-                            <AvatarFallback>{selectedTestimonial.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    </div>
-                </div>
-            )}
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       
@@ -301,7 +351,7 @@ export default function TestimonialsPage() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
