@@ -1,13 +1,17 @@
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Ruler, Package, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Ruler, Package, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 
 
 export default function CustomJewelryPage() {
@@ -22,60 +26,71 @@ export default function CustomJewelryPage() {
       price: 45,
       image: "https://placehold.co/600x400.png",
       tags: ["Modern", "Statement"],
-      hint: "geometric earrings"
+      hint: "geometric earrings",
+      creationTime: "2-3 business days",
     },
     {
       title: "Chunky Neon Necklace",
       price: 80,
       image: "https://placehold.co/600x400.png",
       tags: ["Bold", "Colorful"],
-      hint: "neon necklace"
+      hint: "neon necklace",
+      creationTime: "3-5 business days",
     },
     {
       title: "Minimalist Rings",
       price: 30,
       image: "https://placehold.co/600x400.png",
       tags: ["Minimalist", "Set"],
-      hint: "minimalist rings"
+      hint: "minimalist rings",
+      creationTime: "1-2 business days",
     },
     {
       title: "Custom Nameplate",
       price: 55,
       image: "https://placehold.co/600x400.png",
       tags: ["Personalized", "Modern"],
-      hint: "custom nameplate"
+      hint: "custom nameplate",
+      creationTime: "5-7 business days",
     },
     {
       title: "Layered Bracelet Set",
       price: 65,
       image: "https://placehold.co/600x400.png",
       tags: ["Colorful", "Set"],
-      hint: "layered bracelets"
+      hint: "layered bracelets",
+      creationTime: "3-4 business days",
     },
     {
       title: "Statement Brooch",
       price: 50,
       image: "https://placehold.co/600x400.png",
       tags: ["Bold", "Statement"],
-      hint: "statement brooch"
+      hint: "statement brooch",
+      creationTime: "4-6 business days",
     },
     {
       title: "Transparent Hoops",
       price: 40,
       image: "https://placehold.co/600x400.png",
       tags: ["Minimalist", "Modern"],
-      hint: "clear hoop earrings"
+      hint: "clear hoop earrings",
+      creationTime: "2-3 business days",
     },
      {
       title: "Personalized Keychain",
       price: 25,
       image: "https://placehold.co/600x400.png",
       tags: ["Personalized"],
-      hint: "custom keychain"
+      hint: "custom keychain",
+      creationTime: "2-4 business days",
     },
   ];
   
+  type ArtPiece = typeof artPieces[0];
+
   const duplicatedArt = [...artPieces, ...artPieces];
+  const [selectedArt, setSelectedArt] = useState<ArtPiece | null>(null);
 
   const tags = ["All", "Modern", "Statement", "Bold", "Colorful", "Minimalist", "Personalized", "Set"];
 
@@ -217,77 +232,121 @@ export default function CustomJewelryPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-24 space-y-4">
-          <div className="container">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold font-headline text-primary">Our Designs</h2>
-                 <p className="mt-2 text-lg text-muted-foreground">Browse a selection of our unique jewelry pieces.</p>
-              </div>
-              <div className="flex justify-center flex-wrap gap-2 mb-12">
-                 {tags.map((tag) => (
-                  <Badge key={tag} variant={tag === 'All' ? 'default' : 'outline'} className="text-sm px-4 py-2 cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground">{tag}</Badge>
+        <Dialog>
+          <section className="py-16 sm:py-24 space-y-4">
+            <div className="container">
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-bold font-headline text-primary">Our Designs</h2>
+                   <p className="mt-2 text-lg text-muted-foreground">Browse a selection of our unique jewelry pieces.</p>
+                </div>
+                <div className="flex justify-center flex-wrap gap-2 mb-12">
+                   {tags.map((tag) => (
+                    <Badge key={tag} variant={tag === 'All' ? 'default' : 'outline'} className="text-sm px-4 py-2 cursor-pointer transition-colors hover:bg-accent hover:text-accent-foreground">{tag}</Badge>
+                  ))}
+                </div>
+            </div>
+            <div className="relative w-full overflow-hidden group/container space-y-4">
+              <div className="flex animate-marquee group-hover/container:pause">
+                {duplicatedArt.map((piece, index) => (
+                  <div key={`row1-${index}`} className="flex-shrink-0 w-80 p-4">
+                    <DialogTrigger asChild>
+                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => setSelectedArt(piece)}>
+                        <div className="relative h-64 w-full">
+                          <Image
+                            src={piece.image}
+                            alt={piece.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            data-ai-hint={piece.hint}
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                            <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                            </div>
+                            <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
+                            <div className="flex gap-2">
+                               <Button className="w-full" size="sm" asChild><Link href="/booking">Book Consultation</Link></Button>
+                               <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This</Link></Button>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    </DialogTrigger>
+                  </div>
                 ))}
               </div>
-          </div>
-          <div className="relative w-full overflow-hidden group/container space-y-4">
-            <div className="flex animate-marquee group-hover/container:pause">
-              {duplicatedArt.map((piece, index) => (
-                <div key={`row1-${index}`} className="flex-shrink-0 w-80 p-4">
-                  <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl">
-                    <div className="relative h-64 w-full">
-                      <Image
-                        src={piece.image}
-                        alt={piece.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        data-ai-hint={piece.hint}
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                        <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+              <div className="flex animate-marquee-right group-hover/container:pause">
+                 {duplicatedArt.slice().reverse().map((piece, index) => (
+                  <div key={`row2-${index}`} className="flex-shrink-0 w-80 p-4">
+                    <DialogTrigger asChild>
+                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => setSelectedArt(piece)}>
+                        <div className="relative h-64 w-full">
+                          <Image
+                            src={piece.image}
+                            alt={piece.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            data-ai-hint={piece.hint}
+                          />
+                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                            <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
+                            <div className="flex flex-wrap gap-1 mb-3">
+                              {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
+                            </div>
+                            <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
+                            <div className="flex gap-2">
+                               <Button className="w-full" size="sm" asChild><Link href="/booking">Book Consultation</Link></Button>
+                               <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This</Link></Button>
+                            </div>
+                          </div>
                         </div>
-                        <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
-                        <div className="flex gap-2">
-                           <Button className="w-full" size="sm" asChild><Link href="/booking">Book Consultation</Link></Button>
-                           <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This</Link></Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              ))}
+                      </Card>
+                    </DialogTrigger>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="flex animate-marquee-right group-hover/container:pause">
-               {duplicatedArt.slice().reverse().map((piece, index) => (
-                <div key={`row2-${index}`} className="flex-shrink-0 w-80 p-4">
-                  <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl">
-                    <div className="relative h-64 w-full">
-                      <Image
-                        src={piece.image}
-                        alt={piece.title}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        data-ai-hint={piece.hint}
-                      />
-                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                        <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
-                        </div>
-                        <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
-                        <div className="flex gap-2">
-                           <Button className="w-full" size="sm" asChild><Link href="/booking">Book Consultation</Link></Button>
-                           <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This</Link></Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
+          </section>
+          {selectedArt && (
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle className="font-headline text-3xl text-primary">{selectedArt.title}</DialogTitle>
+              </DialogHeader>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="relative aspect-video rounded-lg overflow-hidden">
+                  <Image src={selectedArt.image} alt={selectedArt.title} fill className="object-cover" data-ai-hint={selectedArt.hint} />
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+                <div className="space-y-4">
+                   <div className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="w-5 h-5 text-primary" />
+                        <span><strong>Creation Time:</strong> {selectedArt.creationTime}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                        <DollarSign className="w-5 h-5 text-primary" />
+                         <span><strong>Price:</strong> ${selectedArt.price}</span>
+                    </div>
+                    <div className="flex items-start gap-2 text-muted-foreground">
+                        <Tag className="w-5 h-5 text-primary mt-1" />
+                        <div>
+                            <strong>Tags:</strong>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                                {selectedArt.tags.map(tag => <Badge key={tag} variant="secondary">{tag}</Badge>)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <DialogFooter>
+                 <Button variant="secondary" asChild><Link href="/booking">Book a Consultation</Link></Button>
+                <Button asChild>
+                    <Link href={`/order?item=${encodeURIComponent(selectedArt.title)}`}>Order This Piece</Link>
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          )}
+        </Dialog>
+
 
         <section id="process" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
