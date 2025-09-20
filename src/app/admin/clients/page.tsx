@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react';
 import { Users, File, PlusCircle, Mail, Phone, ListFilter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,34 +21,38 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
+
+type Client = {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  totalSpent: number;
+  avatar?: string;
+  hint?: string;
+};
 
 export default function ClientsPage() {
-  const clients = [
-    {
-      name: 'Olivia Martin',
-      email: 'olivia.martin@email.com',
-      phone: '+1 (123) 456-7890',
-      totalSpent: '$2,500.00',
-      avatar: 'https://placehold.co/100x100.png',
-      hint: 'woman portrait',
-    },
-    {
-      name: 'Jackson Lee',
-      email: 'jackson.lee@email.com',
-      phone: '+1 (234) 567-8901',
-      totalSpent: '$350.50',
-      avatar: 'https://placehold.co/100x100.png',
-      hint: 'man portrait',
-    },
-     {
-      name: 'Sofia Davis',
-      email: 'sofia.davis@email.com',
-      phone: '+1 (345) 678-9012',
-      totalSpent: '$1,200.75',
-      avatar: 'https://placehold.co/100x100.png',
-      hint: 'woman smiling',
-    },
-  ];
+  const { toast } = useToast();
+  const [clients, setClients] = React.useState<Client[]>([]);
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch('/api/clients');
+      if (response.ok) {
+        const data = await response.json();
+        setClients(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch clients:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch clients." });
+    }
+  };
+
+  React.useEffect(() => {
+    fetchClients();
+  }, []);
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -99,7 +104,7 @@ export default function ClientsPage() {
             </TableHeader>
             <TableBody>
               {clients.map((client) => (
-                <TableRow key={client.email}>
+                <TableRow key={client._id}>
                   <TableCell>
                     <div className="flex items-center gap-4">
                       <Avatar className="h-10 w-10">
@@ -112,10 +117,10 @@ export default function ClientsPage() {
                   <TableCell>
                     <div className="flex flex-col">
                         <span className="flex items-center gap-2 text-sm"><Mail className="h-4 w-4 text-muted-foreground"/>{client.email}</span>
-                        <span className="flex items-center gap-2 text-sm text-muted-foreground"><Phone className="h-4 w-4 text-muted-foreground"/>{client.phone}</span>
+                        {client.phone && <span className="flex items-center gap-2 text-sm text-muted-foreground"><Phone className="h-4 w-4 text-muted-foreground"/>{client.phone}</span>}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right font-medium">{client.totalSpent}</TableCell>
+                  <TableCell className="text-right font-medium">${client.totalSpent.toFixed(2)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -125,3 +130,5 @@ export default function ClientsPage() {
     </main>
   );
 }
+
+    

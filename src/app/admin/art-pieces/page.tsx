@@ -51,6 +51,8 @@ import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import { useToast } from "@/hooks/use-toast";
+
 
 type ArtPiece = {
   _id: string;
@@ -65,6 +67,7 @@ type ArtPiece = {
 };
 
 export default function ArtPiecesPage() {
+    const { toast } = useToast();
     const [artPieces, setArtPieces] = React.useState<ArtPiece[]>([]);
     const [selectedArtPiece, setSelectedArtPiece] = React.useState<ArtPiece | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -81,6 +84,11 @@ export default function ArtPiecesPage() {
             }
         } catch (error) {
             console.error("Failed to fetch art pieces:", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Failed to fetch art pieces.",
+            });
         }
     };
 
@@ -108,11 +116,26 @@ export default function ArtPiecesPage() {
             if (response.ok) {
                 handleCloseModals();
                 fetchArtPieces();
+                toast({
+                    title: "Success!",
+                    description: `Art piece has been ${isEditModalOpen ? 'updated' : 'added'}.`,
+                });
             } else {
-                console.error("Failed to save art piece");
+                const errorData = await response.json();
+                console.error("Failed to save art piece:", errorData.message);
+                 toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Failed to save art piece. ${errorData.message}`,
+                });
             }
         } catch (error) {
             console.error("Error saving art piece:", error);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "An unexpected error occurred while saving.",
+            });
         }
     };
     
@@ -125,11 +148,26 @@ export default function ArtPiecesPage() {
             if (response.ok) {
                 handleCloseModals();
                 fetchArtPieces();
+                toast({
+                    title: "Success!",
+                    description: "Art piece has been deleted.",
+                });
             } else {
-                console.error("Failed to delete art piece");
+                 const errorData = await response.json();
+                console.error("Failed to delete art piece", errorData.message);
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: `Failed to delete art piece. ${errorData.message}`,
+                });
             }
         } catch (error) {
             console.error("Error deleting art piece:", error);
+             toast({
+                variant: "destructive",
+                title: "Error",
+                description: "An unexpected error occurred while deleting.",
+            });
         }
     };
 
@@ -241,7 +279,7 @@ export default function ArtPiecesPage() {
                             alt={artPiece.name}
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src={artPiece.images[0] || 'https://placehold.co/100x100.png'}
+                            src={artPiece.images && artPiece.images.length > 0 ? artPiece.images[0] : 'https://placehold.co/100x100.png'}
                             width="64"
                             data-ai-hint={artPiece.hint}
                           />
@@ -266,8 +304,8 @@ export default function ArtPiecesPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleViewClick(artPiece)}>View</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
                             </DropdownMenuContent>

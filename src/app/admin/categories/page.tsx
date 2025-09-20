@@ -51,45 +51,89 @@ import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
-const categoriesData = [
-  {
-    name: 'Mehndi',
-    description: 'Intricate henna designs for all occasions.',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'henna hand',
-    href: '/mehndi',
-  },
-  {
-    name: 'Rangoli',
-    description: 'Vibrant and colorful floor art.',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'rangoli design',
-    href: '/rangoli',
-  },
-  {
-    name: 'Nail Art',
-    description: 'Creative and stylish nail designs.',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'nail art',
-    href: '/nail-art',
-  },
-  {
-    name: 'Custom Plastic Jewelry',
-    description: 'Unique, handcrafted plastic jewelry.',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'plastic jewelry',
-    href: '/custom-plastic-jewelry',
-  },
-];
-
-type Category = typeof categoriesData[0];
+type Category = {
+  _id: string;
+  name: string;
+  description: string;
+  image?: string;
+  hint?: string;
+  href: string;
+};
 
 export default function CategoriesPage() {
+    const { toast } = useToast();
+    const [categories, setCategories] = React.useState<Category[]>([]);
     const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+    
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('/api/categories');
+            if (response.ok) {
+                const data = await response.json();
+                setCategories(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch categories:", error);
+            toast({ variant: "destructive", title: "Error", description: "Failed to fetch categories." });
+        }
+    };
+
+    React.useEffect(() => {
+        fetchCategories();
+    }, []);
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        const method = isEditModalOpen ? 'PUT' : 'POST';
+        const url = isEditModalOpen ? `/api/categories/${selectedCategory?._id}` : '/api/categories';
+        
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchCategories();
+                toast({ title: "Success!", description: `Category has been ${isEditModalOpen ? 'updated' : 'added'}.` });
+            } else {
+                const errorData = await response.json();
+                toast({ variant: "destructive", title: "Error", description: `Failed to save category. ${errorData.message}` });
+            }
+        } catch (error) {
+            console.error("Error saving category:", error);
+            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedCategory) return;
+        try {
+            const response = await fetch(`/api/categories/${selectedCategory._id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchCategories();
+                toast({ title: "Success!", description: "Category has been deleted." });
+            } else {
+                const errorData = await response.json();
+                toast({ variant: "destructive", title: "Error", description: `Failed to delete category. ${errorData.message}` });
+            }
+        } catch (error) {
+            console.error("Error deleting category:", error);
+            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+        }
+    };
 
     const handleEditClick = (category: Category) => {
         setSelectedCategory(category);
@@ -139,7 +183,7 @@ export default function CategoriesPage() {
                     <Shapes className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{categoriesData.length}</div>
+                    <div className="text-2xl font-bold">{categories.length}</div>
                     <p className="text-xs text-muted-foreground">
                         All art categories
                     </p>
@@ -151,7 +195,7 @@ export default function CategoriesPage() {
                     <LinkIcon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{categoriesData.filter(c => c.href).length}</div>
+                    <div className="text-2xl font-bold">{categories.filter(c => c.href).length}</div>
                     <p className="text-xs text-muted-foreground">
                         Categories with dedicated pages
                     </p>
@@ -183,14 +227,14 @@ export default function CategoriesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {categoriesData.map((category) => (
-                  <TableRow key={category.name}>
+                {categories.map((category) => (
+                  <TableRow key={category._id}>
                     <TableCell className="hidden sm:table-cell">
                       <Image
                         alt={category.name}
                         className="aspect-square rounded-md object-cover"
                         height="64"
-                        src={category.image}
+                        src={category.image || 'https://placehold.co/100x100.png'}
                         width="64"
                         data-ai-hint={category.hint}
                       />
@@ -221,7 +265,7 @@ export default function CategoriesPage() {
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-{categoriesData.length}</strong> of <strong>{categoriesData.length}</strong> categories
+              Showing <strong>1-{categories.length}</strong> of <strong>{categories.length}</strong> categories
             </div>
           </CardFooter>
         </Card>
@@ -236,13 +280,14 @@ export default function CategoriesPage() {
               {isEditModalOpen ? 'Make changes to your category page here.' : 'Add a new category and all its page content.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
+          <form onSubmit={handleFormSubmit}>
           <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="gallery">Gallery</TabsTrigger>
-              <TabsTrigger value="process">Process</TabsTrigger>
-              <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
+              <TabsTrigger value="gallery" disabled={true}>Gallery</TabsTrigger>
+              <TabsTrigger value="process" disabled={true}>Process</TabsTrigger>
+              <TabsTrigger value="content" disabled={true}>Content</TabsTrigger>
+              <TabsTrigger value="seo" disabled={true}>SEO/Meta</TabsTrigger>
             </TabsList>
             <div className="flex-grow overflow-hidden mt-4">
                 <ScrollArea className="h-full pr-6">
@@ -250,170 +295,27 @@ export default function CategoriesPage() {
                         <div className="space-y-4 py-4">
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="name" className="text-right">Name</Label>
-                                <Input id="name" defaultValue={selectedCategory?.name || ""} className="col-span-3" />
+                                <Input id="name" name="name" defaultValue={selectedCategory?.name || ""} className="col-span-3" />
                             </div>
                             <div className="grid grid-cols-4 items-start gap-4">
                                 <Label htmlFor="description" className="text-right pt-2">Description</Label>
-                                <Textarea id="description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
+                                <Textarea id="description" name="description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
                             </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                                 <Label htmlFor="href" className="text-right">Link (URL)</Label>
-                                <Input id="href" placeholder="/page-name" defaultValue={selectedCategory?.href || ""} className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="image-upload" className="text-right">Hero Image</Label>
-                                <Input id="image-upload" type="file" className="col-span-3" />
-                            </div>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="gallery">
-                         <div className="space-y-4 py-4">
-                            <Label>Gallery Items</Label>
-                            <Card>
-                                <CardContent className="p-4 space-y-4">
-                                    {/* Example Gallery Item */}
-                                    <div className="p-4 border rounded-lg space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Item 1</Label>
-                                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                        </div>
-                                        <Input placeholder="Title" defaultValue="Classic Bridal Design" />
-                                        <Input type="number" placeholder="Price" defaultValue="250" />
-                                        <Input placeholder="Tags (comma separated)" defaultValue="Bridal, Traditional" />
-                                        <Input type="file" />
-                                    </div>
-                                     <div className="p-4 border rounded-lg space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Item 2</Label>
-                                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                        </div>
-                                        <Input placeholder="Title" defaultValue="Floral Elegance" />
-                                        <Input type="number" placeholder="Price" defaultValue="150" />
-                                        <Input placeholder="Tags (comma separated)" defaultValue="Festival, Modern" />
-                                        <Input type="file" />
-                                    </div>
-                                    <Button variant="outline" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/> Add Gallery Item</Button>
-                                </CardContent>
-                            </Card>
-                         </div>
-                    </TabsContent>
-                    <TabsContent value="process">
-                        <div className="space-y-4 py-4">
-                            <Label>Process Steps</Label>
-                            <Card>
-                                <CardContent className="p-4 space-y-4">
-                                    <div className="p-4 border rounded-lg space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Step 1</Label>
-                                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                        </div>
-                                        <Input placeholder="Step Title" defaultValue="Consultation" />
-                                        <Textarea placeholder="Step Description" defaultValue="Share your vision, event details, and inspiration with us." />
-                                    </div>
-                                     <div className="p-4 border rounded-lg space-y-3">
-                                        <div className="flex justify-between items-center">
-                                            <Label>Step 2</Label>
-                                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                        </div>
-                                        <Input placeholder="Step Title" defaultValue="Design Finalization" />
-                                        <Textarea placeholder="Step Description" defaultValue="Our artists will sketch a custom design or help you select from our extensive portfolio." />
-                                    </div>
-                                    <Button variant="outline" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/> Add Process Step</Button>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="content">
-                        <div className="space-y-6 py-4">
-                            <div>
-                                <Label>Commitment Section</Label>
-                                <Card>
-                                    <CardContent className="p-4 space-y-2">
-                                         <div className="p-2 border rounded-lg space-y-2">
-                                            <Input placeholder="Commitment Title" defaultValue="Authentic Designs" />
-                                            <Textarea placeholder="Commitment Description" defaultValue="We honor the rich traditions of Mehndi, offering authentic and culturally significant patterns." />
-                                         </div>
-                                        <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Commitment Item</Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                            <div>
-                                <Label>Bespoke Creations Gallery</Label>
-                                 <Card>
-                                    <CardContent className="p-4 space-y-2">
-                                        <Input type="file" multiple />
-                                        <p className="text-xs text-muted-foreground">Upload multiple images for the bespoke creations gallery.</p>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                            <div>
-                                <Label>Testimonials</Label>
-                                 <Card>
-                                    <CardContent className="p-4 space-y-2">
-                                        <div className="p-2 border rounded-lg space-y-2">
-                                            <Input placeholder="Author Name" defaultValue="Aaradhya S." />
-                                            <Textarea placeholder="Comment" defaultValue="The bridal Mehndi was a dream come true!" />
-                                            <Input type="file" />
-                                         </div>
-                                        <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Testimonial</Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                             <div>
-                                <Label>Blog Posts</Label>
-                                 <Card>
-                                    <CardContent className="p-4 space-y-2">
-                                        <div className="p-2 border rounded-lg space-y-2">
-                                            <Input placeholder="Post Title" defaultValue="The Meaning Behind Mehndi Motifs" />
-                                            <Textarea placeholder="Post Description" defaultValue="Explore the rich symbolism of common Mehndi patterns..." />
-                                            <Input type="file" />
-                                         </div>
-                                        <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Blog Post</Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                            <div>
-                                <Label>Care Tips</Label>
-                                 <Card>
-                                    <CardContent className="p-4 space-y-2">
-                                        <div className="p-2 border rounded-lg space-y-2">
-                                            <Input placeholder="Tip Title" defaultValue="Avoid Water" />
-                                            <Textarea placeholder="Tip Description" defaultValue="Keep the henna paste away from water for at least 12-24 hours." />
-                                         </div>
-                                        <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add Care Tip</Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                            <div>
-                                <Label>FAQs</Label>
-                                <Card>
-                                    <CardContent className="p-4 space-y-2">
-                                         <div className="p-2 border rounded-lg space-y-2">
-                                            <Input placeholder="Question" defaultValue="How long does the Mehndi stain last?" />
-                                            <Textarea placeholder="Answer" defaultValue="Our natural henna stain can last from one to three weeks, depending on your skin type and aftercare." />
-                                         </div>
-                                        <Button variant="outline" size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4"/>Add FAQ</Button>
-                                    </CardContent>
-                                </Card>
-                            </div>
-                        </div>
-                    </TabsContent>
-                     <TabsContent value="seo">
-                        <div className="space-y-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="meta-title" className="text-right">Meta Title</Label>
-                                <Input id="meta-title" defaultValue={selectedCategory ? `Stunning ${selectedCategory.name} Designs` : ""} className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-start gap-4">
-                                <Label htmlFor="meta-description" className="text-right pt-2">Meta Description</Label>
-                                <Textarea id="meta-description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
+                                <Input id="href" name="href" placeholder="/page-name" defaultValue={selectedCategory?.href || ""} className="col-span-3" />
                             </div>
                              <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="meta-keywords" className="text-right">Meta Keywords</Label>
-                                <Input id="meta-keywords" placeholder="e.g. bridal mehndi, henna art" className="col-span-3" />
+                                <Label htmlFor="image" className="text-right">Image URL</Label>
+                                <Input id="image" name="image" placeholder="https://example.com/image.png" defaultValue={selectedCategory?.image || ""} className="col-span-3" />
+                            </div>
+                             <div className="grid grid-cols-4 items-center gap-4">
+                                <Label htmlFor="hint" className="text-right">AI Hint</Label>
+                                <Input id="hint" name="hint" placeholder="e.g. henna hand" defaultValue={selectedCategory?.hint || ""} className="col-span-3" />
                             </div>
                         </div>
                     </TabsContent>
+                    {/* Other tabs are disabled for now */}
                 </ScrollArea>
             </div>
           </Tabs>
@@ -423,6 +325,7 @@ export default function CategoriesPage() {
             </DialogClose>
             <Button type="submit">Save changes</Button>
           </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       
@@ -440,14 +343,12 @@ export default function CategoriesPage() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
   );
 }
-
-    
 
     

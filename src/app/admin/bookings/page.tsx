@@ -30,51 +30,55 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useToast } from '@/hooks/use-toast';
 
-const initialBookings = [
-    {
-      id: 'BK001',
-      customer: 'Olivia Martin',
-      service: 'Bridal Mehndi',
-      date: '2024-08-15',
-      status: 'Confirmed' as 'Confirmed' | 'Completed' | 'Pending' | 'Canceled',
-      total: '$250.00',
-    },
-    {
-      id: 'BK002',
-      customer: 'Jackson Lee',
-      service: 'Nail Art - Chrome',
-      date: '2024-08-16',
-      status: 'Completed' as 'Confirmed' | 'Completed' | 'Pending' | 'Canceled',
-      total: '$70.00',
-    },
-    {
-      id: 'BK003',
-      customer: 'Sofia Davis',
-      service: 'Diwali Rangoli',
-      date: '2024-10-20',
-      status: 'Pending' as 'Confirmed' | 'Completed' | 'Pending' | 'Canceled',
-      total: '$120.00',
-    },
-     {
-      id: 'BK004',
-      customer: 'Liam Garcia',
-      service: 'Custom Jewelry Consultation',
-      date: '2024-07-30',
-      status: 'Canceled' as 'Confirmed' | 'Completed' | 'Pending' | 'Canceled',
-      total: '$0.00',
-    },
-  ];
-
-type Booking = typeof initialBookings[0];
+type Booking = {
+  _id: string;
+  customer: string;
+  service: string;
+  date: string;
+  status: 'Confirmed' | 'Completed' | 'Pending' | 'Canceled';
+  total: string;
+};
 
 export default function BookingsPage() {
-  const [bookings, setBookings] = React.useState(initialBookings);
+  const { toast } = useToast();
+  const [bookings, setBookings] = React.useState<Booking[]>([]);
 
-  const handleStatusChange = (bookingId: string, newStatus: Booking['status']) => {
-    setBookings(bookings.map(booking => 
-      booking.id === bookingId ? { ...booking, status: newStatus } : booking
-    ));
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch('/api/bookings');
+      if(response.ok) {
+        const data = await response.json();
+        setBookings(data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch bookings:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch bookings." });
+    }
+  };
+
+  React.useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const handleStatusChange = async (bookingId: string, newStatus: Booking['status']) => {
+    try {
+      const response = await fetch(`/api/bookings/${bookingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (response.ok) {
+        fetchBookings();
+        toast({ title: "Success!", description: `Booking status updated to ${newStatus}.` });
+      } else {
+        toast({ variant: "destructive", title: "Error", description: "Failed to update booking status." });
+      }
+    } catch (error) {
+       console.error("Failed to update booking status:", error);
+       toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+    }
   };
   
   const stats = {
@@ -92,6 +96,14 @@ export default function BookingsPage() {
           case 'Canceled': return 'destructive';
           default: return 'default';
       }
+  }
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
   }
 
   return (
@@ -217,11 +229,11 @@ export default function BookingsPage() {
                     </TableHeader>
                     <TableBody>
                     {bookings.map((booking) => (
-                        <TableRow key={booking.id}>
-                        <TableCell className="font-medium">{booking.id}</TableCell>
+                        <TableRow key={booking._id}>
+                        <TableCell className="font-medium">{booking._id.slice(-6).toUpperCase()}</TableCell>
                         <TableCell>{booking.customer}</TableCell>
                         <TableCell>{booking.service}</TableCell>
-                        <TableCell>{booking.date}</TableCell>
+                        <TableCell>{formatDate(booking.date)}</TableCell>
                         <TableCell>
                             <Badge variant={getStatusVariant(booking.status)}>
                             {booking.status}
@@ -241,9 +253,9 @@ export default function BookingsPage() {
                                   <DropdownMenuItem>View Details</DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuLabel>Update Status</DropdownMenuLabel>
-                                  <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'Confirmed')}>Confirm</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'Completed')}>Complete</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleStatusChange(booking.id, 'Canceled')} className="text-destructive">Cancel</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleStatusChange(booking._id, 'Confirmed')}>Confirm</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleStatusChange(booking._id, 'Completed')}>Complete</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleStatusChange(booking._id, 'Canceled')} className="text-destructive">Cancel</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                         </TableCell>
@@ -258,3 +270,5 @@ export default function BookingsPage() {
     </main>
   );
 }
+
+    
