@@ -112,19 +112,14 @@ export default function ArtPiecesPage() {
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const data = Object.fromEntries(formData.entries());
-
+        
         const method = isEditModalOpen ? 'PUT' : 'POST';
         const url = isEditModalOpen ? `/api/art-pieces/${selectedArtPiece?._id}` : '/api/art-pieces';
 
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...data,
-                    editorsPick: (data.editorsPick === 'on'),
-                }),
+                body: formData,
             });
             if (response.ok) {
                 handleCloseModals();
@@ -389,9 +384,9 @@ export default function ArtPiecesPage() {
                       Images
                   </Label>
                   <div className="col-span-3 space-y-2">
-                      <Input name="image1" type="text" placeholder="Image 1 URL" defaultValue={selectedArtPiece?.images?.[0] || ''} />
-                      <Input name="image2" type="text" placeholder="Image 2 URL" defaultValue={selectedArtPiece?.images?.[1] || ''} />
-                      <Input name="image3" type="text" placeholder="Image 3 URL" defaultValue={selectedArtPiece?.images?.[2] || ''} />
+                      <Input name="image1" type="file" />
+                      <Input name="image2" type="file" />
+                      <Input name="image3" type="file" />
                   </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
@@ -489,4 +484,3 @@ export default function ArtPiecesPage() {
     </>
   );
 }
-
