@@ -108,7 +108,7 @@ export default function ClientsPage() {
                   <TableCell>
                     <div className="flex items-center gap-4">
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={client.avatar} alt={client.name} data-ai-hint={client.hint} />
+                        {client.avatar && <AvatarImage src={client.avatar} alt={client.name} data-ai-hint={client.hint} />}
                         <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <span className="font-medium">{client.name}</span>
@@ -130,5 +130,3 @@ export default function ClientsPage() {
     </main>
   );
 }
-
-    
