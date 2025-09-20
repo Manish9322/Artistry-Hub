@@ -196,6 +196,7 @@ export default function ArtPiecesPage() {
         setSelectedArtPiece(null);
     };
     
+    // Robust helper to get a safe image URL
     const getSafeImage = (images: string[] | undefined) => {
         const safeImages = images || [];
         if (safeImages.length > 0 && typeof safeImages[0] === 'string' && safeImages[0].trim() !== '') {
