@@ -1,11 +1,15 @@
 // This file will be used for the database connection.
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+// Explicitly load environment variables from .env file
+dotenv.config();
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
 if (!MONGODB_URI) {
   throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
+    'Please define the MONGODB_URI environment variable inside .env'
   );
 }
 
