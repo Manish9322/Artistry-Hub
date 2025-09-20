@@ -428,9 +428,9 @@ export default function ArtPiecesPage() {
            {selectedArtPiece && (
                 <div className="space-y-4 py-4">
                     <div className="grid grid-cols-3 gap-4">
-                        {(selectedArtPiece.images || []).map((src, index) => (
-                             src ? <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} /> : null
-                        )).filter(Boolean)}
+                        {(selectedArtPiece.images || []).filter(src => src).map((src, index) => (
+                             <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} />
+                        ))}
                     </div>
                     <Separator />
                     <div className="grid grid-cols-2 gap-4 text-sm">
@@ -467,5 +467,3 @@ export default function ArtPiecesPage() {
     </>
   );
 }
-
-    
