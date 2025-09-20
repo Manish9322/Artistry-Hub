@@ -12,6 +12,11 @@ requiredEnv.forEach((name) => {
 const config = {
   mongodbUri: process.env.MONGODB_URI,
   apiUrl: process.env.NEXT_PUBLIC_API_URL,
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  }
 };
 
 export default config;
