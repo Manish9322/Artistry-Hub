@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -195,6 +194,15 @@ export default function ArtPiecesPage() {
         setIsViewModalOpen(false);
         setSelectedArtPiece(null);
     };
+    
+    // Robust helper to get a safe image URL
+    const getSafeImage = (images: string[] | undefined) => {
+        if (images && images.length > 0 && typeof images[0] === 'string' && images[0].trim() !== '') {
+            return images[0];
+        }
+        return placeholderImages.defaultSquare;
+    };
+
 
   return (
     <>
@@ -274,16 +282,14 @@ export default function ArtPiecesPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {artPieces.map((artPiece) => {
-                      const imageSrc = (artPiece.images && artPiece.images.length > 0 && artPiece.images[0]) ? artPiece.images[0] : placeholderImages.defaultSquare;
-                      return (
+                    {artPieces.map((artPiece) => (
                       <TableRow key={artPiece._id}>
                         <TableCell className="hidden sm:table-cell">
                           <Image
                             alt={artPiece.name}
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src={imageSrc}
+                            src={getSafeImage(artPiece.images)}
                             width="64"
                             data-ai-hint={artPiece.hint}
                           />
@@ -316,7 +322,7 @@ export default function ArtPiecesPage() {
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>
-                    )})}
+                    ))}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -431,7 +437,7 @@ export default function ArtPiecesPage() {
            {selectedArtPiece && (
                 <div className="space-y-4 py-4">
                     <div className="grid grid-cols-3 gap-4">
-                        {(selectedArtPiece.images || []).filter(src => src).map((src, index) => (
+                        {(selectedArtPiece.images || []).filter(src => src && src.trim() !== '').map((src, index) => (
                              <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} />
                         ))}
                     </div>
@@ -470,3 +476,5 @@ export default function ArtPiecesPage() {
     </>
   );
 }
+
+    
