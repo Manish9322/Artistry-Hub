@@ -1,3 +1,4 @@
+
 // This file defines the schema model for art pieces.
 import mongoose from 'mongoose';
 
