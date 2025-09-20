@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -52,6 +53,7 @@ import Image from 'next/image';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 type Category = {
   _id: string;
@@ -228,7 +230,7 @@ export default function CategoriesPage() {
               </TableHeader>
               <TableBody>
                 {categories.map((category) => {
-                  const imageSrc = (category.image && category.image.trim() !== '') ? category.image : 'https://placehold.co/100x100.png';
+                  const imageSrc = category.image && category.image.trim() !== '' ? category.image : placeholderImages.defaultSquare;
                   return (
                     <TableRow key={category._id}>
                       <TableCell className="hidden sm:table-cell">

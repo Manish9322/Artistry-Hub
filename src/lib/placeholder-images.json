@@ -1,0 +1,26 @@
+{
+  "artCategory": {
+    "mehndi": "https://picsum.photos/seed/mehndi/1200/400",
+    "rangoli": "https://picsum.photos/seed/rangoli/1200/400",
+    "nail-art": "https://picsum.photos/seed/nailart/1200/400",
+    "custom-plastic-jewelry": "https://picsum.photos/seed/jewelry/1200/400"
+  },
+  "featuredArt": [
+    { "src": "https://picsum.photos/seed/f-mehndi/600/400", "alt": "Featured Mehndi Art", "hint": "bridal mehndi" },
+    { "src": "https://picsum.photos/seed/f-rangoli/600/400", "alt": "Featured Rangoli Art", "hint": "diwali rangoli" },
+    { "src": "https://picsum.photos/seed/f-nail/600/400", "alt": "Featured Nail Art", "hint": "abstract nails" },
+    { "src": "https://picsum.photos/seed/f-jewelry/600/400", "alt": "Featured Jewelry", "hint": "handmade necklace" },
+    { "src": "https://picsum.photos/seed/f-henna/600/400", "alt": "Detailed Henna", "hint": "intricate henna" },
+    { "src": "https://picsum.photos/seed/f-mehndi2/600/400", "alt": "Featured Mehndi Art 2", "hint": "bridal mehndi" },
+    { "src": "https://picsum.photos/seed/f-rangoli2/600/400", "alt": "Featured Rangoli Art 2", "hint": "diwali rangoli" },
+    { "src": "https://picsum-photos/seed/f-nail2/600/400", "alt": "Featured Nail Art 2", "hint": "abstract nails" }
+  ],
+  "testimonials": {
+    "priya": { "avatar": "https://picsum.photos/seed/priya/100/100", "hint": "woman portrait" },
+    "michael": { "avatar": "https://picsum.photos/seed/michael/100/100", "hint": "man portrait" },
+    "anjali": { "avatar": "https://picsum.photos/seed/anjali/100/100", "hint": "woman smiling" },
+    "sarah": { "avatar": "https://picsum.photos/seed/sarah/100/100", "hint": "woman portrait" }
+  },
+  "default": "https://picsum.photos/seed/placeholder/600/400",
+  "defaultSquare": "https://picsum.photos/seed/placeholder-sq/100/100"
+}

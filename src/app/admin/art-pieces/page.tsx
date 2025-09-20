@@ -53,6 +53,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from "@/hooks/use-toast";
+import placeholderImages from '@/lib/placeholder-images.json';
 
 
 type ArtPiece = {
@@ -274,7 +275,7 @@ export default function ArtPiecesPage() {
                   </TableHeader>
                   <TableBody>
                     {artPieces.map((artPiece) => {
-                      const imageSrc = artPiece.images && artPiece.images.length > 0 && artPiece.images[0] ? artPiece.images[0] : 'https://placehold.co/100x100.png';
+                      const imageSrc = (artPiece.images && artPiece.images.length > 0 && artPiece.images[0]) ? artPiece.images[0] : placeholderImages.defaultSquare;
                       return (
                       <TableRow key={artPiece._id}>
                         <TableCell className="hidden sm:table-cell">

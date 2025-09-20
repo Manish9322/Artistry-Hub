@@ -36,7 +36,7 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ message: 'Art piece not found' }, { status: 404 });
     }
     return NextResponse.json(updatedArtPiece, { status: 200 });
-  } catch (error) => {
+  } catch (error) {
     return NextResponse.json({ message: 'Failed to update art piece', error: error.message }, { status: 400 });
   }
 }
@@ -54,5 +54,3 @@ export async function DELETE(request, { params }) {
     return NextResponse.json({ message: 'Failed to delete art piece', error: error.message }, { status: 500 });
   }
 }
-
-    

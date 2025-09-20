@@ -1,3 +1,4 @@
+
 // This file will handle backend logic for art pieces.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
@@ -21,7 +22,7 @@ export async function POST(request) {
     const body = await request.json();
     const { name, category, price, creationTime, editorsPick, image1, image2, image3 } = body;
     
-    const images = [image1, image2, image3].filter(Boolean); // Filter out empty strings
+    const images = [image1, image2, image3].filter(url => url && url.trim() !== '');
 
     const newArtPieceData = {
         name,

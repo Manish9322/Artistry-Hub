@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -60,6 +61,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 const galleryImagesData = [
   {
@@ -243,7 +245,7 @@ export default function GalleryPage() {
               </TableHeader>
               <TableBody>
                 {galleryImagesData.map((image) => {
-                  const imageSrc = image.image && image.image.trim() !== '' ? image.image : 'https://placehold.co/100x100.png';
+                  const imageSrc = image.image && image.image.trim() !== '' ? image.image : placeholderImages.defaultSquare;
                   return (
                   <TableRow key={image.id}>
                     <TableCell className="hidden sm:table-cell">
