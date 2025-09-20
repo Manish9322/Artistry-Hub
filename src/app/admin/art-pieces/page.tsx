@@ -273,14 +273,16 @@ export default function ArtPiecesPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {artPieces.map((artPiece) => (
+                    {artPieces.map((artPiece) => {
+                      const imageSrc = artPiece.images && artPiece.images.length > 0 && artPiece.images[0] ? artPiece.images[0] : 'https://placehold.co/100x100.png';
+                      return (
                       <TableRow key={artPiece._id}>
                         <TableCell className="hidden sm:table-cell">
                           <Image
                             alt={artPiece.name}
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src={(artPiece.images && artPiece.images.length > 0 && artPiece.images[0]) ? artPiece.images[0] : 'https://placehold.co/100x100.png'}
+                            src={imageSrc}
                             width="64"
                             data-ai-hint={artPiece.hint}
                           />
@@ -313,7 +315,7 @@ export default function ArtPiecesPage() {
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )})}
                   </TableBody>
                 </Table>
               </CardContent>
