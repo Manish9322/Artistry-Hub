@@ -3,14 +3,14 @@ import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
-import config from '@/lib/config';
+import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } from '@/lib/config';
 
 // Configure Cloudinary with credentials from environment variables
-if (config.cloudinary.cloudName) {
+if (CLOUDINARY_CLOUD_NAME) {
   cloudinary.config({
-    cloud_name: config.cloudinary.cloudName,
-    api_key: config.cloudinary.apiKey,
-    api_secret: config.cloudinary.apiSecret,
+    cloud_name: CLOUDINARY_CLOUD_NAME,
+    api_key: CLOUDINARY_API_KEY,
+    api_secret: CLOUDINARY_API_SECRET,
   });
 }
 
