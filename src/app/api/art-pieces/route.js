@@ -21,7 +21,7 @@ export async function POST(request) {
     const body = await request.json();
     const { name, category, price, creationTime, editorsPick, image1, image2, image3 } = body;
     
-    const images = [image1, image2, image3].filter(Boolean);
+    const images = [image1, image2, image3].filter(Boolean); // Filter out empty strings
 
     const newArtPieceData = {
         name,
@@ -39,5 +39,3 @@ export async function POST(request) {
     return NextResponse.json({ message: 'Failed to create art piece', error: error.message }, { status: 400 });
   }
 }
-
-    
