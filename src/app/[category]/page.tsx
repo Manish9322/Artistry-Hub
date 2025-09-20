@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Droplets, Sun, Wind, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight, Paintbrush, Gem, Trash2 } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Droplets, Sun, Wind, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight, Paintbrush, Gem, Trash2, ShieldCheck, Ruler } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -481,7 +481,7 @@ export default function CategoryPage({ params }: { params: { category: string } 
                   <CardContent className="p-8">
                     <div className="flex items-center mb-4">
                       <Avatar className="h-16 w-16 mr-4 border-2 border-primary">
-                        <AvatarImage src={testimonial.image} alt={testimonial.name} data-ai-hint={testimonial.hint} />
+                        {testimonial.image && <AvatarImage src={testimonial.image} alt={testimonial.name} data-ai-hint={testimonial.hint} />}
                         <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
