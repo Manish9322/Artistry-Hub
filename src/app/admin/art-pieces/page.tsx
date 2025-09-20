@@ -58,7 +58,7 @@ const artPiecesData = [
     name: 'Classic Bridal Design',
     category: 'Mehndi',
     price: '$250.00',
-    creationTime: '4-6 hours',
+    creationTime: 300,
     status: 'Active',
     images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'bridal mehndi',
@@ -67,7 +67,7 @@ const artPiecesData = [
     name: 'Geometric Harmony',
     category: 'Rangoli',
     price: '$90.00',
-    creationTime: '2-3 hours',
+    creationTime: 150,
     status: 'Active',
     images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'geometric rangoli',
@@ -76,7 +76,7 @@ const artPiecesData = [
     name: 'Midnight Glitter',
     category: 'Nail Art',
     price: '$60.00',
-    creationTime: '1-1.5 hours',
+    creationTime: 75,
     status: 'Draft',
     images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'glitter nails',
@@ -85,7 +85,7 @@ const artPiecesData = [
     name: 'Geometric Earrings',
     category: 'Jewelry',
     price: '$45.00',
-    creationTime: '2-3 business days',
+    creationTime: 180,
     status: 'Active',
     images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'geometric earrings',
@@ -94,7 +94,7 @@ const artPiecesData = [
     name: 'Diwali Special',
     category: 'Rangoli',
     price: '$120.00',
-    creationTime: '3-4 hours',
+    creationTime: 210,
     status: 'Archived',
     images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'diwali rangoli',
@@ -230,7 +230,7 @@ export default function ArtPiecesPage() {
                         </TableCell>
                         <TableCell>{artPiece.price}</TableCell>
                         <TableCell className="hidden md:table-cell">
-                          {artPiece.creationTime}
+                          {artPiece.creationTime} mins
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -294,9 +294,9 @@ export default function ArtPiecesPage() {
             </div>
              <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="creationTime" className="text-right">
-                Creation Time
+                Creation Time (in minutes)
               </Label>
-              <Input id="creationTime" defaultValue={selectedArtPiece?.creationTime || ""} className="col-span-3" placeholder="e.g., 2-3 hours"/>
+              <Input id="creationTime" type="number" defaultValue={selectedArtPiece?.creationTime || ""} className="col-span-3" placeholder="e.g., 120"/>
             </div>
             <div className="grid grid-cols-4 items-start gap-4">
                 <Label htmlFor="image" className="text-right pt-2">
@@ -375,8 +375,8 @@ export default function ArtPiecesPage() {
                             <p className="text-muted-foreground">{selectedArtPiece.price}</p>
                         </div>
                         <div className="grid gap-1.5">
-                            <Label>Creation Time</Label>
-                            <p className="text-muted-foreground">{selectedArtPiece.creationTime}</p>
+                            <Label>Creation Time (in minutes)</Label>
+                            <p className="text-muted-foreground">{selectedArtPiece.creationTime} mins</p>
                         </div>
                         <div className="grid gap-1.5">
                             <Label>Status</Label>
@@ -395,5 +395,3 @@ export default function ArtPiecesPage() {
     </>
   );
 }
-
-    
