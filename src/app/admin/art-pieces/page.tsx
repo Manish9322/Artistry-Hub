@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -279,7 +280,7 @@ export default function ArtPiecesPage() {
                             alt={artPiece.name}
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src={artPiece.images && artPiece.images.length > 0 && artPiece.images[0] ? artPiece.images[0] : 'https://placehold.co/100x100.png'}
+                            src={(artPiece.images && artPiece.images.length > 0 && artPiece.images[0]) ? artPiece.images[0] : 'https://placehold.co/100x100.png'}
                             width="64"
                             data-ai-hint={artPiece.hint}
                           />
@@ -429,7 +430,7 @@ export default function ArtPiecesPage() {
                     <div className="grid grid-cols-3 gap-4">
                         {(selectedArtPiece.images || []).map((src, index) => (
                              src ? <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} /> : null
-                        ))}
+                        )).filter(Boolean)}
                     </div>
                     <Separator />
                     <div className="grid grid-cols-2 gap-4 text-sm">

@@ -1,3 +1,4 @@
+
 // This file will handle backend logic for a specific art piece.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
@@ -22,12 +23,20 @@ export async function PUT(request, { params }) {
   await _db();
   try {
     const body = await request.json();
-    const updatedArtPiece = await ArtPiece.findByIdAndUpdate(params.id, body, { new: true, runValidators: true });
+    const { image1, image2, image3, ...otherData } = body;
+    const images = [image1, image2, image3].filter(url => url && url.trim() !== '');
+    
+    const updateData = {
+        ...otherData,
+        images,
+    };
+
+    const updatedArtPiece = await ArtPiece.findByIdAndUpdate(params.id, updateData, { new: true, runValidators: true });
     if (!updatedArtPiece) {
       return NextResponse.json({ message: 'Art piece not found' }, { status: 404 });
     }
     return NextResponse.json(updatedArtPiece, { status: 200 });
-  } catch (error) {
+  } catch (error) => {
     return NextResponse.json({ message: 'Failed to update art piece', error: error.message }, { status: 400 });
   }
 }
