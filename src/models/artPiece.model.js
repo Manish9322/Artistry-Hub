@@ -1,4 +1,3 @@
-
 // This file defines the schema model for art pieces.
 import mongoose from 'mongoose';
 
@@ -27,7 +26,7 @@ const ArtPieceSchema = new mongoose.Schema({
   },
   images: {
     type: [String],
-    default: [],
+    default: [], // Ensure this always defaults to an empty array
   },
   hint: {
     type: String,
