@@ -197,8 +197,9 @@ export default function ArtPiecesPage() {
     };
     
     const getSafeImage = (images: string[] | undefined) => {
-        if (images && images.length > 0 && typeof images[0] === 'string' && images[0].trim() !== '') {
-            return images[0];
+        const safeImages = images || [];
+        if (safeImages.length > 0 && typeof safeImages[0] === 'string' && safeImages[0].trim() !== '') {
+            return safeImages[0];
         }
         return placeholderImages.defaultSquare;
     };
