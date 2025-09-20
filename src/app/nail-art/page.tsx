@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Paintbrush, Gem, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Paintbrush, Gem, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
@@ -23,7 +23,7 @@ export default function NailArtPage() {
     {
       title: "Midnight Glitter",
       price: 60,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Glam", "Modern"],
       hint: "glitter nails",
       creationTime: "1-1.5 hours"
@@ -31,7 +31,7 @@ export default function NailArtPage() {
     {
       title: "Pastel Dreams",
       price: 55,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Minimalist", "Chic"],
       hint: "pastel nails",
       creationTime: "1 hour"
@@ -39,7 +39,7 @@ export default function NailArtPage() {
     {
       title: "Abstract Lines",
       price: 65,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Modern", "Artsy"],
       hint: "abstract nail-art",
       creationTime: "1.5 hours"
@@ -47,7 +47,7 @@ export default function NailArtPage() {
     {
       title: "French Tip Twist",
       price: 50,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Classic", "Modern"],
       hint: "french manicure",
       creationTime: "1 hour"
@@ -55,7 +55,7 @@ export default function NailArtPage() {
     {
       title: "Chrome Finish",
       price: 70,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Modern", "Glam"],
       hint: "chrome nails",
       creationTime: "1.5-2 hours"
@@ -63,7 +63,7 @@ export default function NailArtPage() {
     {
       title: "Delicate Florals",
       price: 60,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Chic", "Artsy"],
       hint: "floral nail-art",
       creationTime: "1.5 hours"
@@ -71,7 +71,7 @@ export default function NailArtPage() {
     {
       title: "Matte Black",
       price: 55,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Minimalist", "Modern"],
       hint: "matte black nails",
       creationTime: "1 hour"
@@ -79,7 +79,7 @@ export default function NailArtPage() {
     {
       title: "Rhinestone Accent",
       price: 75,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Glam", "Classic"],
       hint: "rhinestone nails",
       creationTime: "1.5-2 hours"
@@ -90,6 +90,24 @@ export default function NailArtPage() {
 
   const duplicatedArt = [...artPieces, ...artPieces];
   const [selectedArt, setSelectedArt] = useState<ArtPiece | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const nextImage = () => {
+    if (selectedArt) {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % selectedArt.images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedArt) {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + selectedArt.images.length) % selectedArt.images.length);
+    }
+  };
+
+  const openModal = (art: ArtPiece) => {
+    setSelectedArt(art);
+    setCurrentImageIndex(0);
+  }
 
   const tags = ["All", "Glam", "Modern", "Minimalist", "Chic", "Artsy", "Classic"];
 
@@ -249,10 +267,10 @@ export default function NailArtPage() {
                 {duplicatedArt.map((piece, index) => (
                   <div key={`row1-${index}`} className="flex-shrink-0 w-80 p-4">
                     <DialogTrigger asChild>
-                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => setSelectedArt(piece)}>
+                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => openModal(piece)}>
                         <div className="relative h-64 w-full">
                           <Image
-                            src={piece.image}
+                            src={piece.images[0]}
                             alt={piece.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -272,10 +290,10 @@ export default function NailArtPage() {
                  {duplicatedArt.slice().reverse().map((piece, index) => (
                   <div key={`row2-${index}`} className="flex-shrink-0 w-80 p-4">
                     <DialogTrigger asChild>
-                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => setSelectedArt(piece)}>
+                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => openModal(piece)}>
                         <div className="relative h-64 w-full">
                           <Image
-                            src={piece.image}
+                            src={piece.images[0]}
                             alt={piece.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -298,9 +316,22 @@ export default function NailArtPage() {
               <DialogHeader>
                 <DialogTitle className="font-headline text-3xl text-primary">{selectedArt.title}</DialogTitle>
               </DialogHeader>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <Image src={selectedArt.image} alt={selectedArt.title} fill className="object-cover" data-ai-hint={selectedArt.hint} />
+              <div className="grid md:grid-cols-2 gap-8">
+                 <div className="space-y-4">
+                   <div className="relative aspect-square rounded-lg overflow-hidden group">
+                        <Image src={selectedArt.images[currentImageIndex]} alt={selectedArt.title} fill className="object-cover transition-opacity duration-300" data-ai-hint={selectedArt.hint} />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between p-2">
+                           <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 hover:text-white" onClick={prevImage}><ChevronLeft className="w-6 h-6" /></Button>
+                           <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 hover:text-white" onClick={nextImage}><ChevronRight className="w-6 h-6" /></Button>
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        {selectedArt.images.map((img, index) => (
+                            <div key={index} className={`w-1/3 h-24 rounded-md overflow-hidden cursor-pointer border-2 ${index === currentImageIndex ? 'border-primary' : 'border-transparent'}`} onClick={() => setCurrentImageIndex(index)}>
+                               <Image src={img} alt={`${selectedArt.title} thumbnail ${index+1}`} width={150} height={100} className="object-cover w-full h-full"/>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="space-y-4">
                    <div className="flex items-center gap-2 text-muted-foreground">
@@ -491,7 +522,7 @@ export default function NailArtPage() {
         <section id="faq" className="py-16 sm:py-24 bg-background">
           <div className="container max-w-3xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold font-headline">Nail Art FAQs</h2>
+              <h2 className="text-4xl font-bold font-headline">Nail Art FAQs</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
                 Your top questions about our nail services answered.
               </p>

@@ -57,45 +57,45 @@ const artPiecesData = [
     name: 'Classic Bridal Design',
     category: 'Mehndi',
     price: '$250.00',
-    artist: 'Jane Doe',
+    creationTime: '4-6 hours',
     status: 'Active',
-    image: 'https://placehold.co/100x100.png',
+    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'bridal mehndi',
   },
   {
     name: 'Geometric Harmony',
     category: 'Rangoli',
     price: '$90.00',
-    artist: 'Ravi Verma',
+    creationTime: '2-3 hours',
     status: 'Active',
-    image: 'https://placehold.co/100x100.png',
+    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'geometric rangoli',
   },
   {
     name: 'Midnight Glitter',
     category: 'Nail Art',
     price: '$60.00',
-    artist: 'Emily White',
+    creationTime: '1-1.5 hours',
     status: 'Draft',
-    image: 'https://placehold.co/100x100.png',
+    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'glitter nails',
   },
   {
     name: 'Geometric Earrings',
     category: 'Jewelry',
     price: '$45.00',
-    artist: 'Emily White',
+    creationTime: '2-3 business days',
     status: 'Active',
-    image: 'https://placehold.co/100x100.png',
+    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'geometric earrings',
   },
   {
     name: 'Diwali Special',
     category: 'Rangoli',
     price: '$120.00',
-    artist: 'John Smith',
+    creationTime: '3-4 hours',
     status: 'Archived',
-    image: 'https://placehold.co/100x100.png',
+    images: ['https://placehold.co/100x100.png', 'https://placehold.co/100x100.png', 'https://placehold.co/100x100.png'],
     hint: 'diwali rangoli',
   },
 ];
@@ -190,7 +190,7 @@ export default function ArtPiecesPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead>Price</TableHead>
-                      <TableHead className="hidden md:table-cell">Artist</TableHead>
+                      <TableHead className="hidden md:table-cell">Creation Time</TableHead>
                       <TableHead>
                         <span className="sr-only">Actions</span>
                       </TableHead>
@@ -204,7 +204,7 @@ export default function ArtPiecesPage() {
                             alt={artPiece.name}
                             className="aspect-square rounded-md object-cover"
                             height="64"
-                            src={artPiece.image}
+                            src={artPiece.images[0]}
                             width="64"
                             data-ai-hint={artPiece.hint}
                           />
@@ -215,7 +215,7 @@ export default function ArtPiecesPage() {
                         </TableCell>
                         <TableCell>{artPiece.price}</TableCell>
                         <TableCell className="hidden md:table-cell">
-                          {artPiece.artist}
+                          {artPiece.creationTime}
                         </TableCell>
                         <TableCell>
                           <DropdownMenu>
@@ -251,14 +251,14 @@ export default function ArtPiecesPage() {
 
       {/* Add/Edit Modal */}
       <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={isAddModalOpen ? setIsAddModalOpen : setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>{isEditModalOpen ? 'Edit' : 'Add'} Art Piece</DialogTitle>
             <DialogDescription>
               {isEditModalOpen ? 'Make changes to your art piece here.' : 'Add a new art piece to your collection.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-6 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">
                 Name
@@ -277,11 +277,21 @@ export default function ArtPiecesPage() {
               </Label>
               <Input id="price" defaultValue={selectedArtPiece?.price || ""} className="col-span-3" />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="image" className="text-right">
-                    Image
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="creationTime" className="text-right">
+                Creation Time
+              </Label>
+              <Input id="creationTime" defaultValue={selectedArtPiece?.creationTime || ""} className="col-span-3" placeholder="e.g., 2-3 hours"/>
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="image" className="text-right pt-2">
+                    Images
                 </Label>
-                <Input id="image" type="file" className="col-span-3" />
+                <div className="col-span-3 space-y-2">
+                    <Input id="image1" type="file" placeholder="Image 1" />
+                    <Input id="image2" type="file" placeholder="Image 2" />
+                    <Input id="image3" type="file" placeholder="Image 3" />
+                </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="editors-pick" className="text-right">

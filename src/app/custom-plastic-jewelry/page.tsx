@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Ruler, Package, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Ruler, Package, ShieldCheck, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
@@ -24,7 +24,7 @@ export default function CustomJewelryPage() {
     {
       title: "Geometric Earrings",
       price: 45,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Modern", "Statement"],
       hint: "geometric earrings",
       creationTime: "2-3 business days",
@@ -32,7 +32,7 @@ export default function CustomJewelryPage() {
     {
       title: "Chunky Neon Necklace",
       price: 80,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Bold", "Colorful"],
       hint: "neon necklace",
       creationTime: "3-5 business days",
@@ -40,7 +40,7 @@ export default function CustomJewelryPage() {
     {
       title: "Minimalist Rings",
       price: 30,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Minimalist", "Set"],
       hint: "minimalist rings",
       creationTime: "1-2 business days",
@@ -48,7 +48,7 @@ export default function CustomJewelryPage() {
     {
       title: "Custom Nameplate",
       price: 55,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Personalized", "Modern"],
       hint: "custom nameplate",
       creationTime: "5-7 business days",
@@ -56,7 +56,7 @@ export default function CustomJewelryPage() {
     {
       title: "Layered Bracelet Set",
       price: 65,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Colorful", "Set"],
       hint: "layered bracelets",
       creationTime: "3-4 business days",
@@ -64,7 +64,7 @@ export default function CustomJewelryPage() {
     {
       title: "Statement Brooch",
       price: 50,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Bold", "Statement"],
       hint: "statement brooch",
       creationTime: "4-6 business days",
@@ -72,7 +72,7 @@ export default function CustomJewelryPage() {
     {
       title: "Transparent Hoops",
       price: 40,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Minimalist", "Modern"],
       hint: "clear hoop earrings",
       creationTime: "2-3 business days",
@@ -80,7 +80,7 @@ export default function CustomJewelryPage() {
      {
       title: "Personalized Keychain",
       price: 25,
-      image: "https://placehold.co/600x400.png",
+      images: ["https://placehold.co/600x400.png", "https://placehold.co/600x400.png", "https://placehold.co/600x400.png"],
       tags: ["Personalized"],
       hint: "custom keychain",
       creationTime: "2-4 business days",
@@ -91,6 +91,24 @@ export default function CustomJewelryPage() {
 
   const duplicatedArt = [...artPieces, ...artPieces];
   const [selectedArt, setSelectedArt] = useState<ArtPiece | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const nextImage = () => {
+    if (selectedArt) {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % selectedArt.images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedArt) {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + selectedArt.images.length) % selectedArt.images.length);
+    }
+  };
+
+  const openModal = (art: ArtPiece) => {
+    setSelectedArt(art);
+    setCurrentImageIndex(0);
+  }
 
   const tags = ["All", "Modern", "Statement", "Bold", "Colorful", "Minimalist", "Personalized", "Set"];
 
@@ -250,10 +268,10 @@ export default function CustomJewelryPage() {
                 {duplicatedArt.map((piece, index) => (
                   <div key={`row1-${index}`} className="flex-shrink-0 w-80 p-4">
                     <DialogTrigger asChild>
-                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => setSelectedArt(piece)}>
+                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => openModal(piece)}>
                         <div className="relative h-64 w-full">
                           <Image
-                            src={piece.image}
+                            src={piece.images[0]}
                             alt={piece.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -261,14 +279,7 @@ export default function CustomJewelryPage() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                             <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
-                            </div>
-                            <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
-                            <div className="flex gap-2">
-                               <Button className="w-full" size="sm" asChild><Link href="/booking">Book Consultation</Link></Button>
-                               <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This</Link></Button>
-                            </div>
+                            <p className="text-2xl font-bold text-primary">${piece.price}</p>
                           </div>
                         </div>
                       </Card>
@@ -280,10 +291,10 @@ export default function CustomJewelryPage() {
                  {duplicatedArt.slice().reverse().map((piece, index) => (
                   <div key={`row2-${index}`} className="flex-shrink-0 w-80 p-4">
                     <DialogTrigger asChild>
-                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => setSelectedArt(piece)}>
+                      <Card className="overflow-hidden shadow-lg transition-shadow duration-300 group rounded-xl cursor-pointer" onClick={() => openModal(piece)}>
                         <div className="relative h-64 w-full">
                           <Image
-                            src={piece.image}
+                            src={piece.images[0]}
                             alt={piece.title}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -291,14 +302,7 @@ export default function CustomJewelryPage() {
                           />
                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                             <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
-                            <div className="flex flex-wrap gap-1 mb-3">
-                              {piece.tags.map(tag => <Badge key={tag} variant="secondary" className="text-xs">{tag}</Badge>)}
-                            </div>
-                            <p className="text-2xl font-bold text-primary mb-4">${piece.price}</p>
-                            <div className="flex gap-2">
-                               <Button className="w-full" size="sm" asChild><Link href="/booking">Book Consultation</Link></Button>
-                               <Button className="w-full" size="sm" variant="outline" asChild><Link href={`/order?item=${encodeURIComponent(piece.title)}`}>Order This</Link></Button>
-                            </div>
+                            <p className="text-2xl font-bold text-primary">${piece.price}</p>
                           </div>
                         </div>
                       </Card>
@@ -308,14 +312,28 @@ export default function CustomJewelryPage() {
               </div>
             </div>
           </section>
+          
           {selectedArt && (
             <DialogContent className="max-w-4xl">
               <DialogHeader>
                 <DialogTitle className="font-headline text-3xl text-primary">{selectedArt.title}</DialogTitle>
               </DialogHeader>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <Image src={selectedArt.image} alt={selectedArt.title} fill className="object-cover" data-ai-hint={selectedArt.hint} />
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                   <div className="relative aspect-square rounded-lg overflow-hidden group">
+                        <Image src={selectedArt.images[currentImageIndex]} alt={selectedArt.title} fill className="object-cover transition-opacity duration-300" data-ai-hint={selectedArt.hint} />
+                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between p-2">
+                           <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 hover:text-white" onClick={prevImage}><ChevronLeft className="w-6 h-6" /></Button>
+                           <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 hover:text-white" onClick={nextImage}><ChevronRight className="w-6 h-6" /></Button>
+                        </div>
+                    </div>
+                    <div className="flex gap-2">
+                        {selectedArt.images.map((img, index) => (
+                            <div key={index} className={`w-1/3 h-24 rounded-md overflow-hidden cursor-pointer border-2 ${index === currentImageIndex ? 'border-primary' : 'border-transparent'}`} onClick={() => setCurrentImageIndex(index)}>
+                               <Image src={img} alt={`${selectedArt.title} thumbnail ${index+1}`} width={150} height={100} className="object-cover w-full h-full"/>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="space-y-4">
                    <div className="flex items-center gap-2 text-muted-foreground">
