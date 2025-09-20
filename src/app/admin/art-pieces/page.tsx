@@ -68,6 +68,17 @@ type ArtPiece = {
   editorsPick?: boolean;
 };
 
+const isValidUrl = (string: string): boolean => {
+    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    try {
+        if (string.startsWith('/')) return true; // Relative paths
+        new URL(string); // Absolute URLs
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
 export default function ArtPiecesPage() {
     const { toast } = useToast();
     const [artPieces, setArtPieces] = React.useState<ArtPiece[]>([]);
@@ -199,7 +210,7 @@ export default function ArtPiecesPage() {
     // Robust helper to get a safe image URL
     const getSafeImage = (images: string[] | undefined) => {
         const safeImages = images || [];
-        if (safeImages.length > 0 && typeof safeImages[0] === 'string' && safeImages[0].trim() !== '') {
+        if (safeImages.length > 0 && isValidUrl(safeImages[0])) {
             return safeImages[0];
         }
         return placeholderImages.defaultSquare;
@@ -439,7 +450,7 @@ export default function ArtPiecesPage() {
            {selectedArtPiece && (
                 <div className="space-y-4 py-4">
                     <div className="grid grid-cols-3 gap-4">
-                        {(selectedArtPiece.images || []).filter(src => src && src.trim() !== '').map((src, index) => (
+                        {(selectedArtPiece.images || []).filter(isValidUrl).map((src, index) => (
                              <Image key={index} src={src} alt={`${selectedArtPiece.name} - Image ${index + 1}`} width={150} height={150} className="rounded-md object-cover" data-ai-hint={selectedArtPiece.hint} />
                         ))}
                     </div>
@@ -478,3 +489,4 @@ export default function ArtPiecesPage() {
     </>
   );
 }
+
