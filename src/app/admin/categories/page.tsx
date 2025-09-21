@@ -64,6 +64,17 @@ type Category = {
   href: string;
 };
 
+const isValidUrl = (string: string | undefined): boolean => {
+    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    try {
+        if (string.startsWith('/')) return true; // Relative paths
+        new URL(string); // Absolute URLs
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
 export default function CategoriesPage() {
     const { toast } = useToast();
     const [categories, setCategories] = React.useState<Category[]>([]);
@@ -229,16 +240,14 @@ export default function CategoriesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {categories.map((category) => {
-                  const imageSrc = category.image && category.image.trim() !== '' ? category.image : placeholderImages.defaultSquare;
-                  return (
+                {categories.map((category) => (
                     <TableRow key={category._id}>
                       <TableCell className="hidden sm:table-cell">
                         <Image
                           alt={category.name}
                           className="aspect-square rounded-md object-cover"
                           height="64"
-                          src={imageSrc}
+                          src={isValidUrl(category.image) ? category.image! : placeholderImages.defaultSquare}
                           width="64"
                           data-ai-hint={category.hint}
                         />
@@ -263,8 +272,7 @@ export default function CategoriesPage() {
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
+                  ))}
               </TableBody>
             </Table>
           </CardContent>
