@@ -54,6 +54,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import placeholderImages from '@/lib/placeholder-images.json';
+import { Separator } from '@/components/ui/separator';
 
 type Category = {
   _id: string;
@@ -62,6 +63,15 @@ type Category = {
   image?: string;
   hint?: string;
   href: string;
+  tags?: string[];
+  artPieces?: { title: string; price: number; images: string[]; tags: string[]; hint: string; creationTime: string; }[];
+  processSteps?: { icon: string; title: string; description: string; }[];
+  commitment?: { icon: string; title: string; description: string; }[];
+  bespokeCreations?: { image: string; hint: string; }[];
+  testimonials?: { name: string; comment: string; image: string; hint: string; }[];
+  blogPosts?: { title: string; description: string; image: string; hint: string; }[];
+  careTips?: { icon: string; title: string; description: string; }[];
+  faqs?: { question: string; answer: string; }[];
 };
 
 const isValidUrl = (string: string | undefined): boolean => {
@@ -328,7 +338,103 @@ export default function CategoriesPage() {
                             </div>
                         </div>
                     </TabsContent>
-                    {/* Other tabs are disabled for now */}
+                    <TabsContent value="gallery">
+                        <div className="space-y-6 py-4">
+                            <div>
+                                <Label>Gallery Tags</Label>
+                                <Textarea name="tags" placeholder="Comma-separated tags (e.g., All, Bridal, Festival)" defaultValue={selectedCategory?.tags?.join(', ')} />
+                            </div>
+                            <Separator/>
+                            <h4 className="text-lg font-semibold">Art Pieces</h4>
+                            {([0, 1, 2]).map(index => (
+                                <div key={index} className="space-y-4 p-4 border rounded-md">
+                                     <h5 className="font-medium">Art Piece {index+1}</h5>
+                                     <div className="grid grid-cols-2 gap-4">
+                                        <Input name={`artPieces[${index}][title]`} placeholder="Title" defaultValue={selectedCategory?.artPieces?.[index]?.title || ''}/>
+                                        <Input name={`artPieces[${index}][price]`} type="number" placeholder="Price" defaultValue={selectedCategory?.artPieces?.[index]?.price || ''}/>
+                                     </div>
+                                     <Input name={`artPieces[${index}][images]`} placeholder="Image URLs (comma-separated)" defaultValue={selectedCategory?.artPieces?.[index]?.images?.join(', ')}/>
+                                     <Input name={`artPieces[${index}][tags]`} placeholder="Tags (comma-separated)" defaultValue={selectedCategory?.artPieces?.[index]?.tags?.join(', ')}/>
+                                     <div className="grid grid-cols-2 gap-4">
+                                        <Input name={`artPieces[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.artPieces?.[index]?.hint || ''}/>
+                                        <Input name={`artPieces[${index}][creationTime]`} placeholder="Creation Time" defaultValue={selectedCategory?.artPieces?.[index]?.creationTime || ''}/>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="process">
+                        <div className="space-y-6 py-4">
+                            <h4 className="text-lg font-semibold">Process Steps</h4>
+                             {([0, 1, 2, 3]).map(index => (
+                                <div key={index} className="space-y-3 p-4 border rounded-md">
+                                     <h5 className="font-medium">Step {index+1}</h5>
+                                     <Input name={`processSteps[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'MessageSquare')" defaultValue={selectedCategory?.processSteps?.[index]?.icon || ''}/>
+                                     <Input name={`processSteps[${index}][title]`} placeholder="Title" defaultValue={selectedCategory?.processSteps?.[index]?.title || ''}/>
+                                     <Textarea name={`processSteps[${index}][description]`} placeholder="Description" defaultValue={selectedCategory?.processSteps?.[index]?.description || ''}/>
+                                </div>
+                            ))}
+                             <Separator/>
+                            <h4 className="text-lg font-semibold">Our Commitment</h4>
+                             {([0, 1, 2]).map(index => (
+                                <div key={index} className="space-y-3 p-4 border rounded-md">
+                                     <h5 className="font-medium">Commitment {index+1}</h5>
+                                     <Input name={`commitment[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'Award')" defaultValue={selectedCategory?.commitment?.[index]?.icon || ''}/>
+                                     <Input name={`commitment[${index}][title]`} placeholder="Title" defaultValue={selectedCategory?.commitment?.[index]?.title || ''}/>
+                                     <Textarea name={`commitment[${index}][description]`} placeholder="Description" defaultValue={selectedCategory?.commitment?.[index]?.description || ''}/>
+                                </div>
+                            ))}
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="content">
+                         <div className="space-y-6 py-4">
+                            <h4 className="text-lg font-semibold">Bespoke Creations Gallery</h4>
+                            {([0, 1, 2, 3]).map(index => (
+                                <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded-md">
+                                    <Input name={`bespokeCreations[${index}][image]`} placeholder="Image URL" defaultValue={selectedCategory?.bespokeCreations?.[index]?.image || ''}/>
+                                    <Input name={`bespokeCreations[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.bespokeCreations?.[index]?.hint || ''}/>
+                                </div>
+                            ))}
+                            <Separator/>
+                            <h4 className="text-lg font-semibold">Testimonials</h4>
+                            {([0, 1]).map(index => (
+                                <div key={index} className="space-y-3 p-4 border rounded-md">
+                                    <h5 className="font-medium">Testimonial {index+1}</h5>
+                                    <Input name={`testimonials[${index}][name]`} placeholder="Client Name" defaultValue={selectedCategory?.testimonials?.[index]?.name || ''}/>
+                                    <Textarea name={`testimonials[${index}][comment]`} placeholder="Comment" defaultValue={selectedCategory?.testimonials?.[index]?.comment || ''}/>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <Input name={`testimonials[${index}][image]`} placeholder="Avatar URL" defaultValue={selectedCategory?.testimonials?.[index]?.image || ''}/>
+                                        <Input name={`testimonials[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.testimonials?.[index]?.hint || ''}/>
+                                    </div>
+                                </div>
+                            ))}
+                         </div>
+                    </TabsContent>
+                    <TabsContent value="seo">
+                        <div className="space-y-6 py-4">
+                            <h4 className="text-lg font-semibold">FAQs</h4>
+                            {([0, 1, 2]).map(index => (
+                                <div key={index} className="space-y-3 p-4 border rounded-md">
+                                    <h5 className="font-medium">FAQ {index+1}</h5>
+                                    <Input name={`faqs[${index}][question]`} placeholder="Question" defaultValue={selectedCategory?.faqs?.[index]?.question || ''}/>
+                                    <Textarea name={`faqs[${index}][answer]`} placeholder="Answer" defaultValue={selectedCategory?.faqs?.[index]?.answer || ''}/>
+                                </div>
+                            ))}
+                             <Separator/>
+                            <h4 className="text-lg font-semibold">Blog Posts</h4>
+                             {([0, 1]).map(index => (
+                                <div key={index} className="space-y-3 p-4 border rounded-md">
+                                     <h5 className="font-medium">Blog Post {index+1}</h5>
+                                     <Input name={`blogPosts[${index}][title]`} placeholder="Post Title" defaultValue={selectedCategory?.blogPosts?.[index]?.title || ''}/>
+                                     <Textarea name={`blogPosts[${index}][description]`} placeholder="Post Description" defaultValue={selectedCategory?.blogPosts?.[index]?.description || ''}/>
+                                      <div className="grid grid-cols-2 gap-4">
+                                        <Input name={`blogPosts[${index}][image]`} placeholder="Image URL" defaultValue={selectedCategory?.blogPosts?.[index]?.image || ''}/>
+                                        <Input name={`blogPosts[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.blogPosts?.[index]?.hint || ''}/>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </TabsContent>
                 </ScrollArea>
             </div>
           </Tabs>
@@ -363,3 +469,5 @@ export default function CategoriesPage() {
     </>
   );
 }
+
+    
