@@ -214,7 +214,7 @@ export default function ArtPiecesPage() {
 
   return (
     <>
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      <div className="flex flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center pt-6">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><Paintbrush className="h-6 w-6"/>Art Piece Management</h1>
@@ -342,7 +342,7 @@ export default function ArtPiecesPage() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
+      </div>
 
       {/* Add/Edit Modal */}
       <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={handleCloseModals}>
