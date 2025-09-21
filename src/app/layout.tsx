@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: 'Artistry Hub',
-  description: 'A hub for creative arts like Mehndi, Rangoli, and more.',
+  description: 'Artistry Hub is your premier destination for exquisite, handcrafted art. Explore stunning Mehndi, vibrant Rangoli, chic Nail Art, and unique custom jewelry. Book talented artists, join workshops, and discover a world of creativity. Perfect for events, gifts, or personal expression. Your vision, our masterpiece.',
 };
 
 export default function RootLayout({
