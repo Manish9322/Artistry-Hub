@@ -10,6 +10,7 @@ import {
   Shapes,
   Link as LinkIcon,
   Trash2,
+  Plus,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -113,7 +114,36 @@ export default function CategoriesPage() {
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const data = Object.fromEntries(formData.entries());
+
+        const data: any = {
+            artPieces: [],
+            processSteps: [],
+            commitment: [],
+            bespokeCreations: [],
+            testimonials: [],
+            blogPosts: [],
+            careTips: [],
+            faqs: []
+        };
+
+        for (const [key, value] of formData.entries()) {
+            const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+            if (match) {
+                const [, arrayName, index, fieldName] = match;
+                if (!data[arrayName]) data[arrayName] = [];
+                if (!data[arrayName][Number(index)]) data[arrayName][Number(index)] = {};
+                data[arrayName][Number(index)][fieldName] = value;
+            } else {
+                data[key] = value;
+            }
+        }
+        
+        // Convert string arrays back to arrays
+        if (data.tags) data.tags = data.tags.split(',').map((t: string) => t.trim());
+        data.artPieces.forEach((p: any) => {
+            if (p.images) p.images = p.images.split(',').map((t: string) => t.trim());
+            if (p.tags) p.tags = p.tags.split(',').map((t: string) => t.trim());
+        });
 
         const method = isEditModalOpen ? 'PUT' : 'POST';
         const url = isEditModalOpen ? `/api/categories/${selectedCategory?._id}` : '/api/categories';
@@ -174,6 +204,267 @@ export default function CategoriesPage() {
         setIsDeleteModalOpen(false);
         setSelectedCategory(null);
     }
+    
+    const AddEditModal = ({ open, onClose }: { open: boolean, onClose: () => void }) => {
+        const isEdit = !!selectedCategory;
+        const [formData, setFormData] = React.useState<Partial<Category>>(
+            isEdit ? { ...selectedCategory } : {
+                name: '', description: '', href: '', image: '', hint: '', tags: [],
+                artPieces: [], processSteps: [], commitment: [], bespokeCreations: [], testimonials: [], blogPosts: [], careTips: [], faqs: []
+            }
+        );
+
+        const handleFieldChange = <T extends keyof Category>(field: T, index: number, subField: keyof any, value: any) => {
+            setFormData(prev => {
+                const newArray = [...(prev[field] as any[] || [])];
+                newArray[index] = { ...newArray[index], [subField]: value };
+                return { ...prev, [field]: newArray };
+            });
+        };
+    
+        const addField = <T extends keyof Category>(field: T, newFieldData: any) => {
+            setFormData(prev => ({
+                ...prev,
+                [field]: [...(prev[field] as any[] || []), newFieldData]
+            }));
+        };
+    
+        const removeField = <T extends keyof Category>(field: T, index: number) => {
+            setFormData(prev => ({
+                ...prev,
+                [field]: (prev[field] as any[])?.filter((_, i) => i !== index)
+            }));
+        };
+
+        return (
+             <Dialog open={open} onOpenChange={onClose}>
+                <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+                  <DialogHeader>
+                    <DialogTitle>{isEdit ? 'Edit' : 'Add'} Category</DialogTitle>
+                    <DialogDescription>
+                      {isEdit ? 'Make changes to your category page here.' : 'Add a new category and all its page content.'} Click save when you're done.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleFormSubmit} className="flex-grow flex flex-col overflow-hidden">
+                  <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
+                    <TabsList className="grid w-full grid-cols-5">
+                      <TabsTrigger value="general">General</TabsTrigger>
+                      <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                      <TabsTrigger value="process">Process</TabsTrigger>
+                      <TabsTrigger value="content">Content</TabsTrigger>
+                      <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
+                    </TabsList>
+                    <div className="flex-grow overflow-hidden mt-4">
+                        <ScrollArea className="h-full pr-6">
+                            <TabsContent value="general" className="mt-0">
+                                <div className="space-y-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="name" className="text-right">Name</Label>
+                                        <Input id="name" name="name" defaultValue={formData.name || ""} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-start gap-4">
+                                        <Label htmlFor="description" className="text-right pt-2">Description</Label>
+                                        <Textarea id="description" name="description" defaultValue={formData.description || ""} className="col-span-3" />
+                                    </div>
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="href" className="text-right">Link (URL)</Label>
+                                        <Input id="href" name="href" placeholder="/page-name" defaultValue={formData.href || ""} className="col-span-3" />
+                                    </div>
+                                     <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="image" className="text-right">Image URL</Label>
+                                        <Input id="image" name="image" placeholder="https://example.com/image.png" defaultValue={formData.image || ""} className="col-span-3" />
+                                    </div>
+                                     <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="hint" className="text-right">AI Hint</Label>
+                                        <Input id="hint" name="hint" placeholder="e.g. henna hand" defaultValue={formData.hint || ""} className="col-span-3" />
+                                    </div>
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="gallery">
+                                <div className="space-y-6 py-4">
+                                    <div>
+                                        <Label>Gallery Tags</Label>
+                                        <Textarea name="tags" placeholder="Comma-separated tags (e.g., All, Bridal, Festival)" defaultValue={formData.tags?.join(', ')} />
+                                    </div>
+                                    <Separator/>
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Art Pieces</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('artPieces', { title: '', price: 0, images: [], tags: [], hint: '', creationTime: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Piece
+                                        </Button>
+                                    </div>
+                                    {(formData.artPieces || []).map((piece, index) => (
+                                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
+                                            <h5 className="font-medium">Art Piece {index + 1}</h5>
+                                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('artPieces', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                             <div className="grid grid-cols-2 gap-4">
+                                                <Input name={`artPieces[${index}][title]`} placeholder="Title" defaultValue={piece.title} />
+                                                <Input name={`artPieces[${index}][price]`} type="number" placeholder="Price" defaultValue={piece.price} />
+                                             </div>
+                                             <Input name={`artPieces[${index}][images]`} placeholder="Image URLs (comma-separated)" defaultValue={piece.images?.join(', ')} />
+                                             <Input name={`artPieces[${index}][tags]`} placeholder="Tags (comma-separated)" defaultValue={piece.tags?.join(', ')} />
+                                             <div className="grid grid-cols-2 gap-4">
+                                                <Input name={`artPieces[${index}][hint]`} placeholder="AI Hint" defaultValue={piece.hint} />
+                                                <Input name={`artPieces[${index}][creationTime]`} placeholder="Creation Time" defaultValue={piece.creationTime} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="process">
+                                <div className="space-y-6 py-4">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Process Steps</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('processSteps', { icon: '', title: '', description: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Step
+                                        </Button>
+                                    </div>
+                                     {(formData.processSteps || []).map((step, index) => (
+                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
+                                            <h5 className="font-medium">Step {index + 1}</h5>
+                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('processSteps', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                             <Input name={`processSteps[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'MessageSquare')" defaultValue={step.icon} />
+                                             <Input name={`processSteps[${index}][title]`} placeholder="Title" defaultValue={step.title} />
+                                             <Textarea name={`processSteps[${index}][description]`} placeholder="Description" defaultValue={step.description} />
+                                        </div>
+                                    ))}
+                                     <Separator/>
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Our Commitment</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('commitment', { icon: '', title: '', description: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Commitment
+                                        </Button>
+                                    </div>
+                                     {(formData.commitment || []).map((item, index) => (
+                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
+                                            <h5 className="font-medium">Commitment {index + 1}</h5>
+                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('commitment', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                             <Input name={`commitment[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'Award')" defaultValue={item.icon} />
+                                             <Input name={`commitment[${index}][title]`} placeholder="Title" defaultValue={item.title} />
+                                             <Textarea name={`commitment[${index}][description]`} placeholder="Description" defaultValue={item.description} />
+                                        </div>
+                                    ))}
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="content">
+                                 <div className="space-y-6 py-4">
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Bespoke Creations Gallery</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('bespokeCreations', { image: '', hint: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Creation
+                                        </Button>
+                                    </div>
+                                    {(formData.bespokeCreations || []).map((item, index) => (
+                                        <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded-md relative">
+                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('bespokeCreations', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                            <Input name={`bespokeCreations[${index}][image]`} placeholder="Image URL" defaultValue={item.image} />
+                                            <Input name={`bespokeCreations[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
+                                        </div>
+                                    ))}
+                                    <Separator/>
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Testimonials</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('testimonials', { name: '', comment: '', image: '', hint: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Testimonial
+                                        </Button>
+                                    </div>
+                                    {(formData.testimonials || []).map((item, index) => (
+                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
+                                            <h5 className="font-medium">Testimonial {index + 1}</h5>
+                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('testimonials', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                            <Input name={`testimonials[${index}][name]`} placeholder="Client Name" defaultValue={item.name} />
+                                            <Textarea name={`testimonials[${index}][comment]`} placeholder="Comment" defaultValue={item.comment} />
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <Input name={`testimonials[${index}][image]`} placeholder="Avatar URL" defaultValue={item.image} />
+                                                <Input name={`testimonials[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                 </div>
+                            </TabsContent>
+                            <TabsContent value="seo">
+                                <div className="space-y-6 py-4">
+                                     <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Care Tips</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('careTips', { icon: '', title: '', description: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Tip
+                                        </Button>
+                                    </div>
+                                     {(formData.careTips || []).map((item, index) => (
+                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
+                                             <h5 className="font-medium">Tip {index+1}</h5>
+                                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('careTips', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                             <Input name={`careTips[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'Droplets')" defaultValue={item.icon} />
+                                             <Input name={`careTips[${index}][title]`} placeholder="Title" defaultValue={item.title} />
+                                             <Textarea name={`careTips[${index}][description]`} placeholder="Description" defaultValue={item.description} />
+                                        </div>
+                                    ))}
+                                    <Separator/>
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">FAQs</h4>
+                                        <Button type="button" size="sm" onClick={() => addField('faqs', { question: '', answer: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add FAQ
+                                        </Button>
+                                    </div>
+                                    {(formData.faqs || []).map((item, index) => (
+                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
+                                            <h5 className="font-medium">FAQ {index + 1}</h5>
+                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('faqs', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                            <Input name={`faqs[${index}][question]`} placeholder="Question" defaultValue={item.question} />
+                                            <Textarea name={`faqs[${index}][answer]`} placeholder="Answer" defaultValue={item.answer} />
+                                        </div>
+                                    ))}
+                                     <Separator/>
+                                    <div className="flex justify-between items-center">
+                                        <h4 className="text-lg font-semibold">Blog Posts</h4>
+                                         <Button type="button" size="sm" onClick={() => addField('blogPosts', { title: '', description: '', image: '', hint: '' })}>
+                                            <Plus className="mr-2 h-4 w-4" /> Add Post
+                                        </Button>
+                                    </div>
+                                     {(formData.blogPosts || []).map((item, index) => (
+                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
+                                             <h5 className="font-medium">Blog Post {index + 1}</h5>
+                                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('blogPosts', index)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                             <Input name={`blogPosts[${index}][title]`} placeholder="Post Title" defaultValue={item.title} />
+                                             <Textarea name={`blogPosts[${index}][description]`} placeholder="Post Description" defaultValue={item.description} />
+                                              <div className="grid grid-cols-2 gap-4">
+                                                <Input name={`blogPosts[${index}][image]`} placeholder="Image URL" defaultValue={item.image} />
+                                                <Input name={`blogPosts[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </TabsContent>
+                        </ScrollArea>
+                    </div>
+                  </Tabs>
+                  <DialogFooter className="mt-4 pt-4 border-t shrink-0">
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit">Save changes</Button>
+                  </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+        )
+    }
 
   return (
     <>
@@ -190,7 +481,7 @@ export default function CategoriesPage() {
                 Export
               </span>
             </Button>
-            <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
+            <Button size="sm" className="h-8 gap-1" onClick={() => { setSelectedCategory(null); setIsAddModalOpen(true); }}>
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                 Add Category
@@ -263,7 +554,7 @@ export default function CategoriesPage() {
                         />
                       </TableCell>
                       <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell>{category.description}</TableCell>
+                      <TableCell className="max-w-xs truncate">{category.description}</TableCell>
                       <TableCell><a href={category.href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{category.href}</a></TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -294,159 +585,9 @@ export default function CategoriesPage() {
         </Card>
       </main>
 
-      {/* Add/Edit Modal */}
-      <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={handleCloseModals}>
-        <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>{isEditModalOpen ? 'Edit' : 'Add'} Category</DialogTitle>
-            <DialogDescription>
-              {isEditModalOpen ? 'Make changes to your category page here.' : 'Add a new category and all its page content.'} Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleFormSubmit} className="flex-grow flex flex-col overflow-hidden">
-          <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="gallery">Gallery</TabsTrigger>
-              <TabsTrigger value="process">Process</TabsTrigger>
-              <TabsTrigger value="content">Content</TabsTrigger>
-              <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
-            </TabsList>
-            <div className="flex-grow overflow-hidden mt-4">
-                <ScrollArea className="h-full pr-6">
-                    <TabsContent value="general" className="mt-0">
-                        <div className="space-y-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">Name</Label>
-                                <Input id="name" name="name" defaultValue={selectedCategory?.name || ""} className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-start gap-4">
-                                <Label htmlFor="description" className="text-right pt-2">Description</Label>
-                                <Textarea id="description" name="description" defaultValue={selectedCategory?.description || ""} className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="href" className="text-right">Link (URL)</Label>
-                                <Input id="href" name="href" placeholder="/page-name" defaultValue={selectedCategory?.href || ""} className="col-span-3" />
-                            </div>
-                             <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="image" className="text-right">Image URL</Label>
-                                <Input id="image" name="image" placeholder="https://example.com/image.png" defaultValue={selectedCategory?.image || ""} className="col-span-3" />
-                            </div>
-                             <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="hint" className="text-right">AI Hint</Label>
-                                <Input id="hint" name="hint" placeholder="e.g. henna hand" defaultValue={selectedCategory?.hint || ""} className="col-span-3" />
-                            </div>
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="gallery">
-                        <div className="space-y-6 py-4">
-                            <div>
-                                <Label>Gallery Tags</Label>
-                                <Textarea name="tags" placeholder="Comma-separated tags (e.g., All, Bridal, Festival)" defaultValue={selectedCategory?.tags?.join(', ')} />
-                            </div>
-                            <Separator/>
-                            <h4 className="text-lg font-semibold">Art Pieces</h4>
-                            {([0, 1, 2]).map(index => (
-                                <div key={index} className="space-y-4 p-4 border rounded-md">
-                                     <h5 className="font-medium">Art Piece {index+1}</h5>
-                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input name={`artPieces[${index}][title]`} placeholder="Title" defaultValue={selectedCategory?.artPieces?.[index]?.title || ''}/>
-                                        <Input name={`artPieces[${index}][price]`} type="number" placeholder="Price" defaultValue={selectedCategory?.artPieces?.[index]?.price || ''}/>
-                                     </div>
-                                     <Input name={`artPieces[${index}][images]`} placeholder="Image URLs (comma-separated)" defaultValue={selectedCategory?.artPieces?.[index]?.images?.join(', ')}/>
-                                     <Input name={`artPieces[${index}][tags]`} placeholder="Tags (comma-separated)" defaultValue={selectedCategory?.artPieces?.[index]?.tags?.join(', ')}/>
-                                     <div className="grid grid-cols-2 gap-4">
-                                        <Input name={`artPieces[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.artPieces?.[index]?.hint || ''}/>
-                                        <Input name={`artPieces[${index}][creationTime]`} placeholder="Creation Time" defaultValue={selectedCategory?.artPieces?.[index]?.creationTime || ''}/>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="process">
-                        <div className="space-y-6 py-4">
-                            <h4 className="text-lg font-semibold">Process Steps</h4>
-                             {([0, 1, 2, 3]).map(index => (
-                                <div key={index} className="space-y-3 p-4 border rounded-md">
-                                     <h5 className="font-medium">Step {index+1}</h5>
-                                     <Input name={`processSteps[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'MessageSquare')" defaultValue={selectedCategory?.processSteps?.[index]?.icon || ''}/>
-                                     <Input name={`processSteps[${index}][title]`} placeholder="Title" defaultValue={selectedCategory?.processSteps?.[index]?.title || ''}/>
-                                     <Textarea name={`processSteps[${index}][description]`} placeholder="Description" defaultValue={selectedCategory?.processSteps?.[index]?.description || ''}/>
-                                </div>
-                            ))}
-                             <Separator/>
-                            <h4 className="text-lg font-semibold">Our Commitment</h4>
-                             {([0, 1, 2]).map(index => (
-                                <div key={index} className="space-y-3 p-4 border rounded-md">
-                                     <h5 className="font-medium">Commitment {index+1}</h5>
-                                     <Input name={`commitment[${index}][icon]`} placeholder="Lucide Icon Name (e.g., 'Award')" defaultValue={selectedCategory?.commitment?.[index]?.icon || ''}/>
-                                     <Input name={`commitment[${index}][title]`} placeholder="Title" defaultValue={selectedCategory?.commitment?.[index]?.title || ''}/>
-                                     <Textarea name={`commitment[${index}][description]`} placeholder="Description" defaultValue={selectedCategory?.commitment?.[index]?.description || ''}/>
-                                </div>
-                            ))}
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="content">
-                         <div className="space-y-6 py-4">
-                            <h4 className="text-lg font-semibold">Bespoke Creations Gallery</h4>
-                            {([0, 1, 2, 3]).map(index => (
-                                <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded-md">
-                                    <Input name={`bespokeCreations[${index}][image]`} placeholder="Image URL" defaultValue={selectedCategory?.bespokeCreations?.[index]?.image || ''}/>
-                                    <Input name={`bespokeCreations[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.bespokeCreations?.[index]?.hint || ''}/>
-                                </div>
-                            ))}
-                            <Separator/>
-                            <h4 className="text-lg font-semibold">Testimonials</h4>
-                            {([0, 1]).map(index => (
-                                <div key={index} className="space-y-3 p-4 border rounded-md">
-                                    <h5 className="font-medium">Testimonial {index+1}</h5>
-                                    <Input name={`testimonials[${index}][name]`} placeholder="Client Name" defaultValue={selectedCategory?.testimonials?.[index]?.name || ''}/>
-                                    <Textarea name={`testimonials[${index}][comment]`} placeholder="Comment" defaultValue={selectedCategory?.testimonials?.[index]?.comment || ''}/>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <Input name={`testimonials[${index}][image]`} placeholder="Avatar URL" defaultValue={selectedCategory?.testimonials?.[index]?.image || ''}/>
-                                        <Input name={`testimonials[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.testimonials?.[index]?.hint || ''}/>
-                                    </div>
-                                </div>
-                            ))}
-                         </div>
-                    </TabsContent>
-                    <TabsContent value="seo">
-                        <div className="space-y-6 py-4">
-                            <h4 className="text-lg font-semibold">FAQs</h4>
-                            {([0, 1, 2]).map(index => (
-                                <div key={index} className="space-y-3 p-4 border rounded-md">
-                                    <h5 className="font-medium">FAQ {index+1}</h5>
-                                    <Input name={`faqs[${index}][question]`} placeholder="Question" defaultValue={selectedCategory?.faqs?.[index]?.question || ''}/>
-                                    <Textarea name={`faqs[${index}][answer]`} placeholder="Answer" defaultValue={selectedCategory?.faqs?.[index]?.answer || ''}/>
-                                </div>
-                            ))}
-                             <Separator/>
-                            <h4 className="text-lg font-semibold">Blog Posts</h4>
-                             {([0, 1]).map(index => (
-                                <div key={index} className="space-y-3 p-4 border rounded-md">
-                                     <h5 className="font-medium">Blog Post {index+1}</h5>
-                                     <Input name={`blogPosts[${index}][title]`} placeholder="Post Title" defaultValue={selectedCategory?.blogPosts?.[index]?.title || ''}/>
-                                     <Textarea name={`blogPosts[${index}][description]`} placeholder="Post Description" defaultValue={selectedCategory?.blogPosts?.[index]?.description || ''}/>
-                                      <div className="grid grid-cols-2 gap-4">
-                                        <Input name={`blogPosts[${index}][image]`} placeholder="Image URL" defaultValue={selectedCategory?.blogPosts?.[index]?.image || ''}/>
-                                        <Input name={`blogPosts[${index}][hint]`} placeholder="AI Hint" defaultValue={selectedCategory?.blogPosts?.[index]?.hint || ''}/>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </TabsContent>
-                </ScrollArea>
-            </div>
-          </Tabs>
-          <DialogFooter className="mt-4 pt-4 border-t shrink-0">
-            <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      {(isAddModalOpen || isEditModalOpen) && (
+          <AddEditModal open={isAddModalOpen || isEditModalOpen} onClose={handleCloseModals} />
+      )}
       
       {/* Delete Confirmation Modal */}
       <Dialog open={isDeleteModalOpen} onOpenChange={handleCloseModals}>
@@ -469,5 +610,3 @@ export default function CategoriesPage() {
     </>
   );
 }
-
-    
