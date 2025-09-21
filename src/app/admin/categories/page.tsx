@@ -297,10 +297,10 @@ export default function CategoriesPage() {
           <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="gallery" disabled={true}>Gallery</TabsTrigger>
-              <TabsTrigger value="process" disabled={true}>Process</TabsTrigger>
-              <TabsTrigger value="content" disabled={true}>Content</TabsTrigger>
-              <TabsTrigger value="seo" disabled={true}>SEO/Meta</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
+              <TabsTrigger value="process">Process</TabsTrigger>
+              <TabsTrigger value="content">Content</TabsTrigger>
+              <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
             </TabsList>
             <div className="flex-grow overflow-hidden mt-4">
                 <ScrollArea className="h-full pr-6">
