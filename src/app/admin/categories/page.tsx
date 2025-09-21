@@ -303,7 +303,7 @@ export default function CategoriesPage() {
               {isEditModalOpen ? 'Make changes to your category page here.' : 'Add a new category and all its page content.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleFormSubmit}>
+          <form onSubmit={handleFormSubmit} className="flex-grow flex flex-col overflow-hidden">
           <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="general">General</TabsTrigger>
@@ -438,7 +438,7 @@ export default function CategoriesPage() {
                 </ScrollArea>
             </div>
           </Tabs>
-          <DialogFooter className="mt-4 pt-4 border-t">
+          <DialogFooter className="mt-4 pt-4 border-t shrink-0">
             <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
             </DialogClose>
