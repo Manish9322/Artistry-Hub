@@ -41,15 +41,23 @@ async function parseFormData(formData) {
         }
     }
     
+    // Filter out completely empty objects from arrays
+    Object.keys(data).forEach(key => {
+        if (Array.isArray(data[key])) {
+            data[key] = data[key].filter(item => item && Object.values(item).some(v => v !== ''));
+        }
+    });
+
     // Convert comma-separated strings to arrays
-    if (data.tags) data.tags = data.tags.split(',').map(t => t.trim());
+    if (data.tags) data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
     if(data.artPieces) {
         data.artPieces.forEach(p => {
-            if (p.tags) p.tags = p.tags.split(',').map(t => t.trim());
-            // Important: keep existing image string if no new file is uploaded
-            if (typeof p.images === 'string') {
+            if (p.tags && typeof p.tags === 'string') {
+                p.tags = p.tags.split(',').map(t => t.trim()).filter(Boolean);
+            }
+            if (p.images && typeof p.images === 'string') {
               p.images = p.images.split(',').map(i => i.trim()).filter(Boolean);
-            } else {
+            } else if (!p.images) {
               p.images = [];
             }
         });
@@ -92,52 +100,38 @@ export async function PUT(request, { params }) {
         data.image = existingCategory.image;
     }
 
-    // Handle array image uploads
     const uploadPromises = [];
 
     const processArrayImages = (arrayName, fieldName, existingArray) => {
-        if (fileFields[arrayName]) {
-            for (const index in fileFields[arrayName]) {
-                 if (fileFields[arrayName][index][fieldName]) {
-                    const files = fileFields[arrayName][index][fieldName];
-                     uploadPromises.push(
-                        ...files.map(async file => {
-                            const url = await saveImage(file);
-                            if(data[arrayName][index]) {
-                                if(!data[arrayName][index][fieldName]) data[arrayName][index][fieldName] = [];
-                                // For multi-image fields
-                                if (Array.isArray(data[arrayName][index][fieldName])) {
-                                  data[arrayName][index][fieldName].push(url);
-                                } else { // For single image fields
-                                  data[arrayName][index][fieldName] = url;
-                                }
-                            }
-                        })
-                    );
-                 }
-            }
-        }
-        // Preserve existing images if no new files are uploaded
+        const itemMap = new Map((existingArray || []).map(item => [item._id.toString(), item]));
+        
         if (data[arrayName]) {
-          data[arrayName].forEach((item, index) => {
-            const existingItem = existingArray[index] || {};
-            // If there are no new files for this item, keep the old image
-            if (!fileFields[arrayName]?.[index]?.[fieldName] && existingItem[fieldName]) {
-               // Merge existing images for artPieces
-               if (arrayName === 'artPieces' && fieldName === 'images') {
-                 item.images = [...(existingItem.images || []), ...item.images];
-               } else {
-                 item[fieldName] = existingItem[fieldName];
-               }
-            }
-          });
+            data[arrayName].forEach((item, index) => {
+                const existingItem = item._id ? itemMap.get(item._id) : null;
+                const newFiles = fileFields[arrayName]?.[index]?.[fieldName];
+
+                if (newFiles) {
+                    const promise = Promise.all(newFiles.map(file => saveImage(file)))
+                        .then(urls => {
+                            if (arrayName === 'artPieces' && fieldName === 'images') {
+                                item.images = [...(item.images || []), ...urls];
+                            } else {
+                                item[fieldName] = urls[0]; 
+                            }
+                        });
+                    uploadPromises.push(promise);
+                } else if (existingItem) {
+                    // Preserve old image if no new one is uploaded
+                    item[fieldName] = existingItem[fieldName];
+                }
+            });
         }
     };
     
-    processArrayImages('artPieces', 'images', existingCategory.artPieces || []);
-    processArrayImages('bespokeCreations', 'image', existingCategory.bespokeCreations || []);
-    processArrayImages('testimonials', 'image', existingCategory.testimonials || []);
-    processArrayImages('blogPosts', 'image', existingCategory.blogPosts || []);
+    processArrayImages('artPieces', 'images', existingCategory.artPieces);
+    processArrayImages('bespokeCreations', 'image', existingCategory.bespokeCreations);
+    processArrayImages('testimonials', 'image', existingCategory.testimonials);
+    processArrayImages('blogPosts', 'image', existingCategory.blogPosts);
 
     await Promise.all(uploadPromises);
 

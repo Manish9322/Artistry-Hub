@@ -1,3 +1,4 @@
+
 // This file will handle backend logic for categories.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
@@ -16,38 +17,49 @@ async function parseFormData(formData) {
         careTips: [],
         faqs: []
     };
-    const artPiecesFiles = {};
+    const fileFields = {};
 
     for (const [key, value] of formData.entries()) {
         const arrayMatch = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+        
         if (arrayMatch) {
             const [, arrayName, index, fieldName] = arrayMatch;
             if (!data[arrayName]) data[arrayName] = [];
             if (!data[arrayName][Number(index)]) data[arrayName][Number(index)] = {};
-            
+
             if (value instanceof File && value.size > 0) {
-                 if (!artPiecesFiles[index]) artPiecesFiles[index] = {};
-                 if (!artPiecesFiles[index][fieldName]) artPiecesFiles[index][fieldName] = [];
-                 artPiecesFiles[index][fieldName].push(value);
+                 if (!fileFields[arrayName]) fileFields[arrayName] = {};
+                 if (!fileFields[arrayName][index]) fileFields[arrayName][index] = {};
+                 if (!fileFields[arrayName][index][fieldName]) fileFields[arrayName][index][fieldName] = [];
+                 fileFields[arrayName][index][fieldName].push(value);
             } else {
                  data[arrayName][Number(index)][fieldName] = value;
             }
-
         } else if (value instanceof File && value.size > 0) {
-            data[key] = value;
-        }
-        else {
+            fileFields[key] = value;
+        } else {
             data[key] = value;
         }
     }
     
-    // Convert comma-separated strings to arrays
-    if (data.tags) data.tags = data.tags.split(',').map(t => t.trim());
-    data.artPieces.forEach(p => {
-        if (p.tags) p.tags = p.tags.split(',').map(t => t.trim());
+    // Filter out completely empty objects from arrays
+    Object.keys(data).forEach(key => {
+        if (Array.isArray(data[key])) {
+            data[key] = data[key].filter(item => item && Object.values(item).some(v => v !== ''));
+        }
     });
+    
+    // Convert comma-separated strings to arrays
+    if (data.tags) data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
+    if (data.artPieces) {
+        data.artPieces.forEach(p => {
+            if (p.tags && typeof p.tags === 'string') {
+                p.tags = p.tags.split(',').map(t => t.trim()).filter(Boolean);
+            }
+        });
+    }
 
-    return { data, artPiecesFiles };
+    return { data, fileFields };
 }
 
 
@@ -67,48 +79,42 @@ export async function POST(request) {
   await _db();
   try {
     const formData = await request.formData();
-    const { data, artPiecesFiles } = await parseFormData(formData);
+    const { data, fileFields } = await parseFormData(formData);
 
     // Handle main image upload
-    if (data.image instanceof File) {
-        data.image = await saveImage(data.image);
+    if (fileFields.image) {
+        data.image = await saveImage(fileFields.image);
     }
+    
+    const uploadPromises = [];
 
-    // Handle nested image uploads
-    for (const artPiece of data.artPieces) {
-      if (artPiece.images instanceof File) {
-        artPiece.images = [await saveImage(artPiece.images)];
-      }
-    }
-    for (const creation of data.bespokeCreations) {
-      if (creation.image instanceof File) {
-        creation.image = await saveImage(creation.image);
-      }
-    }
-    for (const testimonial of data.testimonials) {
-       if (testimonial.image instanceof File) {
-        testimonial.image = await saveImage(testimonial.image);
-      }
-    }
-    for (const post of data.blogPosts) {
-      if (post.image instanceof File) {
-        post.image = await saveImage(post.image);
-      }
-    }
-
-    // Process multi-image uploads for art pieces
-    for (const index in artPiecesFiles) {
-        if (artPiecesFiles[index].images) {
-            const imageUrls = await Promise.all(
-                artPiecesFiles[index].images.map(file => saveImage(file))
-            );
-            if (!data.artPieces[index].images) {
-              data.artPieces[index].images = [];
+    const processArrayImages = (arrayName, fieldName) => {
+        if (fileFields[arrayName]) {
+            for (const index in fileFields[arrayName]) {
+                 if (fileFields[arrayName][index][fieldName]) {
+                    const files = fileFields[arrayName][index][fieldName];
+                    const promise = Promise.all(files.map(file => saveImage(file)))
+                        .then(urls => {
+                            if (!data[arrayName][index]) data[arrayName][index] = {};
+                            
+                            if (arrayName === 'artPieces' && fieldName === 'images') {
+                                data[arrayName][index][fieldName] = urls;
+                            } else {
+                                data[arrayName][index][fieldName] = urls[0];
+                            }
+                        });
+                    uploadPromises.push(promise);
+                 }
             }
-            // This is simplified; assumes single file input for multi-images. A real multi-image uploader would be more complex.
-             data.artPieces[index].images.push(...imageUrls);
         }
-    }
+    };
+    
+    processArrayImages('artPieces', 'images');
+    processArrayImages('bespokeCreations', 'image');
+    processArrayImages('testimonials', 'image');
+    processArrayImages('blogPosts', 'image');
+    
+    await Promise.all(uploadPromises);
     
     const newCategory = await Category.create(data);
     return NextResponse.json(newCategory, { status: 201 });
