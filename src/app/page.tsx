@@ -12,11 +12,38 @@ import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import placeholderImages from '@/lib/placeholder-images.json';
+
+
+type Category = {
+  _id: string;
+  name: string;
+  description: string;
+  image?: string;
+  hint?: string;
+  href: string;
+};
 
 
 export default function Home() {
   const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint: string} | null>(null);
   const [dynamicHeadline, setDynamicHeadline] = useState(0);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch('/api/categories');
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    }
+    fetchCategories();
+  }, []);
 
   const artCategories = [
     {
@@ -383,11 +410,11 @@ export default function Home() {
               </p>
             </div>
             <div className="grid gap-8">
-              {artCategories.map((category, index) => (
-                <Link href={category.href} key={category.name}>
+              {categories.map((category, index) => (
+                <Link href={category.href} key={category._id}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                      <Image
-                        src={category.image}
+                        src={category.image || placeholderImages.default}
                         alt={category.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
@@ -635,9 +662,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
-
-    
-
-    
