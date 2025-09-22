@@ -23,16 +23,17 @@ async function parseFormData(formData) {
         
         if (arrayMatch) {
             const [, arrayName, index, fieldName] = arrayMatch;
+            const numIndex = Number(index);
             if (!data[arrayName]) data[arrayName] = [];
-            if (!data[arrayName][Number(index)]) data[arrayName][Number(index)] = {};
+            if (!data[arrayName][numIndex]) data[arrayName][numIndex] = {};
 
             if (value instanceof File && value.size > 0) {
                  if (!fileFields[arrayName]) fileFields[arrayName] = {};
-                 if (!fileFields[arrayName][index]) fileFields[arrayName][index] = {};
-                 if (!fileFields[arrayName][index][fieldName]) fileFields[arrayName][index][fieldName] = [];
-                 fileFields[arrayName][index][fieldName].push(value);
+                 if (!fileFields[arrayName][numIndex]) fileFields[arrayName][numIndex] = {};
+                 if (!fileFields[arrayName][numIndex][fieldName]) fileFields[arrayName][numIndex][fieldName] = [];
+                 fileFields[arrayName][numIndex][fieldName].push(value);
             } else {
-                 data[arrayName][Number(index)][fieldName] = value;
+                 data[arrayName][numIndex][fieldName] = value;
             }
         } else if (value instanceof File && value.size > 0) {
             fileFields[key] = value;
@@ -44,12 +45,12 @@ async function parseFormData(formData) {
     // Filter out completely empty objects from arrays
     Object.keys(data).forEach(key => {
         if (Array.isArray(data[key])) {
-            data[key] = data[key].filter(item => item && Object.values(item).some(v => v !== ''));
+            data[key] = data[key].filter(item => item && Object.values(item).some(v => v !== '' && v !== null && v !== undefined));
         }
     });
 
     // Convert comma-separated strings to arrays
-    if (data.tags) data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
+    if (data.tags && typeof data.tags === 'string') data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
     if(data.artPieces) {
         data.artPieces.forEach(p => {
             if (p.tags && typeof p.tags === 'string') {
@@ -90,52 +91,64 @@ export async function PUT(request, { params }) {
         return NextResponse.json({ message: 'Category not found' }, { status: 404 });
     }
 
-    const formData = await request.formData();
-    const { data, fileFields } = await parseFormData(formData);
-    
-    // Handle main image upload
-    if (fileFields.image) {
-        data.image = await saveImage(fileFields.image);
+    const contentType = request.headers.get('content-type') || '';
+    let updateData;
+
+    if (contentType.includes('application/json')) {
+      updateData = await request.json();
+    } else if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      const { data, fileFields } = await parseFormData(formData);
+      updateData = data;
+      
+      // Handle main image upload
+      if (fileFields.image) {
+          updateData.image = await saveImage(fileFields.image);
+      } else {
+          updateData.image = existingCategory.image;
+      }
+
+      const uploadPromises = [];
+
+      const processArrayImages = (arrayName, fieldName, existingArray) => {
+          const itemMap = new Map((existingArray || []).map(item => [item._id.toString(), item]));
+          
+          if (updateData[arrayName]) {
+              updateData[arrayName].forEach((item, index) => {
+                  const existingItem = item._id ? itemMap.get(item._id) : null;
+                  const newFiles = fileFields[arrayName]?.[index]?.[fieldName];
+
+                  if (newFiles) {
+                      const promise = Promise.all(newFiles.map(file => saveImage(file)))
+                          .then(urls => {
+                              if (arrayName === 'artPieces' && fieldName === 'images') {
+                                  // This logic assumes replacement or addition. For more complex logic, adjust as needed.
+                                  item.images = [...(item.images || []), ...urls].filter(img => !String(img).includes('blob:'));
+                              } else {
+                                  item[fieldName] = urls[0]; 
+                              }
+                          });
+                      uploadPromises.push(promise);
+                  } else if (existingItem) {
+                      // Preserve old image if no new one is uploaded
+                      item[fieldName] = existingItem[fieldName];
+                  }
+              });
+          }
+      };
+      
+      processArrayImages('artPieces', 'images', existingCategory.artPieces);
+      processArrayImages('bespokeCreations', 'image', existingCategory.bespokeCreations);
+      processArrayImages('testimonials', 'image', existingCategory.testimonials);
+      processArrayImages('blogPosts', 'image', existingCategory.blogPosts);
+
+      await Promise.all(uploadPromises);
+
     } else {
-        data.image = existingCategory.image;
+      return NextResponse.json({ message: 'Unsupported Content-Type' }, { status: 415 });
     }
 
-    const uploadPromises = [];
-
-    const processArrayImages = (arrayName, fieldName, existingArray) => {
-        const itemMap = new Map((existingArray || []).map(item => [item._id.toString(), item]));
-        
-        if (data[arrayName]) {
-            data[arrayName].forEach((item, index) => {
-                const existingItem = item._id ? itemMap.get(item._id) : null;
-                const newFiles = fileFields[arrayName]?.[index]?.[fieldName];
-
-                if (newFiles) {
-                    const promise = Promise.all(newFiles.map(file => saveImage(file)))
-                        .then(urls => {
-                            if (arrayName === 'artPieces' && fieldName === 'images') {
-                                item.images = [...(item.images || []), ...urls];
-                            } else {
-                                item[fieldName] = urls[0]; 
-                            }
-                        });
-                    uploadPromises.push(promise);
-                } else if (existingItem) {
-                    // Preserve old image if no new one is uploaded
-                    item[fieldName] = existingItem[fieldName];
-                }
-            });
-        }
-    };
-    
-    processArrayImages('artPieces', 'images', existingCategory.artPieces);
-    processArrayImages('bespokeCreations', 'image', existingCategory.bespokeCreations);
-    processArrayImages('testimonials', 'image', existingCategory.testimonials);
-    processArrayImages('blogPosts', 'image', existingCategory.blogPosts);
-
-    await Promise.all(uploadPromises);
-
-    const updatedCategory = await Category.findByIdAndUpdate(params.id, data, { new: true, runValidators: true });
+    const updatedCategory = await Category.findByIdAndUpdate(params.id, updateData, { new: true, runValidators: true });
     
     return NextResponse.json(updatedCategory, { status: 200 });
   } catch (error) {

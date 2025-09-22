@@ -46,12 +46,12 @@ async function parseFormData(formData) {
     // Filter out completely empty objects from arrays
     Object.keys(data).forEach(key => {
         if (Array.isArray(data[key])) {
-            data[key] = data[key].filter(item => item && Object.values(item).some(v => v !== ''));
+            data[key] = data[key].filter(item => item && Object.values(item).some(v => v !== '' && v !== null && v !== undefined));
         }
     });
     
     // Convert comma-separated strings to arrays
-    if (data.tags) data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
+    if (data.tags && typeof data.tags === 'string') data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
     if (data.artPieces) {
         data.artPieces.forEach(p => {
             if (p.tags && typeof p.tags === 'string') {
@@ -79,46 +79,56 @@ export async function GET() {
 export async function POST(request) {
   await _db();
   try {
-    const formData = await request.formData();
-    const { data, fileFields } = await parseFormData(formData);
+    const contentType = request.headers.get('content-type') || '';
+    let categoryData;
 
-    // Handle main image upload
-    if (fileFields.image) {
-        data.image = await saveImage(fileFields.image);
+    if (contentType.includes('application/json')) {
+      categoryData = await request.json();
+    } else if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      const { data, fileFields } = await parseFormData(formData);
+
+      // Handle main image upload
+      if (fileFields.image) {
+          data.image = await saveImage(fileFields.image);
+      }
+      
+      const uploadPromises = [];
+
+      const processArrayImages = (arrayName, fieldName) => {
+          if (fileFields[arrayName]) {
+              for (const index in fileFields[arrayName]) {
+                  const numIndex = Number(index);
+                  if (fileFields[arrayName][numIndex] && fileFields[arrayName][numIndex][fieldName]) {
+                      const files = fileFields[arrayName][numIndex][fieldName];
+                      const promise = Promise.all(files.map(file => saveImage(file)))
+                          .then(urls => {
+                              if (!data[arrayName][numIndex]) data[arrayName][numIndex] = {};
+                              
+                              if (arrayName === 'artPieces' && fieldName === 'images') {
+                                  data[arrayName][numIndex][fieldName] = urls;
+                              } else {
+                                  data[arrayName][numIndex][fieldName] = urls[0];
+                              }
+                          });
+                      uploadPromises.push(promise);
+                  }
+              }
+          }
+      };
+      
+      processArrayImages('artPieces', 'images');
+      processArrayImages('bespokeCreations', 'image');
+      processArrayImages('testimonials', 'image');
+      processArrayImages('blogPosts', 'image');
+      
+      await Promise.all(uploadPromises);
+      categoryData = data;
+    } else {
+      return NextResponse.json({ message: 'Unsupported Content-Type' }, { status: 415 });
     }
-    
-    const uploadPromises = [];
 
-    const processArrayImages = (arrayName, fieldName) => {
-        if (fileFields[arrayName]) {
-            for (const index in fileFields[arrayName]) {
-                 if (fileFields[arrayName][index][fieldName]) {
-                    const files = fileFields[arrayName][index][fieldName];
-                    const numIndex = Number(index);
-                    const promise = Promise.all(files.map(file => saveImage(file)))
-                        .then(urls => {
-                            if (!data[arrayName][numIndex]) data[arrayName][numIndex] = {};
-                            
-                            if (arrayName === 'artPieces' && fieldName === 'images') {
-                                data[arrayName][numIndex][fieldName] = urls;
-                            } else {
-                                data[arrayName][numIndex][fieldName] = urls[0];
-                            }
-                        });
-                    uploadPromises.push(promise);
-                 }
-            }
-        }
-    };
-    
-    processArrayImages('artPieces', 'images');
-    processArrayImages('bespokeCreations', 'image');
-    processArrayImages('testimonials', 'image');
-    processArrayImages('blogPosts', 'image');
-    
-    await Promise.all(uploadPromises);
-    
-    const newCategory = await Category.create(data);
+    const newCategory = await Category.create(categoryData);
     return NextResponse.json(newCategory, { status: 201 });
   } catch (error) {
     console.error("Error creating category:", error);
