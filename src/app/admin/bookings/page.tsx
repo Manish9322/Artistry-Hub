@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from '@/hooks/use-toast';
+import { useGetBookingsQuery, useUpdateBookingMutation } from '@/services/api';
 
 type Booking = {
   _id: string;
@@ -43,50 +44,25 @@ type Booking = {
 
 export default function BookingsPage() {
   const { toast } = useToast();
-  const [bookings, setBookings] = React.useState<Booking[]>([]);
-
-  const fetchBookings = async () => {
-    try {
-      const response = await fetch('/api/bookings');
-      if(response.ok) {
-        const data = await response.json();
-        setBookings(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch bookings:", error);
-      toast({ variant: "destructive", title: "Error", description: "Failed to fetch bookings." });
-    }
-  };
-
-  React.useEffect(() => {
-    fetchBookings();
-  }, []);
+  const { data: bookings = [], isLoading } = useGetBookingsQuery();
+  const [updateBooking] = useUpdateBookingMutation();
 
   const handleStatusChange = async (bookingId: string, newStatus: Booking['status']) => {
     try {
-      const response = await fetch(`/api/bookings/${bookingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (response.ok) {
-        fetchBookings();
-        toast({ title: "Success!", description: `Booking status updated to ${newStatus}.` });
-      } else {
-        toast({ variant: "destructive", title: "Error", description: "Failed to update booking status." });
-      }
+      await updateBooking({ id: bookingId, body: { status: newStatus } }).unwrap();
+      toast({ title: "Success!", description: `Booking status updated to ${newStatus}.` });
     } catch (error) {
        console.error("Failed to update booking status:", error);
        toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
     }
   };
   
-  const stats = {
+  const stats = React.useMemo(() => ({
       total: bookings.length,
-      confirmed: bookings.filter(b => b.status === 'Confirmed').length,
-      pending: bookings.filter(b => b.status === 'Pending').length,
-      completed: bookings.filter(b => b.status === 'Completed').length,
-  }
+      confirmed: bookings.filter((b: Booking) => b.status === 'Confirmed').length,
+      pending: bookings.filter((b: Booking) => b.status === 'Pending').length,
+      completed: bookings.filter((b: Booking) => b.status === 'Completed').length,
+  }), [bookings]);
 
   const getStatusVariant = (status: Booking['status']) => {
       switch (status) {
@@ -228,7 +204,10 @@ export default function BookingsPage() {
                     </TableRow>
                     </TableHeader>
                     <TableBody>
-                    {bookings.map((booking) => (
+                    {isLoading ? (
+                        <TableRow><TableCell colSpan={7} className="text-center">Loading...</TableCell></TableRow>
+                    ) : (
+                    bookings.map((booking: Booking) => (
                         <TableRow key={booking._id}>
                         <TableCell className="font-medium">{booking._id.slice(-6).toUpperCase()}</TableCell>
                         <TableCell>{booking.customer}</TableCell>
@@ -260,7 +239,7 @@ export default function BookingsPage() {
                               </DropdownMenu>
                         </TableCell>
                         </TableRow>
-                    ))}
+                    )))}
                     </TableBody>
                 </Table>
                 </CardContent>
@@ -270,5 +249,3 @@ export default function BookingsPage() {
     </main>
   );
 }
-
-    

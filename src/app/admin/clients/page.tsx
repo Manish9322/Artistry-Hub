@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
+import { useGetClientsQuery } from '@/services/api';
 
 type Client = {
   _id: string;
@@ -35,25 +35,7 @@ type Client = {
 };
 
 export default function ClientsPage() {
-  const { toast } = useToast();
-  const [clients, setClients] = React.useState<Client[]>([]);
-
-  const fetchClients = async () => {
-    try {
-      const response = await fetch('/api/clients');
-      if (response.ok) {
-        const data = await response.json();
-        setClients(data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch clients:", error);
-      toast({ variant: "destructive", title: "Error", description: "Failed to fetch clients." });
-    }
-  };
-
-  React.useEffect(() => {
-    fetchClients();
-  }, []);
+  const { data: clients = [], isLoading } = useGetClientsQuery();
 
   return (
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -104,7 +86,10 @@ export default function ClientsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clients.map((client) => (
+              {isLoading ? (
+                  <TableRow><TableCell colSpan={3} className="text-center">Loading...</TableCell></TableRow>
+              ) : (
+              clients.map((client: Client) => (
                 <TableRow key={client._id}>
                   <TableCell>
                     <div className="flex items-center gap-4">
@@ -123,7 +108,7 @@ export default function ClientsPage() {
                   </TableCell>
                   <TableCell className="text-right font-medium">${client.totalSpent.toFixed(2)}</TableCell>
                 </TableRow>
-              ))}
+              )))}
             </TableBody>
           </Table>
         </CardContent>

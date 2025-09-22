@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -47,41 +48,62 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { useGetFaqsQuery, useAddFaqMutation, useUpdateFaqMutation, useDeleteFaqMutation } from '@/services/api';
 
-const faqsData = [
-    {
-      id: 'faq001',
-      question: "How do I book an appointment?",
-      answer: "You can easily book an appointment through our website's booking page. Simply select your desired service, artist, date, and time, and we'll confirm your session via email.",
-      category: 'Booking'
-    },
-    {
-      id: 'faq002',
-      question: "Do you offer services for events and weddings?",
-      answer: "Absolutely! We specialize in providing artistic services for weddings, parties, corporate events, and other special occasions. Contact us to discuss your event needs.",
-      category: 'Services'
-    },
-    {
-      id: 'faq003',
-      question: "How long does a Mehndi/Henna design last?",
-      answer: "Our natural henna designs typically last for 1-3 weeks, depending on your skin type and aftercare. We provide detailed aftercare instructions to help you prolong the life of your design.",
-      category: 'Mehndi'
-    },
-     {
-      id: 'faq004',
-      question: "Can I request a custom design?",
-      answer: "Yes, we love creating custom designs! You can provide us with inspiration, or our artists can create a unique design for you based on your preferences.",
-      category: 'Customization'
-    },
-];
 
-type FAQ = typeof faqsData[0];
+type FAQ = {
+  _id: string;
+  question: string;
+  answer: string;
+  category: string;
+};
 
 export default function FaqPage() {
+    const { toast } = useToast();
+    const { data: faqsData = [], isLoading } = useGetFaqsQuery();
+    const [addFaq] = useAddFaqMutation();
+    const [updateFaq] = useUpdateFaqMutation();
+    const [deleteFaq] = useDeleteFaqMutation();
+    
     const [selectedFaq, setSelectedFaq] = React.useState<FAQ | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+    
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            if (isEditModalOpen) {
+                await updateFaq({ id: selectedFaq!._id, body: data }).unwrap();
+                toast({ title: "Success!", description: "FAQ has been updated." });
+            } else {
+                await addFaq(data).unwrap();
+                toast({ title: "Success!", description: "FAQ has been added." });
+            }
+            handleCloseModals();
+        } catch (error) {
+            console.error("Error saving FAQ:", error);
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
+        }
+    };
+    
+    const handleDelete = async () => {
+        if (!selectedFaq) return;
+        try {
+            await deleteFaq(selectedFaq._id).unwrap();
+            toast({ title: "Success!", description: "FAQ has been deleted." });
+            handleCloseModals();
+        } catch (error) {
+            console.error("Error deleting FAQ:", error);
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
+        }
+    };
 
     const handleEditClick = (faq: FAQ) => {
         setSelectedFaq(faq);
@@ -100,7 +122,7 @@ export default function FaqPage() {
         setSelectedFaq(null);
     }
     
-    const faqCategories = [...new Set(faqsData.map(faq => faq.category))];
+    const faqCategories = [...new Set(faqsData.map((faq: FAQ) => faq.category))];
 
   return (
     <>
@@ -173,8 +195,11 @@ export default function FaqPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {faqsData.map((faq) => (
-                  <TableRow key={faq.id}>
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={3} className="text-center">Loading...</TableCell></TableRow>
+                ) : (
+                faqsData.map((faq: FAQ) => (
+                  <TableRow key={faq._id}>
                     <TableCell className="font-medium">{faq.question}</TableCell>
                     <TableCell className="max-w-md truncate">{faq.answer}</TableCell>
                     <TableCell>
@@ -194,7 +219,7 @@ export default function FaqPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
+                )))}
               </TableBody>
             </Table>
           </CardContent>
@@ -215,32 +240,34 @@ export default function FaqPage() {
               {isEditModalOpen ? 'Make changes to this FAQ.' : 'Add a new FAQ to your website.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="question" className="text-right pt-2">
-                Question
-              </Label>
-              <Textarea id="question" defaultValue={selectedFaq?.question || ""} className="col-span-3" />
+          <form onSubmit={handleFormSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="question" className="text-right pt-2">
+                  Question
+                </Label>
+                <Textarea id="question" name="question" defaultValue={selectedFaq?.question || ""} className="col-span-3" />
+              </div>
+               <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="answer" className="text-right pt-2">
+                  Answer
+                </Label>
+                <Textarea id="answer" name="answer" defaultValue={selectedFaq?.answer || ""} className="col-span-3" rows={5} />
+              </div>
+               <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="category" className="text-right">
+                  Category
+                </Label>
+                <Input id="category" name="category" defaultValue={selectedFaq?.category || ""} className="col-span-3" placeholder="e.g., Booking, Services" />
+              </div>
             </div>
-             <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="answer" className="text-right pt-2">
-                Answer
-              </Label>
-              <Textarea id="answer" defaultValue={selectedFaq?.answer || ""} className="col-span-3" rows={5} />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="category" className="text-right">
-                Category
-              </Label>
-              <Input id="category" defaultValue={selectedFaq?.category || ""} className="col-span-3" placeholder="e.g., Booking, Services" />
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       
@@ -257,7 +284,7 @@ export default function FaqPage() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

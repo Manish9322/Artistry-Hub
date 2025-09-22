@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -56,41 +57,64 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { useGetWorkshopsQuery, useAddWorkshopMutation, useUpdateWorkshopMutation, useDeleteWorkshopMutation } from '@/services/api';
 
-const workshopsData = [
-  {
-    id: 'wkshp001',
-    title: "Beginner's Mehndi Workshop",
-    date: '2024-08-10',
-    location: 'Online',
-    status: 'Published',
-    description: "Learn the basics of henna application, from cone handling to simple floral and paisley motifs.",
-  },
-  {
-    id: 'wkshp002',
-    title: "Advanced Rangoli Techniques",
-    date: '2024-08-25',
-    location: 'Community Art Center',
-    status: 'Published',
-    description: "Explore complex patterns, color blending, and techniques for creating large-scale rangoli art for competitions.",
-  },
-  {
-    id: 'wkshp003',
-    title: "Nail Art Fundamentals",
-    date: '2024-09-05',
-    location: 'Studio B',
-    status: 'Draft',
-    description: "An introduction to nail art tools, techniques, and basic designs.",
-  },
-];
 
-type Workshop = typeof workshopsData[0];
+type Workshop = {
+  _id: string;
+  title: string;
+  date: string;
+  location: string;
+  status: 'Published' | 'Draft' | 'Archived';
+  description: string;
+};
 
 export default function WorkshopsPage() {
+    const { toast } = useToast();
+    const { data: workshopsData = [], isLoading } = useGetWorkshopsQuery();
+    const [addWorkshop] = useAddWorkshopMutation();
+    const [updateWorkshop] = useUpdateWorkshopMutation();
+    const [deleteWorkshop] = useDeleteWorkshopMutation();
+
     const [selectedWorkshop, setSelectedWorkshop] = React.useState<Workshop | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            if (isEditModalOpen) {
+                await updateWorkshop({ id: selectedWorkshop!._id, body: data }).unwrap();
+                toast({ title: "Success!", description: "Workshop has been updated." });
+            } else {
+                await addWorkshop(data).unwrap();
+                toast({ title: "Success!", description: "Workshop has been added." });
+            }
+            handleCloseModals();
+        } catch (error) {
+            console.error("Error saving workshop:", error);
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
+        }
+    };
+    
+    const handleDelete = async () => {
+        if (!selectedWorkshop) return;
+        try {
+            await deleteWorkshop(selectedWorkshop._id).unwrap();
+            toast({ title: "Success!", description: "Workshop has been deleted." });
+            handleCloseModals();
+        } catch (error) {
+            console.error("Error deleting workshop:", error);
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
+        }
+    };
 
     const handleEditClick = (workshop: Workshop) => {
         setSelectedWorkshop(workshop);
@@ -109,11 +133,11 @@ export default function WorkshopsPage() {
         setSelectedWorkshop(null);
     }
     
-    const stats = {
+    const stats = React.useMemo(() => ({
         total: workshopsData.length,
-        published: workshopsData.filter(w => w.status === 'Published').length,
-        upcoming: workshopsData.filter(w => new Date(w.date) >= new Date()).length
-    };
+        published: workshopsData.filter((w: Workshop) => w.status === 'Published').length,
+        upcoming: workshopsData.filter((w: Workshop) => new Date(w.date) >= new Date()).length
+    }), [workshopsData]);
 
   return (
     <>
@@ -200,10 +224,13 @@ export default function WorkshopsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {workshopsData.map((workshop) => (
-                  <TableRow key={workshop.id}>
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
+                ) : (
+                workshopsData.map((workshop: Workshop) => (
+                  <TableRow key={workshop._id}>
                     <TableCell className="font-medium">{workshop.title}</TableCell>
-                    <TableCell>{workshop.date}</TableCell>
+                    <TableCell>{new Date(workshop.date).toLocaleDateString()}</TableCell>
                     <TableCell>{workshop.location}</TableCell>
                     <TableCell>
                       <Badge variant={workshop.status === 'Published' ? 'default' : 'outline'}>{workshop.status}</Badge>
@@ -225,7 +252,7 @@ export default function WorkshopsPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
+                )))}
               </TableBody>
             </Table>
           </CardContent>
@@ -246,53 +273,55 @@ export default function WorkshopsPage() {
               {isEditModalOpen ? 'Make changes to your workshop here.' : 'Add a new workshop to your schedule.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
-              <Input id="title" defaultValue={selectedWorkshop?.title || ""} className="col-span-3" />
+          <form onSubmit={handleFormSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
+                </Label>
+                <Input id="title" name="title" defaultValue={selectedWorkshop?.title || ""} className="col-span-3" />
+              </div>
+               <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="description" className="text-right pt-2">
+                  Description
+                </Label>
+                <Textarea id="description" name="description" defaultValue={selectedWorkshop?.description || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="date" className="text-right">
+                  Date
+                </Label>
+                <Input id="date" name="date" type="date" defaultValue={selectedWorkshop ? new Date(selectedWorkshop.date).toISOString().split('T')[0] : ""} className="col-span-3" />
+              </div>
+               <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="location" className="text-right">
+                  Location
+                </Label>
+                <Input id="location" name="location" defaultValue={selectedWorkshop?.location || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                  Status
+                </Label>
+                <Select name="status" defaultValue={selectedWorkshop?.status || 'Draft'}>
+                  <SelectTrigger className="col-span-3">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Published">Published</SelectItem>
+                    <SelectItem value="Draft">Draft</SelectItem>
+                    <SelectItem value="Archived">Archived</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">
-                Description
-              </Label>
-              <Textarea id="description" defaultValue={selectedWorkshop?.description || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="date" className="text-right">
-                Date
-              </Label>
-              <Input id="date" type="date" defaultValue={selectedWorkshop?.date || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="location" className="text-right">
-                Location
-              </Label>
-              <Input id="location" defaultValue={selectedWorkshop?.location || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">
-                Status
-              </Label>
-              <Select defaultValue={selectedWorkshop?.status || 'Draft'}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Published">Published</SelectItem>
-                  <SelectItem value="Draft">Draft</SelectItem>
-                  <SelectItem value="Archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-                <Button variant="outline">Cancel</Button>
-            </DialogClose>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <DialogClose asChild>
+                  <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       
@@ -310,7 +339,7 @@ export default function WorkshopsPage() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

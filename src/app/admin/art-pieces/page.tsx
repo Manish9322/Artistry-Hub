@@ -54,7 +54,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from '@/lib/placeholder-images.json';
-
+import { useGetArtPiecesQuery, useAddArtPieceMutation, useUpdateArtPieceMutation, useDeleteArtPieceMutation } from '@/services/api';
 
 type ArtPiece = {
   _id: string;
@@ -81,101 +81,47 @@ const isValidUrl = (string: string): boolean => {
 
 export default function ArtPiecesPage() {
     const { toast } = useToast();
-    const [artPieces, setArtPieces] = React.useState<ArtPiece[]>([]);
+    const { data: artPieces = [], isLoading } = useGetArtPiecesQuery();
+    const [addArtPiece] = useAddArtPieceMutation();
+    const [updateArtPiece] = useUpdateArtPieceMutation();
+    const [deleteArtPiece] = useDeleteArtPieceMutation();
+    
     const [selectedArtPiece, setSelectedArtPiece] = React.useState<ArtPiece | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
-    
-    const fetchArtPieces = async () => {
-        try {
-            const response = await fetch('/api/art-pieces');
-            if (response.ok) {
-                const data = await response.json();
-                setArtPieces(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch art pieces:", error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Failed to fetch art pieces.",
-            });
-        }
-    };
-
-    React.useEffect(() => {
-        fetchArtPieces();
-    }, []);
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         
-        const method = isEditModalOpen ? 'PUT' : 'POST';
-        const url = isEditModalOpen ? `/api/art-pieces/${selectedArtPiece?._id}` : '/api/art-pieces';
-
         try {
-            const response = await fetch(url, {
-                method: method,
-                body: formData,
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchArtPieces();
-                toast({
-                    title: "Success!",
-                    description: `Art piece has been ${isEditModalOpen ? 'updated' : 'added'}.`,
-                });
+            if (isEditModalOpen) {
+                await updateArtPiece({ id: selectedArtPiece!._id, body: formData }).unwrap();
+                toast({ title: "Success!", description: "Art piece has been updated." });
             } else {
-                const errorData = await response.json();
-                console.error("Failed to save art piece:", errorData.message);
-                 toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: `Failed to save art piece. ${errorData.message}`,
-                });
+                await addArtPiece(formData).unwrap();
+                toast({ title: "Success!", description: "Art piece has been added." });
             }
+            handleCloseModals();
         } catch (error) {
-            console.error("Error saving art piece:", error);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "An unexpected error occurred while saving.",
-            });
+            console.error("Failed to save art piece:", error);
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
     
     const handleDelete = async () => {
         if (!selectedArtPiece) return;
         try {
-            const response = await fetch(`/api/art-pieces/${selectedArtPiece._id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchArtPieces();
-                toast({
-                    title: "Success!",
-                    description: "Art piece has been deleted.",
-                });
-            } else {
-                 const errorData = await response.json();
-                console.error("Failed to delete art piece", errorData.message);
-                toast({
-                    variant: "destructive",
-                    title: "Error",
-                    description: `Failed to delete art piece. ${errorData.message}`,
-                });
-            }
+            await deleteArtPiece(selectedArtPiece._id).unwrap();
+            toast({ title: "Success!", description: "Art piece has been deleted." });
+            handleCloseModals();
         } catch (error) {
             console.error("Error deleting art piece:", error);
-             toast({
-                variant: "destructive",
-                title: "Error",
-                description: "An unexpected error occurred while deleting.",
-            });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
@@ -202,7 +148,6 @@ export default function ArtPiecesPage() {
         setSelectedArtPiece(null);
     };
     
-    // Robust helper to get a safe image URL
     const getSafeImage = (images: string[] | undefined) => {
         const safeImages = images || [];
         if (safeImages.length > 0 && isValidUrl(safeImages[0])) {
@@ -290,7 +235,10 @@ export default function ArtPiecesPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {artPieces.map((artPiece) => (
+                    {isLoading ? (
+                        <TableRow><TableCell colSpan={6} className="text-center">Loading...</TableCell></TableRow>
+                    ) : (
+                    artPieces.map((artPiece: ArtPiece) => (
                       <TableRow key={artPiece._id}>
                         <TableCell className="hidden sm:table-cell">
                           <Image
@@ -330,7 +278,7 @@ export default function ArtPiecesPage() {
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    )))}
                   </TableBody>
                 </Table>
               </CardContent>

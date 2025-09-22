@@ -56,6 +56,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Separator } from '@/components/ui/separator';
+import { useGetCategoriesQuery, useAddCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation } from '@/services/api';
 
 type Category = {
   _id: string;
@@ -88,73 +89,47 @@ const isValidUrl = (string: string | undefined): boolean => {
 
 export default function CategoriesPage() {
     const { toast } = useToast();
-    const [categories, setCategories] = React.useState<Category[]>([]);
+    const { data: categories = [], isLoading } = useGetCategoriesQuery();
+    const [addCategory] = useAddCategoryMutation();
+    const [updateCategory] = useUpdateCategoryMutation();
+    const [deleteCategory] = useDeleteCategoryMutation();
+
     const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
     
-    const fetchCategories = async () => {
-        try {
-            const response = await fetch('/api/categories');
-            if (response.ok) {
-                const data = await response.json();
-                setCategories(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch categories:", error);
-            toast({ variant: "destructive", title: "Error", description: "Failed to fetch categories." });
-        }
-    };
-
-    React.useEffect(() => {
-        fetchCategories();
-    }, []);
-
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formElement = event.currentTarget;
         const formData = new FormData(formElement);
 
-        const method = isEditModalOpen ? 'PUT' : 'POST';
-        const url = isEditModalOpen ? `/api/categories/${selectedCategory?._id}` : '/api/categories';
-        
         try {
-            const response = await fetch(url, {
-                method: method,
-                body: formData,
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchCategories();
-                toast({ title: "Success!", description: `Category has been ${isEditModalOpen ? 'updated' : 'added'}.` });
+            if (isEditModalOpen) {
+                await updateCategory({ id: selectedCategory!._id, body: formData }).unwrap();
+                toast({ title: "Success!", description: "Category has been updated." });
             } else {
-                const errorData = await response.json();
-                toast({ variant: "destructive", title: "Error", description: `Failed to save category. ${errorData.message}` });
+                await addCategory(formData).unwrap();
+                toast({ title: "Success!", description: "Category has been added." });
             }
+            handleCloseModals();
         } catch (error) {
             console.error("Error saving category:", error);
-            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
     const handleDelete = async () => {
         if (!selectedCategory) return;
         try {
-            const response = await fetch(`/api/categories/${selectedCategory._id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchCategories();
-                toast({ title: "Success!", description: "Category has been deleted." });
-            } else {
-                const errorData = await response.json();
-                toast({ variant: "destructive", title: "Error", description: `Failed to delete category. ${errorData.message}` });
-            }
+            await deleteCategory(selectedCategory._id).unwrap();
+            toast({ title: "Success!", description: "Category has been deleted." });
+            handleCloseModals();
         } catch (error) {
             console.error("Error deleting category:", error);
-            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
@@ -491,7 +466,7 @@ export default function CategoriesPage() {
                     <LinkIcon className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                    <div className="text-2xl font-bold">{categories.filter(c => c.href).length}</div>
+                    <div className="text-2xl font-bold">{categories.filter((c:Category) => c.href).length}</div>
                     <p className="text-xs text-muted-foreground">
                         Categories with dedicated pages
                     </p>
@@ -523,7 +498,10 @@ export default function CategoriesPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {categories.map((category) => (
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
+                ) : (
+                categories.map((category: Category) => (
                     <TableRow key={category._id}>
                       <TableCell className="hidden sm:table-cell">
                         <Image
@@ -555,7 +533,7 @@ export default function CategoriesPage() {
                         </DropdownMenu>
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )))}
               </TableBody>
             </Table>
           </CardContent>

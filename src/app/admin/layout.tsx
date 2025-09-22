@@ -47,6 +47,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
+import StoreProvider from './StoreProvider';
 
 function AdminHeader() {
   const { toggleSidebar } = useSidebar();
@@ -96,19 +97,21 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   if (pathname === '/admin/login') {
-    return <>{children}</>;
+    return <StoreProvider>{children}</StoreProvider>;
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <div className="flex flex-col flex-1">
-          <AdminHeader />
-          <SidebarInset>{children}</SidebarInset>
+    <StoreProvider>
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AdminSidebar />
+          <div className="flex flex-col flex-1">
+            <AdminHeader />
+            <SidebarInset>{children}</SidebarInset>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </StoreProvider>
   );
 }
 

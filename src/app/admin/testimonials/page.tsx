@@ -58,6 +58,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { useGetTestimonialsQuery, useAddTestimonialMutation, useUpdateTestimonialMutation, useDeleteTestimonialMutation } from '@/services/api';
 
 type Testimonial = {
   _id: string;
@@ -70,74 +71,47 @@ type Testimonial = {
 
 export default function TestimonialsPage() {
     const { toast } = useToast();
-    const [testimonials, setTestimonials] = React.useState<Testimonial[]>([]);
+    const { data: testimonials = [], isLoading } = useGetTestimonialsQuery();
+    const [addTestimonial] = useAddTestimonialMutation();
+    const [updateTestimonial] = useUpdateTestimonialMutation();
+    const [deleteTestimonial] = useDeleteTestimonialMutation();
+
     const [selectedTestimonial, setSelectedTestimonial] = React.useState<Testimonial | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
-
-    const fetchTestimonials = async () => {
-        try {
-            const response = await fetch('/api/testimonials');
-            if (response.ok) {
-                const data = await response.json();
-                setTestimonials(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch testimonials:", error);
-            toast({ variant: "destructive", title: "Error", description: "Failed to fetch testimonials." });
-        }
-    };
-
-    React.useEffect(() => {
-        fetchTestimonials();
-    }, []);
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const data = Object.fromEntries(formData.entries());
 
-        const method = isEditModalOpen ? 'PUT' : 'POST';
-        const url = isEditModalOpen ? `/api/testimonials/${selectedTestimonial?._id}` : '/api/testimonials';
-        
         try {
-            const response = await fetch(url, {
-                method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchTestimonials();
-                toast({ title: "Success!", description: `Testimonial has been ${isEditModalOpen ? 'updated' : 'added'}.` });
+            if (isEditModalOpen) {
+                await updateTestimonial({ id: selectedTestimonial!._id, body: data }).unwrap();
+                toast({ title: "Success!", description: "Testimonial has been updated." });
             } else {
-                const errorData = await response.json();
-                toast({ variant: "destructive", title: "Error", description: `Failed to save testimonial. ${errorData.message}` });
+                await addTestimonial(data).unwrap();
+                toast({ title: "Success!", description: "Testimonial has been added." });
             }
+            handleCloseModals();
         } catch (error) {
             console.error("Error saving testimonial:", error);
-            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
     const handleDelete = async () => {
         if (!selectedTestimonial) return;
         try {
-            const response = await fetch(`/api/testimonials/${selectedTestimonial._id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchTestimonials();
-                toast({ title: "Success!", description: "Testimonial has been deleted." });
-            } else {
-                const errorData = await response.json();
-                toast({ variant: "destructive", title: "Error", description: `Failed to delete testimonial. ${errorData.message}` });
-            }
+            await deleteTestimonial(selectedTestimonial._id).unwrap();
+            toast({ title: "Success!", description: "Testimonial has been deleted." });
+            handleCloseModals();
         } catch (error) {
             console.error("Error deleting testimonial:", error);
-            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
@@ -158,9 +132,9 @@ export default function TestimonialsPage() {
         setSelectedTestimonial(null);
     }
     
-    const averageRating = testimonials.length > 0 
-        ? (testimonials.reduce((acc, t) => acc + t.rating, 0) / testimonials.length).toFixed(1)
-        : '0.0';
+    const averageRating = React.useMemo(() => testimonials.length > 0 
+        ? (testimonials.reduce((acc: number, t: Testimonial) => acc + t.rating, 0) / testimonials.length).toFixed(1)
+        : '0.0', [testimonials]);
 
   return (
     <>
@@ -233,7 +207,10 @@ export default function TestimonialsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {testimonials.map((testimonial) => (
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={4} className="text-center">Loading...</TableCell></TableRow>
+                ) : (
+                testimonials.map((testimonial: Testimonial) => (
                   <TableRow key={testimonial._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -267,7 +244,7 @@ export default function TestimonialsPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                ))}
+                )))}
               </TableBody>
             </Table>
           </CardContent>

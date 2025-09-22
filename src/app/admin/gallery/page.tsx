@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -61,6 +62,7 @@ import {
 } from '@/components/ui/select';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useToast } from '@/hooks/use-toast';
+import { useGetGalleryImagesQuery, useAddGalleryImageMutation, useUpdateGalleryImageMutation, useDeleteGalleryImageMutation } from '@/services/api';
 
 type GalleryImage = {
   _id: string;
@@ -85,72 +87,46 @@ const isValidUrl = (string: string | undefined): boolean => {
 
 export default function GalleryPage() {
     const { toast } = useToast();
-    const [galleryImages, setGalleryImages] = React.useState<GalleryImage[]>([]);
+    const { data: galleryImages = [], isLoading } = useGetGalleryImagesQuery();
+    const [addGalleryImage] = useAddGalleryImageMutation();
+    const [updateGalleryImage] = useUpdateGalleryImageMutation();
+    const [deleteGalleryImage] = useDeleteGalleryImageMutation();
+
     const [selectedImage, setSelectedImage] = React.useState<GalleryImage | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
 
-    const fetchGalleryImages = async () => {
-        try {
-            const response = await fetch('/api/gallery');
-            if (response.ok) {
-                const data = await response.json();
-                setGalleryImages(data);
-            }
-        } catch (error) {
-            console.error("Failed to fetch gallery images:", error);
-            toast({ variant: "destructive", title: "Error", description: "Failed to fetch gallery images." });
-        }
-    };
-
-    React.useEffect(() => {
-        fetchGalleryImages();
-    }, []);
-
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         
-        const method = isEditModalOpen ? 'PUT' : 'POST';
-        const url = isEditModalOpen ? `/api/gallery/${selectedImage?._id}` : '/api/gallery';
-
         try {
-            const response = await fetch(url, {
-                method: method,
-                body: formData,
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchGalleryImages();
-                toast({ title: "Success!", description: `Gallery item has been ${isEditModalOpen ? 'updated' : 'added'}.` });
+            if (isEditModalOpen) {
+                await updateGalleryImage({ id: selectedImage!._id, body: formData }).unwrap();
+                toast({ title: "Success!", description: "Gallery item has been updated." });
             } else {
-                const errorData = await response.json();
-                toast({ variant: "destructive", title: "Error", description: `Failed to save item. ${errorData.message}` });
+                await addGalleryImage(formData).unwrap();
+                toast({ title: "Success!", description: "Gallery item has been added." });
             }
+            handleCloseModals();
         } catch (error) {
             console.error("Error saving gallery item:", error);
-            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
     const handleDelete = async () => {
         if (!selectedImage) return;
         try {
-            const response = await fetch(`/api/gallery/${selectedImage._id}`, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                handleCloseModals();
-                fetchGalleryImages();
-                toast({ title: "Success!", description: "Gallery item has been deleted." });
-            } else {
-                const errorData = await response.json();
-                toast({ variant: "destructive", title: "Error", description: `Failed to delete item. ${errorData.message}` });
-            }
+            await deleteGalleryImage(selectedImage._id).unwrap();
+            toast({ title: "Success!", description: "Gallery item has been deleted." });
+            handleCloseModals();
         } catch (error) {
             console.error("Error deleting gallery item:", error);
-            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+            const errorMsg = (error as any)?.data?.message || 'An unexpected error occurred.';
+            toast({ variant: "destructive", title: "Error", description: errorMsg });
         }
     };
 
@@ -171,12 +147,12 @@ export default function GalleryPage() {
         setSelectedImage(null);
     }
 
-    const stats = {
+    const stats = React.useMemo(() => ({
         total: galleryImages.length,
-        published: galleryImages.filter(img => img.status === 'Published').length,
-        drafts: galleryImages.filter(img => img.status === 'Draft').length,
-        archived: galleryImages.filter(img => img.status === 'Archived').length,
-    }
+        published: galleryImages.filter((img: GalleryImage) => img.status === 'Published').length,
+        drafts: galleryImages.filter((img: GalleryImage) => img.status === 'Draft').length,
+        archived: galleryImages.filter((img: GalleryImage) => img.status === 'Archived').length,
+    }), [galleryImages]);
 
   return (
     <>
@@ -291,7 +267,10 @@ export default function GalleryPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {galleryImages.map((image) => {
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
+                ) : (
+                galleryImages.map((image: GalleryImage) => {
                   const imageSrc = isValidUrl(image.image) ? image.image : placeholderImages.defaultSquare;
                   return (
                   <TableRow key={image._id}>
@@ -330,7 +309,7 @@ export default function GalleryPage() {
                     </TableCell>
                   </TableRow>
                   );
-                })}
+                }))}
               </TableBody>
             </Table>
           </CardContent>
@@ -428,5 +407,3 @@ export default function GalleryPage() {
     </>
   );
 }
-
-    
