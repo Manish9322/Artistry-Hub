@@ -24,16 +24,17 @@ async function parseFormData(formData) {
         
         if (arrayMatch) {
             const [, arrayName, index, fieldName] = arrayMatch;
+            const numIndex = Number(index);
             if (!data[arrayName]) data[arrayName] = [];
-            if (!data[arrayName][Number(index)]) data[arrayName][Number(index)] = {};
+            if (!data[arrayName][numIndex]) data[arrayName][numIndex] = {};
 
             if (value instanceof File && value.size > 0) {
                  if (!fileFields[arrayName]) fileFields[arrayName] = {};
-                 if (!fileFields[arrayName][index]) fileFields[arrayName][index] = {};
-                 if (!fileFields[arrayName][index][fieldName]) fileFields[arrayName][index][fieldName] = [];
-                 fileFields[arrayName][index][fieldName].push(value);
+                 if (!fileFields[arrayName][numIndex]) fileFields[arrayName][numIndex] = {};
+                 if (!fileFields[arrayName][numIndex][fieldName]) fileFields[arrayName][numIndex][fieldName] = [];
+                 fileFields[arrayName][numIndex][fieldName].push(value);
             } else {
-                 data[arrayName][Number(index)][fieldName] = value;
+                 data[arrayName][numIndex][fieldName] = value;
             }
         } else if (value instanceof File && value.size > 0) {
             fileFields[key] = value;
@@ -93,14 +94,15 @@ export async function POST(request) {
             for (const index in fileFields[arrayName]) {
                  if (fileFields[arrayName][index][fieldName]) {
                     const files = fileFields[arrayName][index][fieldName];
+                    const numIndex = Number(index);
                     const promise = Promise.all(files.map(file => saveImage(file)))
                         .then(urls => {
-                            if (!data[arrayName][index]) data[arrayName][index] = {};
+                            if (!data[arrayName][numIndex]) data[arrayName][numIndex] = {};
                             
                             if (arrayName === 'artPieces' && fieldName === 'images') {
-                                data[arrayName][index][fieldName] = urls;
+                                data[arrayName][numIndex][fieldName] = urls;
                             } else {
-                                data[arrayName][index][fieldName] = urls[0];
+                                data[arrayName][numIndex][fieldName] = urls[0];
                             }
                         });
                     uploadPromises.push(promise);
