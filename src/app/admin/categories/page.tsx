@@ -113,37 +113,8 @@ export default function CategoriesPage() {
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-
-        const data: any = {
-            artPieces: [],
-            processSteps: [],
-            commitment: [],
-            bespokeCreations: [],
-            testimonials: [],
-            blogPosts: [],
-            careTips: [],
-            faqs: []
-        };
-
-        for (const [key, value] of formData.entries()) {
-            const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
-            if (match) {
-                const [, arrayName, index, fieldName] = match;
-                if (!data[arrayName]) data[arrayName] = [];
-                if (!data[arrayName][Number(index)]) data[arrayName][Number(index)] = {};
-                data[arrayName][Number(index)][fieldName] = value;
-            } else {
-                data[key] = value;
-            }
-        }
-        
-        // Convert string arrays back to arrays
-        if (data.tags) data.tags = data.tags.split(',').map((t: string) => t.trim());
-        data.artPieces.forEach((p: any) => {
-            if (p.images) p.images = p.images.split(',').map((t: string) => t.trim());
-            if (p.tags) p.tags = p.tags.split(',').map((t: string) => t.trim());
-        });
+        const formElement = event.currentTarget;
+        const formData = new FormData(formElement);
 
         const method = isEditModalOpen ? 'PUT' : 'POST';
         const url = isEditModalOpen ? `/api/categories/${selectedCategory?._id}` : '/api/categories';
@@ -151,8 +122,7 @@ export default function CategoriesPage() {
         try {
             const response = await fetch(url, {
                 method: method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: formData,
             });
             if (response.ok) {
                 handleCloseModals();
@@ -214,6 +184,18 @@ export default function CategoriesPage() {
             }
         );
 
+        React.useEffect(() => {
+            if (isEdit) {
+                setFormData({ ...selectedCategory });
+            } else {
+                 setFormData({
+                    name: '', description: '', href: '', image: '', hint: '', tags: [],
+                    artPieces: [], processSteps: [], commitment: [], bespokeCreations: [], testimonials: [], blogPosts: [], careTips: [], faqs: []
+                });
+            }
+        }, [selectedCategory, isEdit]);
+
+
         const handleFieldChange = <T extends keyof Category>(field: T, index: number, subField: keyof any, value: any) => {
             setFormData(prev => {
                 const newArray = [...(prev[field] as any[] || [])];
@@ -271,8 +253,8 @@ export default function CategoriesPage() {
                                         <Input id="href" name="href" placeholder="/page-name" defaultValue={formData.href || ""} className="col-span-3" />
                                     </div>
                                      <div className="grid grid-cols-4 items-center gap-4">
-                                        <Label htmlFor="image" className="text-right">Image URL</Label>
-                                        <Input id="image" name="image" placeholder="https://example.com/image.png" defaultValue={formData.image || ""} className="col-span-3" />
+                                        <Label htmlFor="image" className="text-right">Image</Label>
+                                        <Input id="image" name="image" type="file" className="col-span-3" />
                                     </div>
                                      <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="hint" className="text-right">AI Hint</Label>
@@ -303,7 +285,7 @@ export default function CategoriesPage() {
                                                 <Input name={`artPieces[${index}][title]`} placeholder="Title" defaultValue={piece.title} />
                                                 <Input name={`artPieces[${index}][price]`} type="number" placeholder="Price" defaultValue={piece.price} />
                                              </div>
-                                             <Input name={`artPieces[${index}][images]`} placeholder="Image URLs (comma-separated)" defaultValue={piece.images?.join(', ')} />
+                                             <Input name={`artPieces[${index}][images]`} type="file" multiple placeholder="Image URLs (comma-separated)" />
                                              <Input name={`artPieces[${index}][tags]`} placeholder="Tags (comma-separated)" defaultValue={piece.tags?.join(', ')} />
                                              <div className="grid grid-cols-2 gap-4">
                                                 <Input name={`artPieces[${index}][hint]`} placeholder="AI Hint" defaultValue={piece.hint} />
@@ -365,7 +347,7 @@ export default function CategoriesPage() {
                                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('bespokeCreations', index)}>
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
-                                            <Input name={`bespokeCreations[${index}][image]`} placeholder="Image URL" defaultValue={item.image} />
+                                            <Input name={`bespokeCreations[${index}][image]`} type="file" />
                                             <Input name={`bespokeCreations[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
                                         </div>
                                     ))}
@@ -385,7 +367,7 @@ export default function CategoriesPage() {
                                             <Input name={`testimonials[${index}][name]`} placeholder="Client Name" defaultValue={item.name} />
                                             <Textarea name={`testimonials[${index}][comment]`} placeholder="Comment" defaultValue={item.comment} />
                                             <div className="grid grid-cols-2 gap-4">
-                                                <Input name={`testimonials[${index}][image]`} placeholder="Avatar URL" defaultValue={item.image} />
+                                                <Input name={`testimonials[${index}][image]`} type="file" />
                                                 <Input name={`testimonials[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
                                             </div>
                                         </div>
@@ -444,7 +426,7 @@ export default function CategoriesPage() {
                                              <Input name={`blogPosts[${index}][title]`} placeholder="Post Title" defaultValue={item.title} />
                                              <Textarea name={`blogPosts[${index}][description]`} placeholder="Post Description" defaultValue={item.description} />
                                               <div className="grid grid-cols-2 gap-4">
-                                                <Input name={`blogPosts[${index}][image]`} placeholder="Image URL" defaultValue={item.image} />
+                                                <Input name={`blogPosts[${index}][image]`} type="file" />
                                                 <Input name={`blogPosts[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
                                             </div>
                                         </div>
@@ -468,7 +450,7 @@ export default function CategoriesPage() {
 
   return (
     <>
-      <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+      <main className="flex flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
         <div className="flex items-center pt-4 sm:pt-6">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><Shapes className="h-6 w-6"/>Category Management</h1>
