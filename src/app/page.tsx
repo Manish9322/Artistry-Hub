@@ -24,6 +24,17 @@ type Category = {
   href: string;
 };
 
+const isValidUrl = (string: string | undefined): boolean => {
+    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    try {
+        if (string.startsWith('/')) return true; // Relative paths
+        new URL(string); // Absolute URLs
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
 
 export default function Home() {
   const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint: string} | null>(null);
@@ -414,7 +425,7 @@ export default function Home() {
                 <Link href={category.href} key={category._id}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                      <Image
-                        src={category.image || placeholderImages.default}
+                        src={isValidUrl(category.image) ? category.image! : placeholderImages.default}
                         alt={category.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
