@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -52,7 +51,6 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import Image from 'next/image';
 import {
   Select,
@@ -62,57 +60,99 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import placeholderImages from '@/lib/placeholder-images.json';
+import { useToast } from '@/hooks/use-toast';
 
-const galleryImagesData = [
-  {
-    id: 'img001',
-    title: 'Bridal Mehndi Elegance',
-    gallery: 'Exhibition Highlights',
-    status: 'Published',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'bridal mehndi',
-  },
-  {
-    id: 'img002',
-    title: 'Visitor Enjoying Art',
-    gallery: 'From Our Visitors',
-    status: 'Published',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'visitor smiling',
-  },
-  {
-    id: 'img003',
-    title: 'Geometric Rangoli',
-    gallery: 'Exhibition Highlights',
-    status: 'Draft',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'geometric rangoli',
-  },
-  {
-    id: 'img004',
-    title: 'Live Art Demonstration',
-    gallery: 'From Our Visitors',
-    status: 'Published',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'artist working',
-  },
-  {
-    id: 'img005',
-    title: 'Midnight Glitter Nails',
-    gallery: 'Exhibition Highlights',
-    status: 'Archived',
-    image: 'https://placehold.co/100x100.png',
-    hint: 'glitter nails',
-  },
-];
+type GalleryImage = {
+  _id: string;
+  title: string;
+  gallery: string;
+  status: 'Published' | 'Draft' | 'Archived';
+  image: string;
+  hint?: string;
+};
 
-type GalleryImage = typeof galleryImagesData[0];
+const isValidUrl = (string: string | undefined): boolean => {
+    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    try {
+        if (string.startsWith('/')) return true; // Relative paths
+        new URL(string); // Absolute URLs
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
 
 export default function GalleryPage() {
+    const { toast } = useToast();
+    const [galleryImages, setGalleryImages] = React.useState<GalleryImage[]>([]);
     const [selectedImage, setSelectedImage] = React.useState<GalleryImage | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+
+    const fetchGalleryImages = async () => {
+        try {
+            const response = await fetch('/api/gallery');
+            if (response.ok) {
+                const data = await response.json();
+                setGalleryImages(data);
+            }
+        } catch (error) {
+            console.error("Failed to fetch gallery images:", error);
+            toast({ variant: "destructive", title: "Error", description: "Failed to fetch gallery images." });
+        }
+    };
+
+    React.useEffect(() => {
+        fetchGalleryImages();
+    }, []);
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        
+        const method = isEditModalOpen ? 'PUT' : 'POST';
+        const url = isEditModalOpen ? `/api/gallery/${selectedImage?._id}` : '/api/gallery';
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                body: formData,
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchGalleryImages();
+                toast({ title: "Success!", description: `Gallery item has been ${isEditModalOpen ? 'updated' : 'added'}.` });
+            } else {
+                const errorData = await response.json();
+                toast({ variant: "destructive", title: "Error", description: `Failed to save item. ${errorData.message}` });
+            }
+        } catch (error) {
+            console.error("Error saving gallery item:", error);
+            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!selectedImage) return;
+        try {
+            const response = await fetch(`/api/gallery/${selectedImage._id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                handleCloseModals();
+                fetchGalleryImages();
+                toast({ title: "Success!", description: "Gallery item has been deleted." });
+            } else {
+                const errorData = await response.json();
+                toast({ variant: "destructive", title: "Error", description: `Failed to delete item. ${errorData.message}` });
+            }
+        } catch (error) {
+            console.error("Error deleting gallery item:", error);
+            toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
+        }
+    };
 
     const handleEditClick = (image: GalleryImage) => {
         setSelectedImage(image);
@@ -123,18 +163,25 @@ export default function GalleryPage() {
         setSelectedImage(image);
         setIsDeleteModalOpen(true);
     };
+    
+    const handleCloseModals = () => {
+        setIsAddModalOpen(false);
+        setIsEditModalOpen(false);
+        setIsDeleteModalOpen(false);
+        setSelectedImage(null);
+    }
 
     const stats = {
-        total: galleryImagesData.length,
-        published: galleryImagesData.filter(img => img.status === 'Published').length,
-        drafts: galleryImagesData.filter(img => img.status === 'Draft').length,
-        archived: galleryImagesData.filter(img => img.status === 'Archived').length,
+        total: galleryImages.length,
+        published: galleryImages.filter(img => img.status === 'Published').length,
+        drafts: galleryImages.filter(img => img.status === 'Draft').length,
+        archived: galleryImages.filter(img => img.status === 'Archived').length,
     }
 
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-4">
+        <div className="flex items-center pt-4 sm:pt-6">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><ImageIcon className="h-6 w-6"/>Gallery Management</h1>
              <p className="text-muted-foreground mt-1">Manage images and videos for your website's galleries.</p>
@@ -156,7 +203,7 @@ export default function GalleryPage() {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setIsAddModalOpen(true)}>
+                    <DropdownMenuItem onClick={() => { setSelectedImage(null); setIsAddModalOpen(true); }}>
                         <ImageIcon className="mr-2 h-4 w-4" />
                         <span>Add Image</span>
                     </DropdownMenuItem>
@@ -244,10 +291,10 @@ export default function GalleryPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {galleryImagesData.map((image) => {
-                  const imageSrc = image.image && image.image.trim() !== '' ? image.image : placeholderImages.defaultSquare;
+                {galleryImages.map((image) => {
+                  const imageSrc = isValidUrl(image.image) ? image.image : placeholderImages.defaultSquare;
                   return (
-                  <TableRow key={image.id}>
+                  <TableRow key={image._id}>
                     <TableCell className="hidden sm:table-cell">
                       <Image
                         alt={image.title}
@@ -289,69 +336,74 @@ export default function GalleryPage() {
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-{galleryImagesData.length}</strong> of <strong>{galleryImagesData.length}</strong> images
+              Showing <strong>1-{galleryImages.length}</strong> of <strong>{galleryImages.length}</strong> images
             </div>
           </CardFooter>
         </Card>
       </main>
 
       {/* Add/Edit Modal */}
-      <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={isAddModalOpen ? () => { setIsAddModalOpen(false); setSelectedImage(null); } : () => { setIsEditModalOpen(false); setSelectedImage(null); }}>
-        <DialogContent className="sm:max-w-[425px]">
+      <Dialog open={isAddModalOpen || isEditModalOpen} onOpenChange={handleCloseModals}>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{isEditModalOpen ? 'Edit' : 'Add'} Image</DialogTitle>
             <DialogDescription>
               {isEditModalOpen ? 'Make changes to your image here.' : 'Add a new image to a gallery.'} Click save when you're done.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="title" className="text-right">
-                Title
-              </Label>
-              <Input id="title" defaultValue={selectedImage?.title || ""} className="col-span-3" />
-            </div>
-             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="gallery-select" className="text-right">
-                Gallery
-              </Label>
-               <Select defaultValue={selectedImage?.gallery}>
-                <SelectTrigger className="col-span-3" id="gallery-select">
-                  <SelectValue placeholder="Select a gallery" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Exhibition Highlights">Exhibition Highlights</SelectItem>
-                  <SelectItem value="From Our Visitors">From Our Visitors</SelectItem>
-                  <SelectItem value="Featured Gallery">Featured Gallery (Home)</SelectItem>
-                  <SelectItem value="Client Showcase">Client Showcase (About)</SelectItem>
-                  <SelectItem value="Studio">Studio (About)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="hint" className="text-right">
-                AI Hint
-              </Label>
-              <Input id="hint" placeholder="e.g. 'bridal mehndi'" defaultValue={selectedImage?.hint || ""} className="col-span-3" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="image-upload" className="text-right">
-                    Image
+          <form onSubmit={handleFormSubmit}>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="title" className="text-right">
+                  Title
                 </Label>
-                <Input id="image-upload" type="file" className="col-span-3" />
+                <Input id="title" name="title" defaultValue={selectedImage?.title || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="gallery-select" className="text-right">
+                  Gallery
+                </Label>
+                <Select name="gallery" defaultValue={selectedImage?.gallery}>
+                  <SelectTrigger className="col-span-3" id="gallery-select">
+                    <SelectValue placeholder="Select a gallery" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Exhibition Highlights">Exhibition Highlights</SelectItem>
+                    <SelectItem value="From Our Visitors">From Our Visitors</SelectItem>
+                    <SelectItem value="Featured Gallery">Featured Gallery (Home)</SelectItem>
+                    <SelectItem value="Client Showcase">Client Showcase (About)</SelectItem>
+                    <SelectItem value="Studio">Studio (About)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="hint" className="text-right">
+                  AI Hint
+                </Label>
+                <Input id="hint" name="hint" placeholder="e.g. 'bridal mehndi'" defaultValue={selectedImage?.hint || ""} className="col-span-3" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="image-upload" className="text-right">
+                      Image
+                  </Label>
+                  <Input id="image-upload" name="image" type="file" className="col-span-3" />
+              </div>
+              {selectedImage?.image && (
+                   <div className="grid grid-cols-4 items-center gap-4">
+                      <Label className="text-right">Current</Label>
+                      <div className="col-span-3">
+                          <Image src={isValidUrl(selectedImage.image) ? selectedImage.image : placeholderImages.defaultSquare} alt="Current image" width={80} height={80} className="rounded-md" />
+                      </div>
+                  </div>
+              )}
             </div>
-            {selectedImage?.image && (
-                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label className="text-right">Current</Label>
-                    <div className="col-span-3">
-                        <Image src={selectedImage.image} alt="Current image" width={80} height={80} className="rounded-md" />
-                    </div>
-                </div>
-            )}
-          </div>
-          <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline" type="button">Cancel</Button>
+              </DialogClose>
+              <Button type="submit">Save changes</Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
       
@@ -369,10 +421,12 @@ export default function GalleryPage() {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" onClick={handleDelete}>Delete</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
   );
 }
+
+    
