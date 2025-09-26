@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -801,7 +801,7 @@ export default function BookingPage() {
 
         <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container max-w-4xl">
-              <div className="text-center mb-16">
+              <div className="text-center mb-12">
                   <h2 className="text-3xl font-bold font-headline text-primary">Book an Appointment</h2>
                    {step < 3 && (
                       <p className="mt-4 text-lg text-muted-foreground">
@@ -809,205 +809,205 @@ export default function BookingPage() {
                       </p>
                   )}
               </div>
-              {step < 3 && <Progress value={progressValue} className="mb-12 h-2" />}
               
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                  {step === 1 && (
-                    <div className="space-y-8 animate-in fade-in-0 duration-500">
-                      <FormField
-                        control={form.control}
-                        name="serviceType"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Service Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select a service" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="mehndi">Mehndi</SelectItem>
-                                <SelectItem value="rangoli">Rangoli</SelectItem>
-                                <SelectItem value="nail-art">Nail Art</SelectItem>
-                                <SelectItem value="jewelry">Custom Jewelry Consultation</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                          <FormField
-                          control={form.control}
-                          name="bookingDate"
-                          render={({ field }) => (
-                              <FormItem className="flex flex-col">
-                              <FormLabel>Date</FormLabel>
-                              <Popover>
-                                  <PopoverTrigger asChild>
-                                  <FormControl>
-                                      <Button
-                                      variant={"outline"}
-                                      className={cn(
-                                          "w-full pl-3 text-left font-normal",
-                                          !field.value && "text-muted-foreground"
-                                      )}
-                                      >
-                                      {field.value ? (
-                                          format(field.value, "PPP")
-                                      ) : (
-                                          <span>Pick a date</span>
-                                      )}
-                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                      </Button>
-                                  </FormControl>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-auto p-0" align="start">
-                                  <Calendar
-                                      mode="single"
-                                      selected={field.value}
-                                      onSelect={field.onChange}
-                                      disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
-                                      initialFocus
-                                  />
-                                  </PopoverContent>
-                              </Popover>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                          />
-                          <FormField
-                          control={form.control}
-                          name="bookingTime"
-                          render={({ field }) => (
-                              <FormItem>
-                              <FormLabel>Time Slot</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                  <SelectTrigger>
-                                      <SelectValue placeholder="Select a time" />
-                                  </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                  {timeSlots.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}
-                                  </SelectContent>
-                              </Select>
-                              <FormMessage />
-                              </FormItem>
-                          )}
-                          />
-                      </div>
-                    </div>
-                  )}
-                  
-                  {step === 2 && (
-                     <div className="space-y-8 animate-in fade-in-0 duration-500">
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                              <FormField
-                                  control={form.control}
-                                  name="name"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Full Name</FormLabel>
-                                      <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                              <FormField
-                                  control={form.control}
-                                  name="email"
-                                  render={({ field }) => (
-                                  <FormItem>
-                                      <FormLabel>Email</FormLabel>
-                                      <FormControl><Input type="email" placeholder="Your Email" {...field} /></FormControl>
-                                      <FormMessage />
-                                  </FormItem>
-                                  )}
-                              />
-                         </div>
-                         <FormField
-                          control={form.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Phone <span className="text-muted-foreground">(Optional)</span></FormLabel>
-                              <FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+              <div className="bg-background p-8 md:p-12 rounded-xl shadow-lg">
+                {step < 3 && <Progress value={progressValue} className="mb-12 h-2" />}
+                
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                    {step === 1 && (
+                      <div className="space-y-8 animate-in fade-in-0 duration-500">
                         <FormField
                           control={form.control}
-                          name="notes"
+                          name="serviceType"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Special Requests <span className="text-muted-foreground">(Optional)</span></FormLabel>
-                              <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} /></FormControl>
+                              <FormLabel className="text-lg">Service Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="h-12 text-base">
+                                    <SelectValue placeholder="Select a service" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="mehndi">Mehndi</SelectItem>
+                                  <SelectItem value="rangoli">Rangoli</SelectItem>
+                                  <SelectItem value="nail-art">Nail Art</SelectItem>
+                                  <SelectItem value="jewelry">Custom Jewelry Consultation</SelectItem>
+                                </SelectContent>
+                              </Select>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-                     </div>
-                  )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            <FormField
+                            control={form.control}
+                            name="bookingDate"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col">
+                                <FormLabel className="text-lg">Date</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                    <FormControl>
+                                        <Button
+                                        variant={"outline"}
+                                        className={cn(
+                                            "h-12 w-full pl-3 text-left font-normal text-base",
+                                            !field.value && "text-muted-foreground"
+                                        )}
+                                        >
+                                        {field.value ? (
+                                            format(field.value, "PPP")
+                                        ) : (
+                                            <span>Pick a date</span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
+                                        initialFocus
+                                    />
+                                    </PopoverContent>
+                                </Popover>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                            <FormField
+                            control={form.control}
+                            name="bookingTime"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-lg">Time Slot</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger className="h-12 text-base">
+                                        <SelectValue placeholder="Select a time" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    {timeSlots.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        </div>
+                      </div>
+                    )}
+                    
+                    {step === 2 && (
+                       <div className="space-y-8 animate-in fade-in-0 duration-500">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-lg">Full Name</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                                <Input placeholder="Your Name" {...field} className="pl-10 h-12 text-base" />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className="text-lg">Email</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                                <Input type="email" placeholder="Your Email" {...field} className="pl-10 h-12 text-base" />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                    )}
+                                />
+                           </div>
+                           <FormField
+                            control={form.control}
+                            name="phone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-lg">Phone <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                        <Input type="tel" placeholder="Your Phone Number" {...field} className="pl-10 h-12 text-base" />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="notes"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-lg">Special Requests <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base" /></FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                       </div>
+                    )}
 
-                  {step === 3 && (
-                    <div className="text-center animate-in fade-in-0 duration-500 py-8">
-                        <div className="flex justify-center">
-                          <div className="relative w-40 h-40 mx-auto mb-8">
-                              <svg className="w-full h-full" viewBox="0 0 100 100">
-                                  <circle className="text-green-200" strokeWidth="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
-                                  <circle
-                                  className="text-green-500"
-                                  strokeWidth="8"
-                                  strokeDasharray="264"
-                                  strokeDashoffset="0"
-                                  strokeLinecap="round"
-                                  stroke="currentColor"
-                                  fill="transparent"
-                                  r="42"
-                                  cx="50"
-                                  cy="50"
-                                  style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%", animation: "progress-fill 1s ease-out forwards" }}
-                                  />
-                              </svg>
-                              <div className="absolute inset-0 flex items-center justify-center text-green-600">
-                                  <Check className="w-16 h-16" />
+                    {step === 3 && (
+                      <div className="text-center animate-in fade-in-0 duration-500 py-8">
+                          <div className="flex justify-center mb-8">
+                              <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-200">
+                                  <Check className="w-12 h-12 text-green-600" />
                               </div>
                           </div>
-                        </div>
-                        <h2 className="text-3xl font-bold font-headline">Booking Submitted!</h2>
-                        <p className="text-lg text-muted-foreground mt-2 max-w-md mx-auto">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
-                        <div className="mt-8 flex justify-center gap-4">
-                          <Button asChild><Link href="/">Back to Home</Link></Button>
-                          <Button asChild variant="outline"><Link href="/#categories">Explore More Art</Link></Button>
-                        </div>
-                    </div>
-                  )}
-                  
-                  {step < 3 && (
-                      <div className="flex justify-between items-center pt-8 border-t">
-                          {step > 1 ? (
-                              <Button type="button" variant="outline" onClick={handlePreviousStep}>
-                              Back
-                              </Button>
-                          ) : <div />}
-                          
-                          {step === 1 && (
-                              <Button type="button" onClick={handleNextStep}>
-                              Next Step <ArrowRight className="ml-2 h-4 w-4" />
-                              </Button>
-                          )}
-                          
-                          {step === 2 && (
-                              <Button type="submit">Submit Booking</Button>
-                          )}
+                          <h2 className="text-3xl font-bold font-headline">Booking Submitted!</h2>
+                          <p className="text-lg text-muted-foreground mt-4 max-w-lg mx-auto">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
+                          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                            <Button asChild size="lg"><Link href="/">Back to Home</Link></Button>
+                            <Button asChild variant="outline" size="lg"><Link href="/#categories">Explore More Art</Link></Button>
+                          </div>
                       </div>
-                  )}
-                </form>
-              </Form>
+                    )}
+                    
+                    {step < 3 && (
+                        <div className="flex justify-between items-center pt-8 mt-12 border-t">
+                            {step > 1 ? (
+                                <Button type="button" variant="outline" size="lg" onClick={handlePreviousStep}>
+                                Back
+                                </Button>
+                            ) : <div />}
+                            
+                            {step === 1 && (
+                                <Button type="button" size="lg" onClick={handleNextStep}>
+                                Next Step <ArrowRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            )}
+                            
+                            {step === 2 && (
+                                <Button type="submit" size="lg">Submit Booking</Button>
+                            )}
+                        </div>
+                    )}
+                  </form>
+                </Form>
+              </div>
           </div>
         </section>
       </main>
@@ -1020,4 +1020,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
