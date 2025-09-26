@@ -801,20 +801,25 @@ export default function BookingPage() {
 
         <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container max-w-4xl">
-              <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold font-headline text-primary">Book an Appointment</h2>
-                   {step < 3 && (
-                      <p className="mt-4 text-lg text-muted-foreground">
-                          Step {step} of 2: {stepTitles[step-1]}
-                      </p>
-                  )}
+              <div className="text-center mb-16">
+                <h2 className="text-3xl font-bold font-headline text-primary">Book an Appointment</h2>
+                 {step < 3 && (
+                    <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                        Step {step} of 2: {stepTitles[step-1]}
+                    </p>
+                )}
               </div>
               
-              <div className="bg-background p-8 md:p-12 rounded-xl shadow-lg">
-                {step < 3 && <Progress value={progressValue} className="mb-12 h-2" />}
-                
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    {step < 3 && (
+                    <div className="space-y-12">
+                         <div className="space-y-4">
+                            <Progress value={progressValue} className="h-2" />
+                        </div>
+                    </div>
+                    )}
+
                     {step === 1 && (
                       <div className="space-y-8 animate-in fade-in-0 duration-500">
                         <FormField
@@ -822,10 +827,10 @@ export default function BookingPage() {
                           name="serviceType"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-lg">Service Type</FormLabel>
+                              <FormLabel className="text-lg font-semibold">Service Type</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                  <SelectTrigger className="h-12 text-base">
+                                  <SelectTrigger className="h-14 text-base bg-background">
                                     <SelectValue placeholder="Select a service" />
                                   </SelectTrigger>
                                 </FormControl>
@@ -846,14 +851,14 @@ export default function BookingPage() {
                             name="bookingDate"
                             render={({ field }) => (
                                 <FormItem className="flex flex-col">
-                                <FormLabel className="text-lg">Date</FormLabel>
+                                <FormLabel className="text-lg font-semibold">Date</FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button
                                         variant={"outline"}
                                         className={cn(
-                                            "h-12 w-full pl-3 text-left font-normal text-base",
+                                            "h-14 w-full pl-3 text-left font-normal text-base bg-background",
                                             !field.value && "text-muted-foreground"
                                         )}
                                         >
@@ -885,10 +890,10 @@ export default function BookingPage() {
                             name="bookingTime"
                             render={({ field }) => (
                                 <FormItem>
-                                <FormLabel className="text-lg">Time Slot</FormLabel>
+                                <FormLabel className="text-lg font-semibold">Time Slot</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                    <SelectTrigger className="h-12 text-base">
+                                    <SelectTrigger className="h-14 text-base bg-background">
                                         <SelectValue placeholder="Select a time" />
                                     </SelectTrigger>
                                     </FormControl>
@@ -912,11 +917,11 @@ export default function BookingPage() {
                                     name="name"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-lg">Full Name</FormLabel>
+                                        <FormLabel className="text-lg font-semibold">Full Name</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                                <Input placeholder="Your Name" {...field} className="pl-10 h-12 text-base" />
+                                                <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                                <Input placeholder="Your Name" {...field} className="pl-12 h-14 text-base bg-background" />
                                             </div>
                                         </FormControl>
                                         <FormMessage />
@@ -928,11 +933,11 @@ export default function BookingPage() {
                                     name="email"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className="text-lg">Email</FormLabel>
+                                        <FormLabel className="text-lg font-semibold">Email</FormLabel>
                                         <FormControl>
                                             <div className="relative">
-                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                                <Input type="email" placeholder="Your Email" {...field} className="pl-10 h-12 text-base" />
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                                <Input type="email" placeholder="Your Email" {...field} className="pl-12 h-14 text-base bg-background" />
                                             </div>
                                         </FormControl>
                                         <FormMessage />
@@ -945,11 +950,11 @@ export default function BookingPage() {
                             name="phone"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-lg">Phone <span className="text-muted-foreground">(Optional)</span></FormLabel>
+                                <FormLabel className="text-lg font-semibold">Phone <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
                                 <FormControl>
                                     <div className="relative">
-                                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                        <Input type="tel" placeholder="Your Phone Number" {...field} className="pl-10 h-12 text-base" />
+                                        <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                        <Input type="tel" placeholder="Your Phone Number" {...field} className="pl-12 h-14 text-base bg-background" />
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -961,8 +966,8 @@ export default function BookingPage() {
                             name="notes"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-lg">Special Requests <span className="text-muted-foreground">(Optional)</span></FormLabel>
-                                <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base" /></FormControl>
+                                <FormLabel className="text-lg font-semibold">Special Requests <span className="text-muted-foreground font-normal">(Optional)</span></FormLabel>
+                                <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base bg-background p-4" /></FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
@@ -972,14 +977,29 @@ export default function BookingPage() {
 
                     {step === 3 && (
                       <div className="text-center animate-in fade-in-0 duration-500 py-8">
-                          <div className="flex justify-center mb-8">
-                              <div className="w-24 h-24 rounded-full bg-green-100 flex items-center justify-center border-4 border-green-200">
-                                  <Check className="w-12 h-12 text-green-600" />
+                          <div className="relative w-40 h-40 mx-auto mb-8">
+                              <svg className="w-full h-full" viewBox="0 0 100 100">
+                                  <circle className="text-border" strokeWidth="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                                  <circle
+                                  className="text-green-500"
+                                  strokeWidth="8"
+                                  strokeDasharray="264 264"
+                                  strokeLinecap="round"
+                                  stroke="currentColor"
+                                  fill="transparent"
+                                  r="42"
+                                  cx="50"
+                                  cy="50"
+                                  style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%", transition: "stroke-dasharray 1s ease-out" }}
+                                  />
+                              </svg>
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Check className="h-16 w-16 text-green-500" />
                               </div>
                           </div>
-                          <h2 className="text-3xl font-bold font-headline">Booking Submitted!</h2>
-                          <p className="text-lg text-muted-foreground mt-4 max-w-lg mx-auto">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
-                          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+                          <h3 className="text-3xl font-bold font-headline">Booking Submitted!</h3>
+                          <p className="text-lg text-muted-foreground mt-4">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
+                          <div className="mt-8 flex justify-center gap-4">
                             <Button asChild size="lg"><Link href="/">Back to Home</Link></Button>
                             <Button asChild variant="outline" size="lg"><Link href="/#categories">Explore More Art</Link></Button>
                           </div>
@@ -987,27 +1007,25 @@ export default function BookingPage() {
                     )}
                     
                     {step < 3 && (
-                        <div className="flex justify-between items-center pt-8 mt-12 border-t">
-                            {step > 1 ? (
-                                <Button type="button" variant="outline" size="lg" onClick={handlePreviousStep}>
-                                Back
-                                </Button>
-                            ) : <div />}
-                            
+                        <div className="mt-12 text-center">
                             {step === 1 && (
                                 <Button type="button" size="lg" onClick={handleNextStep}>
-                                Next Step <ArrowRight className="ml-2 h-4 w-4" />
+                                Next Step <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             )}
                             
                             {step === 2 && (
+                                <div className="flex justify-center gap-4">
+                                <Button type="button" variant="outline" size="lg" onClick={handlePreviousStep}>
+                                Back
+                                </Button>
                                 <Button type="submit" size="lg">Submit Booking</Button>
+                                </div>
                             )}
                         </div>
                     )}
                   </form>
                 </Form>
-              </div>
           </div>
         </section>
       </main>
@@ -1020,3 +1038,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
