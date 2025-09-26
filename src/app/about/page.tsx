@@ -44,9 +44,9 @@ export default function AboutPage() {
           const response = await fetch('/api/gallery');
           if (response.ok) {
             const allImages: GalleryImage[] = await response.json();
-            setStudioImages(allImages.filter(img => img.gallery === "Studio (About)"));
+            setStudioImages(allImages.filter(img => img.gallery === "Studio"));
             
-            const clientImages = allImages.filter(img => img.gallery === "Client Showcase (About)");
+            const clientImages = allImages.filter(img => img.gallery === "Client Showcase");
             // Assign classNames for styling as in the original static component
             const showcaseWithStyles = clientImages.map((img, index) => {
               const classNames = ['w-80', 'w-[30rem]', 'w-72'];
@@ -449,5 +449,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-    

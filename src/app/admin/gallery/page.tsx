@@ -349,9 +349,9 @@ export default function GalleryPage() {
                   <SelectContent>
                     <SelectItem value="Exhibition Highlights">Exhibition Highlights</SelectItem>
                     <SelectItem value="From Our Visitors">From Our Visitors</SelectItem>
-                    <SelectItem value="Featured Gallery">Featured Gallery (Home)</SelectItem>
-                    <SelectItem value="Client Showcase">Client Showcase (About)</SelectItem>
-                    <SelectItem value="Studio">Studio (About)</SelectItem>
+                    <SelectItem value="Featured Gallery (Home)">Featured Gallery (Home)</SelectItem>
+                    <SelectItem value="Client Showcase">Client Showcase</SelectItem>
+                    <SelectItem value="Studio">Studio</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
