@@ -61,27 +61,6 @@ export default function AboutPage() {
       fetchGalleryImages();
     }, []);
 
-  const teamMembers = [
-    {
-      name: "Jane Doe",
-      role: "Lead Mehndi Artist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
-    {
-      name: "John Smith",
-      role: "Rangoli Specialist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
-    {
-      name: "Emily White",
-      role: "Nail Art & Jewelry Designer",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
-  ];
-
   const coreValues = [
     {
       icon: Sparkles,
