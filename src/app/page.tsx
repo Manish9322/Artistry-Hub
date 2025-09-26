@@ -24,12 +24,12 @@ type Category = {
   href: string;
 };
 
-type GalleryImage = {
-  _id: string;
-  title: string;
-  gallery: string;
-  image: string;
-  hint?: string;
+type ArtPiece = {
+    _id: string;
+    name: string;
+    category: string;
+    images: string[];
+    hint: string;
 };
 
 const isValidUrl = (string: string | undefined): boolean => {
@@ -45,27 +45,26 @@ const isValidUrl = (string: string | undefined): boolean => {
 
 
 export default function Home() {
-  const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint?: string} | null>(null);
   const [dynamicHeadline, setDynamicHeadline] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [artPieces, setArtPieces] = useState<ArtPiece[]>([]);
 
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const [catResponse, galResponse] = await Promise.all([
+        const [catResponse, artResponse] = await Promise.all([
           fetch('/api/categories'),
-          fetch('/api/gallery')
+          fetch('/api/art-pieces')
         ]);
         
         if (catResponse.ok) {
           const catData = await catResponse.json();
           setCategories(catData);
         }
-        if(galResponse.ok) {
-            const galData = await galResponse.json();
-            setGalleryImages(galData.filter((item: GalleryImage) => item.gallery === "Featured Gallery (Home)"));
+        if(artResponse.ok) {
+            const artData = await artResponse.json();
+            setArtPieces(artData);
         }
       } catch (error) {
         console.error("Failed to fetch data:", error);
@@ -204,7 +203,7 @@ export default function Home() {
   }, [dynamicHeadlines.length]);
 
   
-  const duplicatedGalleryImages = galleryImages.length > 0 ? [...galleryImages, ...galleryImages, ...galleryImages, ...galleryImages] : [];
+  const duplicatedArtPieces = artPieces.length > 0 ? [...artPieces, ...artPieces] : [];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
   const duplicatedNews = [...marqueeNews, ...marqueeNews];
 
@@ -283,76 +282,68 @@ export default function Home() {
               <h2 className="text-4xl font-bold font-headline">Featured Gallery</h2>
               <p className="text-lg text-muted-foreground mt-2">A glimpse into our finest work.</p>
             </div>
-            <Dialog>
-               <div className="relative w-full overflow-hidden group">
-                  <div className="flex animate-marquee-right group-hover:pause">
-                    {duplicatedGalleryImages.map((art, index) => (
-                      <div key={`fwd-${art._id}-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
-                          <DialogTrigger asChild>
-                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt({src: art.image, alt: art.title, hint: art.hint})}>
-                              <CardContent className="p-0 relative">
+             <div className="relative w-full overflow-hidden group">
+                <div className="flex animate-marquee-right group-hover:pause">
+                  {duplicatedArtPieces.map((art, index) => {
+                    const category = categories.find(c => c.name === art.category);
+                    const href = category ? category.href : '/';
+                    return (
+                    <div key={`fwd-${art._id}-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                        <Link href={href}>
+                            <Card className="overflow-hidden group/card cursor-pointer">
+                            <CardContent className="p-0 relative">
                                 <Image
-                                  src={isValidUrl(art.image) ? art.image : placeholderImages.default}
-                                  alt={art.title}
-                                  width={600}
-                                  height={400}
-                                  className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
-                                  data-ai-hint={art.hint}
+                                src={isValidUrl(art.images[0]) ? art.images[0] : placeholderImages.default}
+                                alt={art.name}
+                                width={600}
+                                height={400}
+                                className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                                data-ai-hint={art.hint}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-                                  <h3 className="text-white font-bold text-lg">{art.title}</h3>
-                                  <p className="text-white/80 text-sm">Click to preview</p>
+                                <h3 className="text-white font-bold text-lg">{art.name}</h3>
+                                <p className="text-white/80 text-sm">View in {art.category}</p>
                                 </div>
-                              </CardContent>
+                            </CardContent>
                             </Card>
-                          </DialogTrigger>
-                        </div>
-                    ))}
-                  </div>
-                  <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
-              </div>
-               <div className="relative w-full overflow-hidden group">
-                  <div className="flex animate-marquee group-hover:pause">
-                    {duplicatedGalleryImages.map((art, index) => (
-                      <div key={`rev-${art._id}-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
-                          <DialogTrigger asChild>
-                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt({src: art.image, alt: art.title, hint: art.hint})}>
-                              <CardContent className="p-0 relative">
+                        </Link>
+                    </div>
+                  )})}
+                </div>
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
+            </div>
+             <div className="relative w-full overflow-hidden group">
+                <div className="flex animate-marquee group-hover:pause">
+                  {duplicatedArtPieces.map((art, index) => {
+                     const category = categories.find(c => c.name === art.category);
+                     const href = category ? category.href : '/';
+                     return (
+                    <div key={`rev-${art._id}-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                        <Link href={href}>
+                            <Card className="overflow-hidden group/card cursor-pointer">
+                            <CardContent className="p-0 relative">
                                 <Image
-                                  src={isValidUrl(art.image) ? art.image : placeholderImages.default}
-                                  alt={art.title}
-                                  width={600}
-                                  height={400}
-                                  className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
-                                  data-ai-hint={art.hint}
+                                src={isValidUrl(art.images[0]) ? art.images[0] : placeholderImages.default}
+                                alt={art.name}
+                                width={600}
+                                height={400}
+                                className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+                                data-ai-hint={art.hint}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-                                  <h3 className="text-white font-bold text-lg">{art.title}</h3>
-                                  <p className="text-white/80 text-sm">Click to preview</p>
+                                <h3 className="text-white font-bold text-lg">{art.name}</h3>
+                                <p className="text-white/80 text-sm">View in {art.category}</p>
                                 </div>
-                              </CardContent>
+                            </CardContent>
                             </Card>
-                          </DialogTrigger>
-                        </div>
-                    ))}
-                  </div>
-                  <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
-                  <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
-              </div>
-              {selectedArt && (
-                 <DialogContent className="max-w-3xl p-0">
-                    <Image
-                        src={isValidUrl(selectedArt.src) ? selectedArt.src : placeholderImages.default}
-                        alt={selectedArt.alt}
-                        width={1200}
-                        height={800}
-                        className="w-full h-auto rounded-lg object-contain"
-                        data-ai-hint={selectedArt.hint}
-                    />
-                 </DialogContent>
-              )}
-            </Dialog>
+                        </Link>
+                    </div>
+                  )})}
+                </div>
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-background to-transparent"></div>
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-gradient-to-l from-background to-transparent"></div>
+            </div>
           </div>
         </section>
 
@@ -369,7 +360,7 @@ export default function Home() {
                 <Link href={category.href} key={category._id}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                      <Image
-                        src={isValidUrl(category.image) ? category.image! : placeholderImages.default}
+                        src={isValidUrl(category.image) ? category.image : placeholderImages.default}
                         alt={category.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
