@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck, Mail } from "lucide-react";
+import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck, Mail, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
@@ -392,20 +392,16 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section id="newsletter" className="py-16 sm:py-24 bg-primary/10">
+        <section id="cta-gallery" className="py-16 sm:py-24 bg-primary/10">
           <div className="container text-center">
             <div className="max-w-2xl mx-auto">
-                <h2 className="text-3xl font-bold font-headline text-primary">Stay Inspired</h2>
+                <h2 className="text-3xl font-bold font-headline text-primary">Ready to Find Your Masterpiece?</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Subscribe to our newsletter for the latest art trends, workshop announcements, and exclusive offers delivered straight to your inbox.
+                    Explore our diverse collections of handcrafted art. From intricate Mehndi to sparkling custom jewelry, your next favorite piece is waiting to be discovered.
                 </p>
-                <form className="mt-8 flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                    <div className="relative flex-grow">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input type="email" placeholder="Enter your email" className="pl-10 w-full" />
-                    </div>
-                    <Button type="submit">Subscribe</Button>
-                </form>
+                <Button size="lg" className="mt-8" asChild>
+                    <Link href="/#categories">Explore The Gallery <ArrowRight className="ml-2 h-5 w-5"/></Link>
+                </Button>
             </div>
           </div>
         </section>
