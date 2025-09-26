@@ -204,7 +204,7 @@ export default function Home() {
   }, [dynamicHeadlines.length]);
 
   
-  const duplicatedGalleryImages = galleryImages.length > 0 ? [...galleryImages, ...galleryImages] : [];
+  const duplicatedGalleryImages = galleryImages.length > 0 ? [...galleryImages, ...galleryImages, ...galleryImages, ...galleryImages] : [];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
   const duplicatedNews = [...marqueeNews, ...marqueeNews];
 
