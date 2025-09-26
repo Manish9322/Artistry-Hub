@@ -411,34 +411,6 @@ export default function AboutPage() {
             </div>
           </div>
         </section>
-
-        <section className="py-16 sm:py-24 bg-primary/10">
-          <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
-                <div key={member.name} className="text-center group">
-                  <div className="relative inline-block">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      width={400}
-                      height={400}
-                      className="rounded-full w-40 h-40 mx-auto mb-4 shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
-                      data-ai-hint={member.hint}
-                    />
-                     <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </div>
-                  <h3 className="text-xl font-semibold font-headline">{member.name}</h3>
-                  <p className="text-primary">{member.role}</p>
-                </div>
-              ))}
-            </div>
-             <div className="text-center mt-12">
-                <Button variant="outline" asChild><Link href="/contact#team">Join Our Team</Link></Button>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="bg-primary text-primary-foreground mt-auto">
