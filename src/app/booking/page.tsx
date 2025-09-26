@@ -43,6 +43,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import placeholderImages from '@/lib/placeholder-images.json';
 
 type ArtPiece = {
     _id: string;
@@ -54,6 +55,16 @@ type ArtPiece = {
     images: string[];
     hint: string;
     editorsPick?: boolean;
+};
+
+type GalleryImage = {
+  _id: string;
+  title: string;
+  gallery: string;
+  status: 'Published' | 'Draft' | 'Archived';
+  image: string;
+  hint?: string;
+  className?: string; // For client showcase specifically
 };
 
 const bookingSchema = z.object({
@@ -68,10 +79,24 @@ const bookingSchema = z.object({
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
+const isValidUrl = (string: string | undefined): boolean => {
+    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    try {
+        if (string.startsWith('/')) return true; // Relative paths
+        new URL(string); // Absolute URLs
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
 export default function BookingPage() {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
+  const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
+  const [visitorImages, setVisitorImages] = useState<GalleryImage[]>([]);
+
 
   useEffect(() => {
     async function fetchEditorsPick() {
@@ -86,7 +111,29 @@ export default function BookingPage() {
         console.error("Failed to fetch art pieces:", error);
       }
     }
+
+    async function fetchGalleryImages() {
+        try {
+          const response = await fetch('/api/gallery');
+          if (response.ok) {
+            const allImages: GalleryImage[] = await response.json();
+            setExhibitionImages(allImages.filter(img => img.gallery === "Exhibition Highlights"));
+
+            const clientImages = allImages.filter(img => img.gallery === "From Our Visitors");
+             // Assign classNames for styling as in the original static component
+            const visitorImagesWithStyles = clientImages.map((img, index) => {
+              const classNames = ['w-80', 'w-[30rem]', 'w-72'];
+              return { ...img, className: classNames[index % classNames.length] };
+            });
+            setVisitorImages(visitorImagesWithStyles);
+          }
+        } catch (error) {
+          console.error("Failed to fetch gallery images:", error);
+        }
+    }
+
     fetchEditorsPick();
+    fetchGalleryImages();
   }, []);
 
   const form = useForm<BookingFormValues>({
@@ -104,16 +151,6 @@ export default function BookingPage() {
     "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", "05:00 PM"
   ];
   
-  const exhibitionHighlights = [
-    { src: 'https://placehold.co/400x500.png', hint: 'bridal mehndi', title: 'Bridal Elegance' },
-    { src: 'https://placehold.co/400x500.png', hint: 'geometric rangoli', title: 'Geometric Harmony' },
-    { src: 'https://placehold.co/400x500.png', hint: 'glitter nails', title: 'Midnight Glitter' },
-    { src: 'https://placehold.co/400x500.png', hint: 'custom necklace', title: 'Statement Necklace' },
-    { src: 'https://placehold.co/400x500.png', hint: 'peacock henna', title: 'Peacock Motif' },
-    { src: 'https://placehold.co/400x500.png', hint: 'floating rangoli', title: 'Floating Blooms' },
-    { src: 'https://placehold.co/400x500.png', hint: 'chrome nails', title: 'Chrome Finish' },
-  ];
-
     const ticketTiers = [
     {
       title: "General Admission",
@@ -204,15 +241,6 @@ export default function BookingPage() {
       icon: Mic,
     },
   ];
-  
-  const photoGallery = [
-      { image: 'https://placehold.co/400x600.png', hint: 'visitor enjoying art', className: 'w-80' },
-      { image: 'https://placehold.co/600x400.png', hint: 'group photo exhibition', className: 'w-[30rem]'},
-      { image: 'https://placehold.co/400x500.png', hint: 'live art demonstration', className: 'w-72' },
-      { image: 'https://placehold.co/400x600.png', hint: 'child interacting with art', className: 'w-80' },
-      { image: 'https://placehold.co/600x400.png', hint: 'artist talk session', className: 'w-[30rem]' },
-      { image: 'https://placehold.co/400x500.png', hint: 'close-up artwork', className: 'w-72' },
-    ];
 
     const quizQuestions = [
     {
@@ -375,11 +403,11 @@ export default function BookingPage() {
               <div className="relative">
                 <ScrollArea className="w-full whitespace-nowrap">
                   <div className="flex w-max space-x-6 p-4">
-                    {exhibitionHighlights.map((item, index) => (
-                      <div key={index} className="shrink-0 w-[280px] group">
+                    {exhibitionImages.length > 0 ? exhibitionImages.map((item) => (
+                      <div key={item._id} className="shrink-0 w-[280px] group">
                         <div className="overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
                           <Image
-                            src={item.src}
+                            src={isValidUrl(item.image) ? item.image : placeholderImages.default}
                             alt={item.title}
                             width={400}
                             height={500}
@@ -389,7 +417,7 @@ export default function BookingPage() {
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-center">{item.title}</h3>
                       </div>
-                    ))}
+                    )) : <p className="text-center w-full text-muted-foreground">No exhibition images to display yet.</p>}
                   </div>
                   <ScrollBar orientation="horizontal" className="hidden" />
                 </ScrollArea>
@@ -411,18 +439,18 @@ export default function BookingPage() {
           <div className="relative">
             <ScrollArea className="w-full whitespace-nowrap">
               <div className="flex w-max space-x-8 p-4">
-                {photoGallery.map((item, index) => (
-                  <figure key={index} className={`shrink-0 rounded-xl overflow-hidden shadow-xl group ${item.className}`}>
+                 {visitorImages.length > 0 ? visitorImages.map((item) => (
+                  <figure key={item._id} className={`shrink-0 rounded-xl overflow-hidden shadow-xl group ${item.className}`}>
                     <Image
-                      src={item.image}
-                      alt="Visitor photo"
+                      src={isValidUrl(item.image) ? item.image : placeholderImages.default}
+                      alt={item.title}
                       width={600}
                       height={600}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       data-ai-hint={item.hint}
                     />
                   </figure>
-                ))}
+                )) : <p className="text-center w-full text-muted-foreground">No visitor images to display yet.</p>}
               </div>
               <ScrollBar orientation="horizontal" className="hidden" />
             </ScrollArea>
