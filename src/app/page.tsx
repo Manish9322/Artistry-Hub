@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Image from "next/image";
@@ -7,7 +8,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap, Leaf } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap, Leaf, PartyPopper } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -26,7 +27,7 @@ type Category = {
 
 type ArtPiece = {
     _id: string;
-    name: string;
+    name:string;
     category: string;
     images: string[];
     hint: string;
@@ -102,23 +103,6 @@ export default function Home() {
       rating: 5,
       comment: "The rangoli for our event was stunning. It was the centerpiece of our decorations and everyone loved it. Thank you!",
     },
-  ];
-
-  const workshops = [
-    {
-      title: "Beginner's Mehndi Workshop",
-      date: "August 10, 2024",
-      location: "Online",
-      description: "Learn the basics of henna application, from cone handling to simple floral and paisley motifs.",
-      icon: PenTool,
-    },
-    {
-      title: "Advanced Rangoli Techniques",
-      date: "August 25, 2024",
-      location: "Community Art Center",
-      description: "Explore complex patterns, color blending, and techniques for creating large-scale rangoli art for competitions.",
-      icon: Palette,
-    }
   ];
 
   const whyChooseUsItems = [
@@ -360,7 +344,7 @@ export default function Home() {
                 <Link href={category.href} key={category._id}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                      <Image
-                        src={isValidUrl(category.image) ? category.image : placeholderImages.default}
+                        src={isValidUrl(category.image) ? category.image! : placeholderImages.default}
                         alt={category.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
@@ -537,39 +521,31 @@ export default function Home() {
           </div>
         </section>
         
-        <section id="workshops" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="art-in-action" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold font-headline">Upcoming Workshops</h2>
-              <p className="mt-2 max-w-2xl mx-auto text-muted-foreground">
-                Join our workshops to learn new skills, meet fellow art lovers, and unleash your creativity.
+              <h2 className="text-3xl font-bold font-headline text-primary">Art in Action</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                See how our artistry transforms moments into cherished memories.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-              {workshops.map((workshop) => (
-                <Card key={workshop.title} className="shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                   <CardHeader className="flex-row gap-4 items-center">
-                      <div className="flex-shrink-0">
-                        <div className="flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary">
-                          <workshop.icon className="w-8 h-8" />
-                        </div>
-                      </div>
-                      <div className="flex-1">
-                        <CardTitle className="font-headline text-xl">{workshop.title}</CardTitle>
-                        <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                           <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />{workshop.date}</span>
-                           <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" />{workshop.location}</span>
-                        </CardDescription>
-                      </div>
-                   </CardHeader>
-                  <CardContent className="flex-grow">
-                    <p className="text-muted-foreground">{workshop.description}</p>
-                  </CardContent>
-                  <div className="p-6 pt-0">
-                    <Button variant="outline" className="w-full">Learn More & Register</Button>
-                  </div>
-                </Card>
-              ))}
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              <Card className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <Image src="https://placehold.co/600x400.png" alt="Weddings & Celebrations" width={600} height={400} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-ai-hint="bridal mehndi" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
+                  <h3 className="text-3xl font-bold font-headline text-white">Weddings & Celebrations</h3>
+                  <p className="text-white/90 mt-2 mb-4">Add a touch of elegance and tradition to your special day with our exquisite bridal mehndi and decorative art.</p>
+                  <Button variant="secondary" asChild><Link href="/booking">Book a Consultation</Link></Button>
+                </div>
+              </Card>
+              <Card className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                <Image src="https://placehold.co/600x400.png" alt="Festivals & Events" width={600} height={400} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-ai-hint="diwali rangoli" />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
+                  <h3 className="text-3xl font-bold font-headline text-white">Festivals & Events</h3>
+                  <p className="text-white/90 mt-2 mb-4">Light up your festivals with vibrant rangoli, festive nail art, and custom pieces that celebrate the occasion.</p>
+                  <Button variant="secondary" asChild><Link href="/booking">Plan Your Event</Link></Button>
+                </div>
+              </Card>
             </div>
           </div>
         </section>
