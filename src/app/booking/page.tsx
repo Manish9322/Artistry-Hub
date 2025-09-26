@@ -301,7 +301,19 @@ export default function BookingPage() {
     setScore(0);
     setQuizFinished(false);
   };
+  
+    const getResultDetails = (finalScore: number) => {
+    const percentage = (finalScore / quizQuestions.length) * 100;
+    if (percentage < 50) {
+      return { title: "Art Novice", message: "A great start! Keep exploring to sharpen your art knowledge." };
+    }
+    if (percentage < 100) {
+      return { title: "Art Enthusiast", message: "You have a great eye for art! Well done." };
+    }
+    return { title: "Art Connoisseur!", message: "Perfect score! Your knowledge is as impressive as a masterpiece." };
+  };
 
+  const resultDetails = getResultDetails(score);
 
   async function handleNextStep() {
     const fieldsToValidate: (keyof BookingFormValues)[] =
@@ -459,7 +471,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="quiz" className="py-16 sm:py-24 bg-secondary/30">
+         <section id="quiz" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container max-w-3xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Art Lover's Quiz</h2>
@@ -470,10 +482,14 @@ export default function BookingPage() {
             
             {!quizFinished ? (
               <div>
-                <div className="flex justify-between items-center mb-6">
-                    <p className="text-sm text-muted-foreground">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
-                    <p className="text-sm font-bold text-primary">Score: {score}</p>
+                <div className="mb-6 space-y-3">
+                  <div className="flex justify-between items-center text-sm">
+                    <p className="text-muted-foreground">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
+                    <p className="font-bold text-primary">Score: {score}</p>
+                  </div>
+                   <Progress value={((currentQuestionIndex) / quizQuestions.length) * 100} className="h-2" />
                 </div>
+
                 <h3 className="text-2xl font-bold font-headline mb-8 text-center">{quizQuestions[currentQuestionIndex].question}</h3>
                 <RadioGroup onValueChange={handleAnswerSelect} value={selectedAnswer || undefined} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {quizQuestions[currentQuestionIndex].options.map(option => (
@@ -481,22 +497,26 @@ export default function BookingPage() {
                       <RadioGroupItem value={option} id={option} className="sr-only" disabled={showExplanation} />
                        <Label htmlFor={option} className={cn(
                           "flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 bg-background/50",
-                          "hover:border-primary",
-                          selectedAnswer === option && isCorrect === true && "bg-primary/10 border-primary text-primary",
-                          selectedAnswer === option && isCorrect === false && "bg-destructive/10 border-destructive text-destructive",
-                          selectedAnswer && selectedAnswer !== option && "opacity-50"
+                          "hover:border-primary hover:bg-primary/5",
+                          selectedAnswer === option && isCorrect === true && "bg-green-100 border-green-500 text-green-800",
+                          selectedAnswer === option && isCorrect === false && "bg-red-100 border-red-500 text-red-800",
+                          selectedAnswer && selectedAnswer !== option && "opacity-60 hover:bg-background/50"
                         )}>
                           <span className="flex-1 font-semibold">{option}</span>
-                          {selectedAnswer === option && isCorrect === true && <Check className="w-6 h-6" />}
-                          {selectedAnswer === option && isCorrect === false && <X className="w-6 h-6" />}
+                          {selectedAnswer === option && isCorrect === true && <Check className="w-6 h-6 text-green-600" />}
+                          {selectedAnswer === option && isCorrect === false && <X className="w-6 h-6 text-red-600" />}
                        </Label>
                     </div>
                   ))}
                 </RadioGroup>
+
                 {showExplanation && (
-                  <div className="mt-8 p-4 rounded-lg bg-background/70 animate-in fade-in-0 duration-500">
+                  <div className={cn(
+                      "mt-8 p-4 rounded-lg animate-in fade-in-0 duration-500",
+                       isCorrect ? "bg-green-100/50 border border-green-200" : "bg-background/70 border"
+                  )}>
                     <div className="flex items-start gap-4">
-                       <Lightbulb className="w-8 h-8 text-primary flex-shrink-0" />
+                       <Lightbulb className={cn("w-8 h-8 flex-shrink-0", isCorrect ? "text-green-600" : "text-primary")} />
                        <div>
                           <h4 className="font-bold text-lg">{isCorrect ? "Correct!" : "Not quite!"}</h4>
                           <p className="text-muted-foreground">{quizQuestions[currentQuestionIndex].explanation}</p>
@@ -512,15 +532,32 @@ export default function BookingPage() {
                 </div>
               </div>
             ) : (
-              <div className="text-center animate-in fade-in-0 duration-500 py-8">
-                <Award className="w-20 h-20 text-primary mx-auto mb-6" />
-                <h3 className="text-3xl font-bold font-headline">Quiz Complete!</h3>
-                <p className="text-xl text-muted-foreground mt-2">You scored {score} out of {quizQuestions.length}!</p>
-                <div className="mt-8 flex justify-center gap-4">
-                    <Button onClick={handleRestartQuiz} size="lg"><RefreshCw className="mr-2 h-4 w-4"/>Play Again</Button>
-                    <Button variant="outline" size="lg" asChild><Link href="#booking-form">Book Now</Link></Button>
+                <div className="text-center animate-in fade-in-0 duration-500 py-8">
+                    <div className="relative w-40 h-40 mx-auto mb-8">
+                        <svg className="w-full h-full" viewBox="0 0 100 100">
+                            <circle className="text-border" strokeWidth="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                            <circle
+                            className="text-primary"
+                            strokeWidth="8"
+                            strokeDasharray={`${((score / quizQuestions.length) * 264)} 264`}
+                            strokeLinecap="round"
+                            stroke="currentColor"
+                            fill="transparent"
+                            r="42"
+                            cx="50"
+                            cy="50"
+                            style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%", transition: "stroke-dasharray 1s ease-out" }}
+                            />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center text-3xl font-bold">{score}/{quizQuestions.length}</div>
+                    </div>
+                    <h3 className="text-3xl font-bold font-headline">{resultDetails.title}</h3>
+                    <p className="text-lg text-muted-foreground mt-2">{resultDetails.message}</p>
+                    <div className="mt-8 flex justify-center gap-4">
+                        <Button onClick={handleRestartQuiz} size="lg"><RefreshCw className="mr-2 h-4 w-4"/>Play Again</Button>
+                        <Button variant="outline" size="lg" asChild><Link href="#booking-form">Book Now</Link></Button>
+                    </div>
                 </div>
-              </div>
             )}
           </div>
         </section>
@@ -972,7 +1009,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
-    
-
-    
