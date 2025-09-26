@@ -460,65 +460,69 @@ export default function BookingPage() {
         </section>
 
         <section id="quiz" className="py-16 sm:py-24 bg-secondary/30">
-          <div className="container max-w-2xl">
+          <div className="container max-w-3xl">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Art Lover's Quiz</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
                 Test your knowledge and have some fun with our quick art quiz!
               </p>
             </div>
-            <Card className="shadow-lg">
-              <CardContent className="p-8">
+            <div className="bg-background p-8 rounded-2xl shadow-lg">
                 {!quizFinished ? (
                   <div>
-                    <p className="text-sm text-muted-foreground mb-4">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
-                    <h3 className="text-xl font-semibold mb-6">{quizQuestions[currentQuestionIndex].question}</h3>
-                    <RadioGroup onValueChange={handleAnswerSelect} value={selectedAnswer || undefined} className="space-y-4">
+                    <div className="flex justify-between items-center mb-6">
+                        <p className="text-sm text-muted-foreground">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
+                        <p className="text-sm font-bold text-primary">Score: {score}</p>
+                    </div>
+                    <h3 className="text-2xl font-bold font-headline mb-8 text-center">{quizQuestions[currentQuestionIndex].question}</h3>
+                    <RadioGroup onValueChange={handleAnswerSelect} value={selectedAnswer || undefined} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {quizQuestions[currentQuestionIndex].options.map(option => (
-                        <div key={option} className={cn(
-                          "flex items-center space-x-3 p-4 rounded-lg border transition-all duration-300",
-                          selectedAnswer === option && isCorrect === true && "bg-green-100 border-green-500",
-                          selectedAnswer === option && isCorrect === false && "bg-red-100 border-red-500",
-                          selectedAnswer && selectedAnswer !== option && "opacity-60"
-                        )}>
-                          <RadioGroupItem value={option} id={option} disabled={showExplanation} />
-                          <Label htmlFor={option} className="font-normal text-base flex-1 cursor-pointer">{option}</Label>
-                          {selectedAnswer === option && isCorrect === true && <Check className="w-5 h-5 text-green-600" />}
-                          {selectedAnswer === option && isCorrect === false && <X className="w-5 h-5 text-red-600" />}
+                        <div key={option}>
+                          <RadioGroupItem value={option} id={option} className="sr-only" disabled={showExplanation} />
+                           <Label htmlFor={option} className={cn(
+                              "flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-300",
+                              "hover:border-primary",
+                              selectedAnswer === option && isCorrect === true && "bg-primary/10 border-primary text-primary",
+                              selectedAnswer === option && isCorrect === false && "bg-destructive/10 border-destructive text-destructive",
+                              selectedAnswer && selectedAnswer !== option && "opacity-50"
+                            )}>
+                              <span className="flex-1 font-semibold">{option}</span>
+                              {selectedAnswer === option && isCorrect === true && <Check className="w-6 h-6" />}
+                              {selectedAnswer === option && isCorrect === false && <X className="w-6 h-6" />}
+                           </Label>
                         </div>
                       ))}
                     </RadioGroup>
                     {showExplanation && (
-                      <div className="mt-6 p-4 rounded-lg bg-primary/10 animate-in fade-in-0 duration-500">
-                        <div className="flex items-start gap-3">
-                           <Lightbulb className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                      <div className="mt-8 p-4 rounded-lg bg-accent/50 animate-in fade-in-0 duration-500">
+                        <div className="flex items-start gap-4">
+                           <Lightbulb className="w-8 h-8 text-primary flex-shrink-0" />
                            <div>
-                              <h4 className="font-bold">{isCorrect ? "Correct!" : "Not quite!"}</h4>
-                              <p className="text-muted-foreground text-sm">{quizQuestions[currentQuestionIndex].explanation}</p>
+                              <h4 className="font-bold text-lg">{isCorrect ? "Correct!" : "Not quite!"}</h4>
+                              <p className="text-muted-foreground">{quizQuestions[currentQuestionIndex].explanation}</p>
                            </div>
                         </div>
                       </div>
                     )}
-                    <div className="mt-8 text-right">
-                       <Button onClick={handleNextQuestion} disabled={!showExplanation}>
+                    <div className="mt-8 text-center">
+                       <Button onClick={handleNextQuestion} disabled={!showExplanation} size="lg">
                         {currentQuestionIndex < quizQuestions.length - 1 ? "Next Question" : "Finish Quiz"}
-                        <ArrowRight className="ml-2 h-4 w-4" />
+                        <ArrowRight className="ml-2 h-5 w-5" />
                        </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center animate-in fade-in-0 duration-500">
-                    <Award className="w-16 h-16 text-primary mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold font-headline">Quiz Complete!</h3>
-                    <p className="text-lg text-muted-foreground mt-2">You scored {score} out of {quizQuestions.length}!</p>
+                  <div className="text-center animate-in fade-in-0 duration-500 py-8">
+                    <Award className="w-20 h-20 text-primary mx-auto mb-6" />
+                    <h3 className="text-3xl font-bold font-headline">Quiz Complete!</h3>
+                    <p className="text-xl text-muted-foreground mt-2">You scored {score} out of {quizQuestions.length}!</p>
                     <div className="mt-8 flex justify-center gap-4">
-                        <Button onClick={handleRestartQuiz}><RefreshCw className="mr-2 h-4 w-4"/>Play Again</Button>
-                        <Button variant="outline" asChild><Link href="#booking-form">Book Now</Link></Button>
+                        <Button onClick={handleRestartQuiz} size="lg"><RefreshCw className="mr-2 h-4 w-4"/>Play Again</Button>
+                        <Button variant="outline" size="lg" asChild><Link href="#booking-form">Book Now</Link></Button>
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
           </div>
         </section>
 
@@ -969,5 +973,7 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
 
     
