@@ -33,7 +33,7 @@ type GalleryImage = {
 };
 
 const isValidUrl = (string: string | undefined): boolean => {
-    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    if (!string || typeof string !== 'string' || string.trim() === '' || string === 'NA') return false;
     try {
         if (string.startsWith('/')) return true; // Relative paths
         new URL(string); // Absolute URLs
@@ -204,7 +204,7 @@ export default function Home() {
   }, [dynamicHeadlines.length]);
 
   
-  const duplicatedArt = galleryImages.length > 0 ? [...galleryImages, ...galleryImages] : [];
+  const duplicatedGalleryImages = galleryImages.length > 0 ? [...galleryImages, ...galleryImages] : [];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
   const duplicatedNews = [...marqueeNews, ...marqueeNews];
 
@@ -286,8 +286,8 @@ export default function Home() {
             <Dialog>
                <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee-right group-hover:pause">
-                    {duplicatedArt.map((art, index) => (
-                      <div key={`fwd-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                    {duplicatedGalleryImages.map((art, index) => (
+                      <div key={`fwd-${art._id}-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
                             <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt({src: art.image, alt: art.title, hint: art.hint})}>
                               <CardContent className="p-0 relative">
@@ -314,8 +314,8 @@ export default function Home() {
               </div>
                <div className="relative w-full overflow-hidden group">
                   <div className="flex animate-marquee group-hover:pause">
-                    {duplicatedArt.map((art, index) => (
-                      <div key={`rev-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
+                    {duplicatedGalleryImages.map((art, index) => (
+                      <div key={`rev-${art._id}-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
                             <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt({src: art.image, alt: art.title, hint: art.hint})}>
                               <CardContent className="p-0 relative">
@@ -617,5 +617,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
