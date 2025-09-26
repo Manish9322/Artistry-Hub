@@ -1,14 +1,66 @@
+
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
 import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import placeholderImages from '@/lib/placeholder-images.json';
 
+
+const isValidUrl = (string: string | undefined): boolean => {
+    if (!string || typeof string !== 'string' || string.trim() === '') return false;
+    try {
+        if (string.startsWith('/')) return true; // Relative paths
+        new URL(string); // Absolute URLs
+        return true;
+    } catch (_) {
+        return false;
+    }
+};
+
+type GalleryImage = {
+  _id: string;
+  title: string;
+  gallery: string;
+  status: 'Published' | 'Draft' | 'Archived';
+  image: string;
+  hint?: string;
+  className?: string; // For client showcase specifically
+};
 
 export default function AboutPage() {
+    const [studioImages, setStudioImages] = useState<GalleryImage[]>([]);
+    const [clientShowcaseImages, setClientShowcaseImages] = useState<GalleryImage[]>([]);
+
+    useEffect(() => {
+      async function fetchGalleryImages() {
+        try {
+          const response = await fetch('/api/gallery');
+          if (response.ok) {
+            const allImages: GalleryImage[] = await response.json();
+            setStudioImages(allImages.filter(img => img.gallery === "Studio (About)"));
+            
+            const clientImages = allImages.filter(img => img.gallery === "Client Showcase (About)");
+            // Assign classNames for styling as in the original static component
+            const showcaseWithStyles = clientImages.map((img, index) => {
+              const classNames = ['w-80', 'w-[30rem]', 'w-72'];
+              return { ...img, className: classNames[index % classNames.length] };
+            });
+            setClientShowcaseImages(showcaseWithStyles);
+          }
+        } catch (error) {
+          console.error("Failed to fetch gallery images:", error);
+        }
+      }
+      fetchGalleryImages();
+    }, []);
+
   const teamMembers = [
     {
       name: "Jane Doe",
@@ -92,16 +144,6 @@ export default function AboutPage() {
         description: "Voted by our community as the top destination for creative and reliable artistic services, a testament to our strong connection with our clients.",
       },
     ];
-
-    const clientShowcase = [
-      { image: 'https://placehold.co/400x600.png', hint: 'woman mehndi hand', className: 'w-80' },
-      { image: 'https://placehold.co/600x400.png', hint: 'wedding rangoli', className: 'w-[30rem]'},
-      { image: 'https://placehold.co/400x500.png', hint: 'custom nail art', className: 'w-72' },
-      { image: 'https://placehold.co/400x600.png', hint: 'person wearing necklace', className: 'w-80' },
-      { image: 'https://placehold.co/600x400.png', hint: 'festival mehndi', className: 'w-[30rem]' },
-      { image: 'https://placehold.co/400x500.png', hint: 'detailed nail design', className: 'w-72' },
-    ];
-
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -283,18 +325,28 @@ export default function AboutPage() {
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="group overflow-hidden rounded-lg shadow-lg">
-                <Image src="https://placehold.co/400x500.png" alt="Studio view 1" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="art studio interior" />
-              </div>
-              <div className="group overflow-hidden rounded-lg shadow-lg">
-                <Image src="https://placehold.co/400x500.png" alt="Studio view 2" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="art supplies detail" />
-              </div>
-              <div className="group overflow-hidden rounded-lg shadow-lg">
-                <Image src="https://placehold.co/400x500.png" alt="Studio view 3" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="artist at work" />
-              </div>
-              <div className="group overflow-hidden rounded-lg shadow-lg">
-                <Image src="https://placehold.co/400x500.png" alt="Studio view 4" width={400} height={500} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" data-ai-hint="finished artwork display" />
-              </div>
+              {studioImages.length > 0 ? studioImages.slice(0, 4).map((item, index) => (
+                 <div key={item._id} className="group overflow-hidden rounded-lg shadow-lg">
+                    <Image 
+                      src={isValidUrl(item.image) ? item.image : placeholderImages.default} 
+                      alt={item.title} 
+                      width={400} 
+                      height={500} 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                      data-ai-hint={item.hint} 
+                    />
+                 </div>
+              )) : Array.from({ length: 4 }).map((_, index) => (
+                <div key={index} className="group overflow-hidden rounded-lg shadow-lg">
+                  <Image 
+                    src={placeholderImages.default} 
+                    alt={`Studio view ${index+1}`} 
+                    width={400} 
+                    height={500} 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                    data-ai-hint="art studio interior" />
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -311,18 +363,20 @@ export default function AboutPage() {
           <div className="relative">
             <ScrollArea className="w-full whitespace-nowrap">
               <div className="flex w-max space-x-8 p-4">
-                {clientShowcase.map((item, index) => (
-                  <figure key={index} className={`shrink-0 rounded-xl overflow-hidden shadow-xl group ${item.className}`}>
+                {clientShowcaseImages.length > 0 ? clientShowcaseImages.map((item, index) => (
+                  <figure key={item._id} className={`shrink-0 rounded-xl overflow-hidden shadow-xl group ${item.className}`}>
                     <Image
-                      src={item.image}
-                      alt="Client work"
+                      src={isValidUrl(item.image) ? item.image : placeholderImages.default}
+                      alt={item.title}
                       width={600}
                       height={600}
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       data-ai-hint={item.hint}
                     />
                   </figure>
-                ))}
+                )) : (
+                  <p className="text-center w-full text-muted-foreground">No client images to display yet.</p>
+                )}
               </div>
               <ScrollBar orientation="horizontal" className="hidden" />
             </ScrollArea>
@@ -395,3 +449,5 @@ export default function AboutPage() {
     </div>
   );
 }
+
+    
