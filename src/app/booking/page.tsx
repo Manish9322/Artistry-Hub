@@ -18,6 +18,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -800,16 +801,16 @@ export default function BookingPage() {
 
         <section id="booking-form" className="py-16 sm:py-24 bg-primary/10">
           <div className="container max-w-4xl">
-            <div className="bg-background p-8 sm:p-12 rounded-xl shadow-lg">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl font-bold font-headline">Book an Appointment</h2>
-                     {step < 3 && (
-                        <p className="mt-2 text-muted-foreground">
-                            Step {step} of 2: {stepTitles[step-1]}
-                        </p>
-                    )}
-                </div>
-                {step < 3 && <Progress value={progressValue} className="mb-12 h-2" />}
+              <div className="text-center mb-10">
+                  <h2 className="text-3xl font-bold font-headline">Book an Appointment</h2>
+                   {step < 3 && (
+                      <p className="mt-2 text-muted-foreground">
+                          Step {step} of 2: {stepTitles[step-1]}
+                      </p>
+                  )}
+              </div>
+              {step < 3 && <Progress value={progressValue} className="mb-12 h-2" />}
+              <div className="bg-background p-8 sm:p-12 rounded-xl shadow-lg">
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     {step === 1 && (
@@ -819,7 +820,7 @@ export default function BookingPage() {
                           name="serviceType"
                           render={({ field }) => (
                             <FormItem>
-                              <Label>Service Type</Label>
+                              <FormLabel>Service Type</FormLabel>
                               <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                   <SelectTrigger>
@@ -843,7 +844,7 @@ export default function BookingPage() {
                             name="bookingDate"
                             render={({ field }) => (
                                 <FormItem className="flex flex-col">
-                                <Label>Date</Label>
+                                <FormLabel>Date</FormLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                     <FormControl>
@@ -882,7 +883,7 @@ export default function BookingPage() {
                             name="bookingTime"
                             render={({ field }) => (
                                 <FormItem>
-                                <Label>Time Slot</Label>
+                                <FormLabel>Time Slot</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger>
@@ -909,7 +910,7 @@ export default function BookingPage() {
                                     name="name"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <Label>Full Name</Label>
+                                        <FormLabel>Full Name</FormLabel>
                                         <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -920,7 +921,7 @@ export default function BookingPage() {
                                     name="email"
                                     render={({ field }) => (
                                     <FormItem>
-                                        <Label>Email</Label>
+                                        <FormLabel>Email</FormLabel>
                                         <FormControl><Input type="email" placeholder="Your Email" {...field} /></FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -932,7 +933,7 @@ export default function BookingPage() {
                             name="phone"
                             render={({ field }) => (
                               <FormItem>
-                                <Label>Phone <span className="text-muted-foreground">(Optional)</span></Label>
+                                <FormLabel>Phone <span className="text-muted-foreground">(Optional)</span></FormLabel>
                                 <FormControl><Input type="tel" placeholder="Your Phone Number" {...field} /></FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -943,7 +944,7 @@ export default function BookingPage() {
                             name="notes"
                             render={({ field }) => (
                               <FormItem>
-                                <Label>Special Requests <span className="text-muted-foreground">(Optional)</span></Label>
+                                <FormLabel>Special Requests <span className="text-muted-foreground">(Optional)</span></FormLabel>
                                 <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} /></FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -1004,5 +1005,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
-    
