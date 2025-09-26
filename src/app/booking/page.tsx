@@ -472,8 +472,8 @@ export default function BookingPage() {
         </section>
 
          <section id="quiz" className="py-16 sm:py-24 bg-secondary/30">
-          <div className="container max-w-3xl">
-            <div className="text-center mb-12">
+          <div className="container max-w-4xl">
+            <div className="text-center mb-16">
               <h2 className="text-3xl font-bold font-headline text-primary">Art Lover's Quiz</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
                 Test your knowledge and have some fun with our quick art quiz!
@@ -481,28 +481,28 @@ export default function BookingPage() {
             </div>
             
             {!quizFinished ? (
-              <div>
-                <div className="mb-6 space-y-3">
-                  <div className="flex justify-between items-center text-sm">
+              <div className="space-y-12">
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center text-sm font-medium">
                     <p className="text-muted-foreground">Question {currentQuestionIndex + 1} of {quizQuestions.length}</p>
-                    <p className="font-bold text-primary">Score: {score}</p>
+                    <p className="text-primary">Score: {score}</p>
                   </div>
                    <Progress value={((currentQuestionIndex) / quizQuestions.length) * 100} className="h-2" />
                 </div>
 
-                <h3 className="text-2xl font-bold font-headline mb-8 text-center">{quizQuestions[currentQuestionIndex].question}</h3>
-                <RadioGroup onValueChange={handleAnswerSelect} value={selectedAnswer || undefined} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <h3 className="text-3xl font-bold font-headline text-center">{quizQuestions[currentQuestionIndex].question}</h3>
+                <RadioGroup onValueChange={handleAnswerSelect} value={selectedAnswer || undefined} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {quizQuestions[currentQuestionIndex].options.map(option => (
                     <div key={option}>
                       <RadioGroupItem value={option} id={option} className="sr-only" disabled={showExplanation} />
                        <Label htmlFor={option} className={cn(
-                          "flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 bg-background/50",
-                          "hover:border-primary hover:bg-primary/5",
-                          selectedAnswer === option && isCorrect === true && "bg-green-100 border-green-500 text-green-800",
-                          selectedAnswer === option && isCorrect === false && "bg-red-100 border-red-500 text-red-800",
-                          selectedAnswer && selectedAnswer !== option && "opacity-60 hover:bg-background/50"
+                          "flex items-center p-6 rounded-lg border-2 bg-background cursor-pointer transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1",
+                          "hover:border-primary",
+                           selectedAnswer === option && isCorrect === true && "border-green-500 bg-green-50 shadow-[0_0_15px_rgba(74,222,128,0.5)]",
+                           selectedAnswer === option && isCorrect === false && "border-red-500 bg-red-50 shadow-[0_0_15px_rgba(239,68,68,0.5)]",
+                           showExplanation && selectedAnswer !== option && "opacity-60 hover:shadow-sm"
                         )}>
-                          <span className="flex-1 font-semibold">{option}</span>
+                          <span className="flex-1 text-lg font-semibold">{option}</span>
                           {selectedAnswer === option && isCorrect === true && <Check className="w-6 h-6 text-green-600" />}
                           {selectedAnswer === option && isCorrect === false && <X className="w-6 h-6 text-red-600" />}
                        </Label>
@@ -512,14 +512,14 @@ export default function BookingPage() {
 
                 {showExplanation && (
                   <div className={cn(
-                      "mt-8 p-4 rounded-lg animate-in fade-in-0 duration-500",
-                       isCorrect ? "bg-green-100/50 border border-green-200" : "bg-background/70 border"
+                      "mt-8 p-6 rounded-lg animate-in fade-in-0 duration-500 border-2",
+                       isCorrect ? "bg-green-50 border-green-200" : "bg-red-50 border-red-200"
                   )}>
                     <div className="flex items-start gap-4">
-                       <Lightbulb className={cn("w-8 h-8 flex-shrink-0", isCorrect ? "text-green-600" : "text-primary")} />
+                       <Lightbulb className={cn("w-10 h-10 flex-shrink-0", isCorrect ? "text-green-600" : "text-red-600")} />
                        <div>
-                          <h4 className="font-bold text-lg">{isCorrect ? "Correct!" : "Not quite!"}</h4>
-                          <p className="text-muted-foreground">{quizQuestions[currentQuestionIndex].explanation}</p>
+                          <h4 className="font-bold text-xl">{isCorrect ? "Correct!" : "Not quite!"}</h4>
+                          <p className="text-muted-foreground mt-1">{quizQuestions[currentQuestionIndex].explanation}</p>
                        </div>
                     </div>
                   </div>
