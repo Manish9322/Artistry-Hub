@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -800,20 +799,17 @@ export default function BookingPage() {
         </section>
 
         <section id="booking-form" className="py-16 sm:py-24 bg-primary/10">
-          <div className="container max-w-2xl">
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-center text-2xl font-headline">
-                  Book an Appointment
-                </CardTitle>
-                {step < 3 && (
-                    <CardDescription className="text-center">
-                        Step {step} of 2: {stepTitles[step-1]}
-                    </CardDescription>
-                )}
-              </CardHeader>
-              <CardContent>
-                {step < 3 && <Progress value={progressValue} className="mb-8 h-2" />}
+          <div className="container max-w-4xl">
+            <div className="bg-background p-8 sm:p-12 rounded-xl shadow-lg">
+                <div className="text-center mb-10">
+                    <h2 className="text-3xl font-bold font-headline">Book an Appointment</h2>
+                     {step < 3 && (
+                        <p className="mt-2 text-muted-foreground">
+                            Step {step} of 2: {stepTitles[step-1]}
+                        </p>
+                    )}
+                </div>
+                {step < 3 && <Progress value={progressValue} className="mb-12 h-2" />}
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     {step === 1 && (
@@ -957,7 +953,7 @@ export default function BookingPage() {
                     )}
 
                     {step === 3 && (
-                      <div className="text-center space-y-6 animate-in fade-in-0 duration-500 p-8 rounded-lg bg-primary/5">
+                      <div className="text-center space-y-6 animate-in fade-in-0 duration-500 p-8">
                           <div className="flex justify-center">
                             <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
                                 <div className="w-16 h-16 rounded-full bg-green-200 flex items-center justify-center">
@@ -975,7 +971,7 @@ export default function BookingPage() {
                     )}
                     
                     {step < 3 && (
-                        <div className="flex justify-between items-center pt-4 border-t">
+                        <div className="flex justify-between items-center pt-8 border-t">
                             {step > 1 ? (
                                 <Button type="button" variant="outline" onClick={handlePreviousStep}>
                                 Back
@@ -995,8 +991,7 @@ export default function BookingPage() {
                     )}
                   </form>
                 </Form>
-              </CardContent>
-            </Card>
+              </div>
           </div>
         </section>
       </main>
@@ -1009,3 +1004,5 @@ export default function BookingPage() {
     </div>
   );
 }
+
+    
