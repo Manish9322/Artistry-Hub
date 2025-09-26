@@ -24,6 +24,13 @@ type Category = {
   href: string;
 };
 
+type GalleryImage = {
+  _id: string;
+  title: string;
+  image: string;
+  hint?: string;
+};
+
 const isValidUrl = (string: string | undefined): boolean => {
     if (!string || typeof string !== 'string' || string.trim() === '') return false;
     try {
@@ -37,98 +44,34 @@ const isValidUrl = (string: string | undefined): boolean => {
 
 
 export default function Home() {
-  const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint: string} | null>(null);
+  const [selectedArt, setSelectedArt] = useState<{src: string, alt: string, hint?: string} | null>(null);
   const [dynamicHeadline, setDynamicHeadline] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+
 
   useEffect(() => {
-    async function fetchCategories() {
+    async function fetchData() {
       try {
-        const response = await fetch('/api/categories');
-        if (response.ok) {
-          const data = await response.json();
-          setCategories(data);
+        const [catResponse, galResponse] = await Promise.all([
+          fetch('/api/categories'),
+          fetch('/api/gallery')
+        ]);
+        
+        if (catResponse.ok) {
+          const catData = await catResponse.json();
+          setCategories(catData);
+        }
+        if(galResponse.ok) {
+            const galData = await galResponse.json();
+            setGalleryImages(galData.filter((item: GalleryImage) => item.gallery === "Featured Gallery (Home)"));
         }
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("Failed to fetch data:", error);
       }
     }
-    fetchCategories();
+    fetchData();
   }, []);
-
-  const artCategories = [
-    {
-      name: "Mehndi",
-      description: "Intricate henna designs for all occasions.",
-      image: "https://placehold.co/1200x400.png",
-      hint: "henna hand",
-      href: "/mehndi",
-    },
-    {
-      name: "Rangoli",
-      description: "Vibrant and colorful floor art.",
-      image: "https://placehold.co/1200x400.png",
-      hint: "rangoli design",
-      href: "/rangoli",
-    },
-    {
-      name: "Nail Art",
-      description: "Creative and stylish nail designs.",
-      image: "https://placehold.co/1200x400.png",
-      hint: "nail art",
-      href: "/nail-art",
-    },
-    {
-      name: "Custom Plastic Jewelry",
-      description: "Unique, handcrafted plastic jewelry.",
-      image: "https://placehold.co/1200x400.png",
-      hint: "plastic jewelry",
-      href: "/custom-plastic-jewelry",
-    },
-  ];
-
-  const featuredArt = [
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Mehndi Art",
-      hint: "bridal mehndi",
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Rangoli Art",
-      hint: "diwali rangoli",
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Nail Art",
-      hint: "abstract nails",
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Jewelry",
-      hint: "handmade necklace",
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Detailed Henna",
-      hint: "intricate henna",
-    },
-     {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Mehndi Art 2",
-      hint: "bridal mehndi",
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Rangoli Art 2",
-      hint: "diwali rangoli",
-    },
-    {
-      src: "https://placehold.co/600x400.png",
-      alt: "Featured Nail Art 2",
-      hint: "abstract nails",
-    },
-  ];
   
   const testimonials = [
     {
@@ -260,7 +203,7 @@ export default function Home() {
   }, [dynamicHeadlines.length]);
 
   
-  const duplicatedArt = [...featuredArt, ...featuredArt];
+  const duplicatedArt = galleryImages.length > 0 ? [...galleryImages, ...galleryImages] : [];
   const duplicatedTestimonials = [...testimonials, ...testimonials];
   const duplicatedNews = [...marqueeNews, ...marqueeNews];
 
@@ -345,18 +288,18 @@ export default function Home() {
                     {duplicatedArt.map((art, index) => (
                       <div key={`fwd-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
-                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt(art)}>
+                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt({src: art.image, alt: art.title, hint: art.hint})}>
                               <CardContent className="p-0 relative">
                                 <Image
-                                  src={art.src}
-                                  alt={art.alt}
+                                  src={isValidUrl(art.image) ? art.image : placeholderImages.default}
+                                  alt={art.title}
                                   width={600}
                                   height={400}
                                   className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
                                   data-ai-hint={art.hint}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-                                  <h3 className="text-white font-bold text-lg">{art.alt}</h3>
+                                  <h3 className="text-white font-bold text-lg">{art.title}</h3>
                                   <p className="text-white/80 text-sm">Click to preview</p>
                                 </div>
                               </CardContent>
@@ -373,18 +316,18 @@ export default function Home() {
                     {duplicatedArt.map((art, index) => (
                       <div key={`rev-${index}`} className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 p-2">
                           <DialogTrigger asChild>
-                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt(art)}>
+                            <Card className="overflow-hidden group/card cursor-pointer" onClick={() => setSelectedArt({src: art.image, alt: art.title, hint: art.hint})}>
                               <CardContent className="p-0 relative">
                                 <Image
-                                  src={art.src}
-                                  alt={art.alt}
+                                  src={isValidUrl(art.image) ? art.image : placeholderImages.default}
+                                  alt={art.title}
                                   width={600}
                                   height={400}
                                   className="aspect-video w-full object-cover transition-transform duration-300 group-hover/card:scale-105"
                                   data-ai-hint={art.hint}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-start justify-end p-4 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300">
-                                  <h3 className="text-white font-bold text-lg">{art.alt}</h3>
+                                  <h3 className="text-white font-bold text-lg">{art.title}</h3>
                                   <p className="text-white/80 text-sm">Click to preview</p>
                                 </div>
                               </CardContent>
@@ -399,7 +342,7 @@ export default function Home() {
               {selectedArt && (
                  <DialogContent className="max-w-3xl p-0">
                     <Image
-                        src={selectedArt.src}
+                        src={isValidUrl(selectedArt.src) ? selectedArt.src : placeholderImages.default}
                         alt={selectedArt.alt}
                         width={1200}
                         height={800}
@@ -673,3 +616,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
