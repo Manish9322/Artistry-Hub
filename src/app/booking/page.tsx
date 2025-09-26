@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -190,25 +190,22 @@ export default function BookingPage() {
     },
   ];
 
-  const teamMembers = [
+   const whyBookWithUsItems = [
     {
-      name: "Jane Doe",
-      role: "Lead Mehndi Artist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
+      icon: Award,
+      title: "Expert Artists",
+      description: "Our artists are masters of their craft, with years of experience and a passion for creating stunning, high-quality art.",
     },
     {
-      name: "John Smith",
-      role: "Rangoli Specialist",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
+      icon: Brush,
+      title: "Personalized Designs",
+      description: "We collaborate with you to create a unique design that reflects your personality, story, and vision for any occasion.",
     },
     {
-      name: "Emily White",
-      role: "Nail Art & Jewelry Designer",
-      image: "https://placehold.co/400x400.png",
-      hint: "artist portrait",
-    },
+      icon: Heart,
+      title: "Quality Guaranteed",
+      description: "We use only the finest, skin-safe materials and techniques to ensure your art is beautiful, durable, and impressive.",
+    }
   ];
 
    const eventSchedule = [
@@ -641,28 +638,22 @@ export default function BookingPage() {
 
         <section className="py-16 sm:py-24 bg-background">
           <div className="container">
-            <h2 className="text-3xl font-bold text-center mb-12 font-headline">Meet Our Featured Artists</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
-                <div key={member.name} className="text-center group">
-                  <div className="relative inline-block">
-                    <Image
-                      src={member.image}
-                      alt={member.name}
-                      width={400}
-                      height={400}
-                      className="rounded-full w-40 h-40 mx-auto mb-4 shadow-lg object-cover transition-transform duration-300 group-hover:scale-105"
-                      data-ai-hint={member.hint}
-                    />
-                     <div className="absolute inset-0 rounded-full bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold font-headline text-primary">Why Book With Us?</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                We are committed to providing a premium, personalized, and unforgettable artistic experience.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {whyBookWithUsItems.map((item) => (
+                <div key={item.title} className="group text-center p-8 bg-secondary/30 rounded-xl shadow-lg hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-background text-primary mx-auto mb-6 transition-all duration-300 ring-4 ring-transparent group-hover:ring-primary/10 group-hover:bg-primary group-hover:text-primary-foreground">
+                    <item.icon className="w-10 h-10" />
                   </div>
-                  <h3 className="text-xl font-semibold font-headline">{member.name}</h3>
-                  <p className="text-primary">{member.role}</p>
+                  <h3 className="text-2xl font-bold font-headline mb-3">{item.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{item.description}</p>
                 </div>
               ))}
-            </div>
-             <div className="text-center mt-12">
-                <Button variant="outline" asChild><Link href="/about">More About Our Team</Link></Button>
             </div>
           </div>
         </section>
