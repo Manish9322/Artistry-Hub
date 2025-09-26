@@ -817,7 +817,7 @@ export default function BookingPage() {
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     {step === 1 && (
-                      <div className="space-y-6 animate-in fade-in-0 duration-500">
+                      <div className="space-y-8 animate-in fade-in-0 duration-500">
                         <FormField
                           control={form.control}
                           name="serviceType"
@@ -841,7 +841,7 @@ export default function BookingPage() {
                             </FormItem>
                           )}
                         />
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                             <FormField
                             control={form.control}
                             name="bookingDate"
@@ -906,8 +906,8 @@ export default function BookingPage() {
                     )}
                     
                     {step === 2 && (
-                       <div className="space-y-6 animate-in fade-in-0 duration-500">
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                       <div className="space-y-8 animate-in fade-in-0 duration-500">
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                                 <FormField
                                     control={form.control}
                                     name="name"
