@@ -6,11 +6,12 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck } from "lucide-react";
+import { Palette, Users, Rocket, Target, HandHeart, Sparkles, Handshake, Brush, Award, ThumbsUp, MessageSquare, Lightbulb, Scissors, Trophy, Newspaper, Leaf, Wand, UserCheck, Mail } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import placeholderImages from '@/lib/placeholder-images.json';
+import { Input } from "@/components/ui/input";
 
 
 const isValidUrl = (string: string | undefined): boolean => {
@@ -387,6 +388,24 @@ export default function AboutPage() {
                   data-ai-hint="community art event"
                 />
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="newsletter" className="py-16 sm:py-24 bg-primary/10">
+          <div className="container text-center">
+            <div className="max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold font-headline text-primary">Stay Inspired</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Subscribe to our newsletter for the latest art trends, workshop announcements, and exclusive offers delivered straight to your inbox.
+                </p>
+                <form className="mt-8 flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <div className="relative flex-grow">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input type="email" placeholder="Enter your email" className="pl-10 w-full" />
+                    </div>
+                    <Button type="submit">Subscribe</Button>
+                </form>
             </div>
           </div>
         </section>
