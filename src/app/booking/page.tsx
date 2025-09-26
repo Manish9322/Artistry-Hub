@@ -35,6 +35,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useToast } from "@/hooks/use-toast";
 import { Copyright } from "@/components/copyright";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -257,6 +263,25 @@ export default function BookingPage() {
       options: ["Texture", "Composition", "Palette", "Motif"],
       answer: "Composition",
       explanation: "Composition is the placement or arrangement of visual elements in a work of art. It is the organization of the elements of art according to the principles of art."
+    },
+  ];
+  
+    const faqs = [
+    {
+      question: "What are the exhibition hours?",
+      answer: "Our exhibition is open from 10:00 AM to 6:00 PM, Tuesday to Sunday. We are closed on Mondays for maintenance.",
+    },
+    {
+      question: "Can I buy tickets at the door?",
+      answer: "Yes, tickets are available for purchase at the venue. However, we highly recommend booking online in advance to secure your spot and avoid potential queues, especially on weekends.",
+    },
+    {
+      question: "Is there a discount for students or seniors?",
+      answer: "Yes, we offer a 15% discount for students with a valid ID and for seniors aged 65 and over. Please present your identification at the counter when you arrive.",
+    },
+     {
+      question: "Are food and drinks allowed inside?",
+      answer: "To protect the artwork, food and drinks are not permitted inside the gallery spaces. We have a designated café area where you can enjoy refreshments.",
     },
   ];
 
@@ -635,8 +660,32 @@ export default function BookingPage() {
                 </div>
             </div>
         </section>
+        
+        <section id="faq" className="py-16 sm:py-24 bg-background">
+          <div className="container max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold font-headline">Frequently Asked Questions</h2>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                Your questions, answered. Find information about tickets, hours, and our policies.
+              </p>
+            </div>
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((faq, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger className="text-lg font-semibold text-left">{faq.question}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-base">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+            <div className="text-center mt-12">
+                <Button variant="outline" asChild><Link href="/contact">Still have questions? Contact Us</Link></Button>
+            </div>
+          </div>
+        </section>
 
-        <section className="py-16 sm:py-24 bg-background">
+        <section id="why-book-with-us" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-16">
               <h2 className="text-3xl font-bold font-headline text-primary">Why Book With Us?</h2>
@@ -646,8 +695,8 @@ export default function BookingPage() {
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {whyBookWithUsItems.map((item) => (
-                <div key={item.title} className="group text-center p-8 bg-secondary/30 rounded-xl shadow-lg hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-background text-primary mx-auto mb-6 transition-all duration-300 ring-4 ring-transparent group-hover:ring-primary/10 group-hover:bg-primary group-hover:text-primary-foreground">
+                <div key={item.title} className="group text-center p-8 bg-background rounded-xl shadow-lg hover:shadow-primary/20 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6 transition-all duration-300 ring-4 ring-transparent group-hover:ring-primary/10 group-hover:bg-primary group-hover:text-primary-foreground">
                     <item.icon className="w-10 h-10" />
                   </div>
                   <h3 className="text-2xl font-bold font-headline mb-3">{item.title}</h3>
@@ -658,7 +707,7 @@ export default function BookingPage() {
           </div>
         </section>
         
-        <section id="schedule" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="schedule" className="py-16 sm:py-24 bg-background">
             <div className="container">
                 <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold font-headline text-primary">Event Schedule</h2>
@@ -700,7 +749,7 @@ export default function BookingPage() {
             </div>
         </section>
 
-        <section id="artist-stories" className="py-16 sm:py-24 bg-background">
+        <section id="artist-stories" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Behind the Art</h2>
@@ -733,7 +782,7 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="venue" className="py-16 sm:py-24 bg-background">
           <div className="container">
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
@@ -791,7 +840,7 @@ export default function BookingPage() {
         </section>
 
         <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
-          <div className="container max-w-4xl">
+            <div className="container max-w-4xl">
               <div className="text-center mb-16">
                 <h2 className="text-3xl font-bold font-headline text-primary">Book an Appointment</h2>
                  {step < 3 && (
@@ -800,15 +849,11 @@ export default function BookingPage() {
                     </p>
                 )}
               </div>
-              
+
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
                     {step < 3 && (
-                    <div className="space-y-12">
-                         <div className="space-y-4">
-                            <Progress value={progressValue} className="h-2" />
-                        </div>
-                    </div>
+                        <Progress value={progressValue} className="h-2" />
                     )}
 
                     {step === 1 && (
@@ -1029,4 +1074,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
