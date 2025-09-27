@@ -1,6 +1,7 @@
 
 "use client"
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -23,7 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Palette, User, Mail, Phone, Lock } from "lucide-react";
+import { Palette, User, Mail, Phone, Lock, Eye, EyeOff } from "lucide-react";
 import { useAddClientMutation } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
 
@@ -44,6 +45,8 @@ export default function RegisterPage() {
   const router = useRouter();
   const [addClient, { isLoading }] = useAddClientMutation();
   const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -142,7 +145,10 @@ export default function RegisterPage() {
                       <FormControl>
                         <div className="relative">
                           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          <Input type="password" placeholder="••••••••" {...field} className="pl-10"/>
+                          <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="pl-10"/>
+                           <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                           </Button>
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -158,7 +164,10 @@ export default function RegisterPage() {
                       <FormControl>
                          <div className="relative">
                           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                          <Input type="password" placeholder="••••••••" {...field} className="pl-10"/>
+                          <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className="pl-10"/>
+                          <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                                {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </Button>
                         </div>
                       </FormControl>
                       <FormMessage />
