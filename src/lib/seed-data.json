@@ -1,0 +1,63 @@
+
+[
+  {
+    "name": "Diwali Celebration Rangoli",
+    "category": "Rangoli",
+    "price": "200",
+    "creationTime": 120,
+    "status": "Active",
+    "images": [
+      "https://picsum.photos/seed/diwali-rangoli/600/400"
+    ],
+    "hint": "colorful rangoli diwali",
+    "editorsPick": true
+  },
+  {
+    "name": "Geometric Elegance",
+    "category": "Nail Art",
+    "price": "80",
+    "creationTime": 60,
+    "status": "Active",
+    "images": [
+      "https://picsum.photos/seed/geometric-nails/600/400"
+    ],
+    "hint": "geometric nail art",
+    "editorsPick": false
+  },
+  {
+    "name": "Azure Dream Necklace",
+    "category": "Custom Jewelry",
+    "price": "250",
+    "creationTime": 180,
+    "status": "Active",
+    "images": [
+      "https://picsum.photos/seed/azure-necklace/600/400"
+    ],
+    "hint": "blue gem necklace",
+    "editorsPick": true
+  },
+  {
+    "name": "Minimalist Vine Henna",
+    "category": "Mehndi",
+    "price": "75",
+    "creationTime": 45,
+    "status": "Draft",
+    "images": [
+      "https://picsum.photos/seed/simple-henna/600/400"
+    ],
+    "hint": "simple henna vine",
+    "editorsPick": false
+  },
+  {
+    "name": "Spring Blossom Nails",
+    "category": "Nail Art",
+    "price": "95",
+    "creationTime": 75,
+    "status": "Active",
+    "images": [
+      "https://picsum.photos/seed/floral-nails/600/400"
+    ],
+    "hint": "floral nail design",
+    "editorsPick": false
+  }
+]
