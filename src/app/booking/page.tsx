@@ -3,7 +3,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -88,6 +88,18 @@ const bookingSchema = z.object({
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
+// Mock authentication check
+const useAuth = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    useEffect(() => {
+        // In a real app, you'd check for a token in localStorage or a cookie
+        const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        setIsAuthenticated(loggedIn);
+    }, []);
+    return { isAuthenticated };
+}
+
+
 const isValidUrl = (string: string | undefined): boolean => {
     if (!string || typeof string !== 'string' || string.trim() === '') return false;
     try {
@@ -100,8 +112,10 @@ const isValidUrl = (string: string | undefined): boolean => {
 };
 
 function BookingPageContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const artPieceId = searchParams.get('artPieceId');
+  const { isAuthenticated } = useAuth();
   
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -326,7 +340,14 @@ function BookingPageContent() {
     
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
-      setStep(step + 1);
+      if (isAuthenticated) {
+        setStep(step + 1);
+      } else {
+        // Store form data and redirect to login
+        const formData = form.getValues();
+        localStorage.setItem('pendingBooking', JSON.stringify(formData));
+        router.push('/login?redirect=/booking');
+      }
     }
   }
 
@@ -335,13 +356,32 @@ function BookingPageContent() {
   }
 
   function onSubmit(data: BookingFormValues) {
+    if (!isAuthenticated) {
+      const formData = form.getValues();
+      localStorage.setItem('pendingBooking', JSON.stringify(formData));
+      router.push('/login?redirect=/booking');
+      return;
+    }
     console.log(data);
     setStep(3)
+    localStorage.removeItem('pendingBooking');
     toast({
       title: "Booking Submitted!",
       description: "We have received your request and will be in touch shortly.",
     });
   }
+
+  useEffect(() => {
+    const pendingBooking = localStorage.getItem('pendingBooking');
+    if (pendingBooking && isAuthenticated) {
+      const bookingData = JSON.parse(pendingBooking);
+      form.reset(bookingData);
+      // Decide which step to show. If basic details are filled, go to step 2.
+      if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
+        setStep(2);
+      }
+    }
+  }, [isAuthenticated, form]);
   
   const progressValue = step === 1 ? 33 : step === 2 ? 66 : 100;
   const stepTitles = ["Select Service & Time", "Your Contact Details", "Booking Confirmed!"];
@@ -442,7 +482,7 @@ function BookingPageContent() {
                         <div className="text-center sm:text-left">
                           <p className="text-sm text-muted-foreground">{requestedArtPiece.category}</p>
                           <CardTitle className="text-xl font-bold font-headline">{requestedArtPiece.name}</CardTitle>
-                          <p className="text-lg font-semibold text-primary mt-1">${requestedArtPiece.price}</p>
+                          <p className="text-lg font-semibold text-primary">${requestedArtPiece.price}</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -1047,4 +1087,13 @@ function BookingPageContent() {
       </footer>
     </div>
   );
+}
+
+
+export default function BookingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BookingPageContent />
+        </Suspense>
+    )
 }

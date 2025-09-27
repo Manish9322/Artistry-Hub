@@ -2,7 +2,7 @@
 "use client"
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,12 +17,14 @@ import { Palette } from "lucide-react";
 
 export default function ClientLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically handle authentication logic
-    // For now, we'll just redirect to the profile page
-    router.push('/profile');
+    // In a real app, you would typically handle authentication logic
+    localStorage.setItem('isLoggedIn', 'true');
+    const redirectUrl = searchParams.get('redirect') || '/profile/overview';
+    router.push(redirectUrl);
   };
 
   return (
@@ -46,6 +48,7 @@ export default function ClientLoginPage() {
                 type="email"
                 placeholder="me@example.com"
                 required
+                defaultValue="jessica.l@example.com"
               />
             </div>
             <div className="grid gap-2">
@@ -58,7 +61,7 @@ export default function ClientLoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required defaultValue="password" />
             </div>
             <Button type="submit" className="w-full">
               Login
