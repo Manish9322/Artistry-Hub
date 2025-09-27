@@ -125,7 +125,6 @@ function AdminSidebar() {
             <Palette className="w-6 h-6 text-primary" />
             {state === 'expanded' && <span className="font-bold text-lg font-headline">Artistry Hub</span>}
         </div>
-         <SidebarTrigger className="hidden md:flex" />
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -224,6 +223,13 @@ function AdminSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+              <SidebarTrigger className="w-full justify-start hidden md:flex" asChild>
+                <Button variant="ghost" className="h-8">
+                  <span className="group-data-[collapsible=icon]:hidden">Collapse</span>
+                </Button>
+              </SidebarTrigger>
+          </SidebarMenuItem>
           <SidebarMenuItem>
              <Link href="#" passHref legacyBehavior>
                 <SidebarMenuButton asChild tooltip="Settings">
