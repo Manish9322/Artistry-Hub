@@ -2,12 +2,13 @@
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
 import Client from '@/models/client.model.js';
+import ArtPiece from '@/models/artPiece.model.js'; // Ensure ArtPiece model is imported
 
 // Example GET handler to fetch all clients
 export async function GET() {
   await _db();
   try {
-    const clients = await Client.find({});
+    const clients = await Client.find({}).populate('bookedArtPieces');
     return NextResponse.json(clients, { status: 200 });
   } catch (error) {
     return NextResponse.json({ message: 'Failed to fetch clients', error: error.message }, { status: 500 });

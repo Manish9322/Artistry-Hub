@@ -3,7 +3,7 @@
 'use client';
 
 import * as React from 'react';
-import { Users, File, PlusCircle, Mail, Phone, ListFilter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, File, PlusCircle, Mail, Phone, ListFilter, ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -24,6 +24,19 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { useGetClientsQuery } from '@/services/api';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import Image from 'next/image';
+import placeholderImages from '@/lib/placeholder-images.json';
+
+type ArtPiece = {
+  _id: string;
+  name: string;
+  images: string[];
+  hint: string;
+};
 
 type Client = {
   _id: string;
@@ -33,12 +46,15 @@ type Client = {
   totalSpent: number;
   avatar?: string;
   hint?: string;
+  bookedArtPieces?: ArtPiece[];
 };
 
 export default function ClientsPage() {
   const { data: clients = [], isLoading } = useGetClientsQuery();
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
   const itemsPerPage = 10;
 
   const filteredClients = React.useMemo(() => {
@@ -70,9 +86,15 @@ export default function ClientsPage() {
     link.click();
     document.body.removeChild(link);
   };
+  
+  const handleViewDetails = (client: Client) => {
+    setSelectedClient(client);
+    setIsViewModalOpen(true);
+  }
 
 
   return (
+    <>
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
        <div className="flex items-center pt-4">
         <div className="flex-1">
@@ -114,12 +136,16 @@ export default function ClientsPage() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Contact</TableHead>
+                <TableHead>Booked Pieces</TableHead>
                 <TableHead className="text-right">Total Spent</TableHead>
+                <TableHead>
+                    <span className="sr-only">Actions</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                  <TableRow><TableCell colSpan={3} className="text-center">Loading...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
               ) : paginatedClients.length > 0 ? (
               paginatedClients.map((client: Client) => (
                 <TableRow key={client._id}>
@@ -138,10 +164,25 @@ export default function ClientsPage() {
                         {client.phone && <span className="flex items-center gap-2 text-sm text-muted-foreground"><Phone className="h-4 w-4 text-muted-foreground"/>{client.phone}</span>}
                     </div>
                   </TableCell>
+                   <TableCell className="text-center">{client.bookedArtPieces?.length || 0}</TableCell>
                   <TableCell className="text-right font-medium">${client.totalSpent.toFixed(2)}</TableCell>
+                  <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button aria-haspopup="true" size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleViewDetails(client)}>View Details</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                 </TableRow>
               ))) : (
-                  <TableRow><TableCell colSpan={3} className="text-center h-24">No clients found.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center h-24">No clients found.</TableCell></TableRow>
               )}
             </TableBody>
           </Table>
@@ -178,5 +219,60 @@ export default function ClientsPage() {
           </CardFooter>
       </Card>
     </main>
+
+    <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+                <DialogTitle>Client Details</DialogTitle>
+                <DialogDescription>
+                    Viewing information for {selectedClient?.name}.
+                </DialogDescription>
+            </DialogHeader>
+            {selectedClient && (
+                <div className="space-y-4 py-4 text-sm">
+                     <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-1.5">
+                            <Label>Name</Label>
+                            <p className="text-muted-foreground">{selectedClient.name}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Email</Label>
+                            <p className="text-muted-foreground">{selectedClient.email}</p>
+                        </div>
+                         <div className="grid gap-1.5">
+                            <Label>Phone</Label>
+                            <p className="text-muted-foreground">{selectedClient.phone || 'N/A'}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Total Spent</Label>
+                            <p className="font-semibold">${selectedClient.totalSpent.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <Separator />
+                    <div className="grid gap-1.5">
+                       <Label>Booked Art Pieces</Label>
+                        {selectedClient.bookedArtPieces && selectedClient.bookedArtPieces.length > 0 ? (
+                            <div className="space-y-3 mt-2">
+                                {selectedClient.bookedArtPieces.map(piece => (
+                                     <div key={piece._id} className="flex items-center gap-4 p-2 rounded-md bg-secondary/50">
+                                         <Image src={piece.images?.[0] || placeholderImages.defaultSquare} alt={piece.name} width={48} height={48} className="rounded-md object-cover" data-ai-hint={piece.hint} />
+                                         <p className="font-semibold">{piece.name}</p>
+                                     </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-muted-foreground">No art pieces booked.</p>
+                        )}
+                    </div>
+                </div>
+            )}
+            <DialogFooter>
+                <DialogClose asChild>
+                    <Button>Close</Button>
+                </DialogClose>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

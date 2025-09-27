@@ -32,6 +32,10 @@ const ClientSchema = new mongoose.Schema({
   hint: {
     type: String,
   },
+  bookedArtPieces: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ArtPiece'
+  }],
 }, {
   timestamps: true,
 });
