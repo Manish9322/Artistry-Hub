@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 const registerSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^[0-9]*$/, { message: "Phone number can only contain digits." }).optional().or(z.literal('')),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string()
 }).refine((data) => data.password === data.confirmPassword, {
