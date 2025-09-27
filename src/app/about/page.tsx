@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 
 const isValidUrl = (string: string | undefined): boolean => {
