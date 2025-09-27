@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart, Coffee, DraftingCompass, Sparkles as SparklesIcon, Smile } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -709,293 +709,263 @@ export default function BookingPage() {
           </div>
         </section>
 
-        <section id="venue" className="py-16 sm:py-24 bg-secondary/30">
+        <section id="session-process" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold font-headline text-primary">Venue Details</h2>
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold font-headline text-primary">A Glimpse of the Process</h2>
               <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                Find us at the heart of the city's art district. Here’s how you can get to the exhibition.
+                From the moment you arrive, we ensure a relaxing, collaborative, and memorable artistic experience. Here’s what to expect during your session.
               </p>
             </div>
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xl font-bold font-headline flex items-center gap-3 mb-2"><MapPin className="text-primary w-6 h-6" /> Location</h3>
-                  <p className="text-muted-foreground">123 Art Gallery Lane, Creativity City, 12345</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+              {[
+                { icon: Coffee, title: "Welcome & Settle In", description: "Arrive at our serene studio, enjoy a complimentary beverage, and relax as we prepare for your session." },
+                { icon: DraftingCompass, title: "Design Finalization", description: "We'll review your chosen design or inspiration, making any final tweaks to ensure it's perfect for you." },
+                { icon: Paintbrush, title: "The Artistry in Motion", description: "Sit back as our skilled artist meticulously brings your design to life, using premium materials and techniques." },
+                { icon: Smile, title: "The Grand Reveal", description: "See your finished masterpiece for the first time and receive aftercare instructions to keep it looking beautiful." }
+              ].map((step, index) => (
+                <div key={index} className="flex flex-col items-center text-center p-6 bg-background rounded-lg shadow-lg">
+                  <div className="flex-shrink-0 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
+                    <step.icon className="w-8 h-8" />
+                  </div>
+                  <h3 className="font-bold text-lg font-headline mb-2">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm">{step.description}</p>
                 </div>
-                <div className="grid sm:grid-cols-3 gap-6">
-                   <div className="flex items-start gap-3">
-                      <Car className="w-6 h-6 text-primary flex-shrink-0 mt-1"/>
-                      <div>
-                          <h4 className="font-bold">Parking</h4>
-                          <p className="text-muted-foreground text-sm">Ample street and garage parking available nearby.</p>
-                      </div>
-                   </div>
-                   <div className="flex items-start gap-3">
-                      <Train className="w-6 h-6 text-primary flex-shrink-0 mt-1"/>
-                      <div>
-                          <h4 className="font-bold">Public Transit</h4>
-                          <p className="text-muted-foreground text-sm">Accessible via the City Art Line, stop "Gallery Central".</p>
-                      </div>
-                   </div>
-                   <div className="flex items-start gap-3">
-                      <Accessibility className="w-6 h-6 text-primary flex-shrink-0 mt-1"/>
-                      <div>
-                          <h4 className="font-bold">Accessibility</h4>
-                          <p className="text-muted-foreground text-sm">The venue is fully wheelchair accessible.</p>
-                      </div>
-                   </div>
-                </div>
-                 <Button variant="outline" asChild>
-                  <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">
-                    Get Directions
-                  </a>
-                </Button>
-              </div>
-              <div className="rounded-lg overflow-hidden shadow-xl">
-                 <Image
-                  src="https://placehold.co/600x400.png"
-                  alt="Map to Artistry Hub"
-                  width={600}
-                  height={400}
-                  className="w-full object-cover"
-                  data-ai-hint="city map"
-                />
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
         <section id="booking-form" className="py-16 sm:py-24 bg-secondary/30">
           <div className="container max-w-4xl">
-              <div className="text-center mb-16">
-                <h2 className="text-3xl font-bold font-headline text-primary">Book an Appointment</h2>
-                {step < 3 && (
-                    <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                        Step {step} of 2: {stepTitles[step-1]}
-                    </p>
-                )}
-              </div>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
-                      {step < 3 && (
-                           <div className="space-y-4">
-                              <div className="flex justify-between items-center text-sm font-medium">
-                                <p className="text-muted-foreground">Step {step} of 2</p>
-                                <p className="text-primary">{stepTitles[step-1]}</p>
-                              </div>
-                              <Progress value={progressValue} className="h-2" />
-                            </div>
-                      )}
+            <div className="text-center mb-16">
+              <h2 className="text-3xl font-bold font-headline text-primary">Book an Appointment</h2>
+              {step < 3 && (
+                  <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                      Step {step} of 2: {stepTitles[step-1]}
+                  </p>
+              )}
+            </div>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
+                  {step < 3 && (
+                       <div className="space-y-4">
+                          <div className="flex justify-between items-center text-sm font-medium">
+                            <p className="text-muted-foreground">Step {step} of 2</p>
+                            <p className="text-primary">{stepTitles[step-1]}</p>
+                          </div>
+                          <Progress value={progressValue} className="h-2" />
+                        </div>
+                  )}
 
-                      {step === 1 && (
-                        <div className="space-y-8 animate-in fade-in-0 duration-500">
+                  {step === 1 && (
+                    <div className="space-y-8 animate-in fade-in-0 duration-500">
+                      <FormField
+                        control={form.control}
+                        name="serviceType"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Service Type</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
+                                  <SelectValue placeholder="Select a service" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="mehndi">Mehndi</SelectItem>
+                                <SelectItem value="rangoli">Rangoli</SelectItem>
+                                <SelectItem value="nail-art">Nail Art</SelectItem>
+                                <SelectItem value="jewelry">Custom Jewelry Consultation</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                           <FormField
-                            control={form.control}
-                            name="serviceType"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Service Type</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          control={form.control}
+                          name="bookingDate"
+                          render={({ field }) => (
+                              <FormItem className="flex flex-col">
+                              <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Date</FormLabel>
+                              <Popover>
+                                  <PopoverTrigger asChild>
                                   <FormControl>
-                                    <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
-                                      <SelectValue placeholder="Select a service" />
-                                    </SelectTrigger>
+                                      <Button
+                                      variant={"outline"}
+                                      className={cn(
+                                          "h-14 w-full pl-3 text-left font-normal text-base p-6 rounded-lg border-2 bg-background shadow-sm",
+                                          !field.value && "text-muted-foreground"
+                                      )}
+                                      >
+                                      {field.value ? (
+                                          format(field.value, "PPP")
+                                      ) : (
+                                          <span>Pick a date</span>
+                                      )}
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                      </Button>
+                                  </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                      mode="single"
+                                      selected={field.value}
+                                      onSelect={field.onChange}
+                                      disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
+                                      initialFocus
+                                  />
+                                  </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                              </FormItem>
+                          )}
+                          />
+                          <FormField
+                          control={form.control}
+                          name="bookingTime"
+                          render={({ field }) => (
+                              <FormItem>
+                              <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Time Slot</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                  <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
+                                      <SelectValue placeholder="Select a time" />
+                                  </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    <SelectItem value="mehndi">Mehndi</SelectItem>
-                                    <SelectItem value="rangoli">Rangoli</SelectItem>
-                                    <SelectItem value="nail-art">Nail Art</SelectItem>
-                                    <SelectItem value="jewelry">Custom Jewelry Consultation</SelectItem>
+                                  {timeSlots.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}
                                   </SelectContent>
-                                </Select>
-                                <FormMessage />
+                              </Select>
+                              <FormMessage />
                               </FormItem>
-                            )}
+                          )}
                           />
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      </div>
+                    </div>
+                  )}
+                  
+                  {step === 2 && (
+                    <div className="space-y-8 animate-in fade-in-0 duration-500">
+                         <h3 className="text-3xl font-bold font-headline text-center">Your Contact Details</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                               <FormField
-                              control={form.control}
-                              name="bookingDate"
-                              render={({ field }) => (
-                                  <FormItem className="flex flex-col">
-                                  <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Date</FormLabel>
-                                  <Popover>
-                                      <PopoverTrigger asChild>
-                                      <FormControl>
-                                          <Button
-                                          variant={"outline"}
-                                          className={cn(
-                                              "h-14 w-full pl-3 text-left font-normal text-base p-6 rounded-lg border-2 bg-background shadow-sm",
-                                              !field.value && "text-muted-foreground"
-                                          )}
-                                          >
-                                          {field.value ? (
-                                              format(field.value, "PPP")
-                                          ) : (
-                                              <span>Pick a date</span>
-                                          )}
-                                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                          </Button>
-                                      </FormControl>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-auto p-0" align="start">
-                                      <Calendar
-                                          mode="single"
-                                          selected={field.value}
-                                          onSelect={field.onChange}
-                                          disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() -1)) }
-                                          initialFocus
-                                      />
-                                      </PopoverContent>
-                                  </Popover>
-                                  <FormMessage />
-                                  </FormItem>
-                              )}
-                              />
-                              <FormField
-                              control={form.control}
-                              name="bookingTime"
-                              render={({ field }) => (
+                                  control={form.control}
+                                  name="name"
+                                  render={({ field }) => (
                                   <FormItem>
-                                  <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Time Slot</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                                       <FormControl>
-                                      <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
-                                          <SelectValue placeholder="Select a time" />
-                                      </SelectTrigger>
-                                      </FormControl>
-                                      <SelectContent>
-                                      {timeSlots.map(slot => <SelectItem key={slot} value={slot}>{slot}</SelectItem>)}
-                                      </SelectContent>
-                                  </Select>
-                                  <FormMessage />
-                                  </FormItem>
-                              )}
-                              />
-                          </div>
-                        </div>
-                      )}
-                      
-                      {step === 2 && (
-                        <div className="space-y-8 animate-in fade-in-0 duration-500">
-                             <h3 className="text-3xl font-bold font-headline text-center">Your Contact Details</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                  <FormField
-                                      control={form.control}
-                                      name="name"
-                                      render={({ field }) => (
-                                      <FormItem>
-                                          <FormControl>
-                                            <Label htmlFor="name" className={cn(
-                                                "flex items-center p-6 rounded-lg border-2 bg-background cursor-text transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1",
-                                                "hover:border-primary",
-                                            )}>
-                                                 <User className="w-6 h-6 text-muted-foreground mr-4" />
-                                                  <Input id="name" placeholder="Your Name" {...field} className="flex-1 text-lg font-semibold border-0 p-0 h-auto bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" />
-                                            </Label>
-                                          </FormControl>
-                                          <FormMessage className="pl-4" />
-                                      </FormItem>
-                                      )}
-                                  />
-                                  <FormField
-                                      control={form.control}
-                                      name="email"
-                                      render={({ field }) => (
-                                      <FormItem>
-                                          <FormControl>
-                                                <Label htmlFor="email" className={cn(
-                                                    "flex items-center p-6 rounded-lg border-2 bg-background cursor-text transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1",
-                                                    "hover:border-primary",
-                                                )}>
-                                                     <Mail className="w-6 h-6 text-muted-foreground mr-4" />
-                                                      <Input id="email" type="email" placeholder="Your Email" {...field} className="flex-1 text-lg font-semibold border-0 p-0 h-auto bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" />
-                                                </Label>
-                                          </FormControl>
-                                          <FormMessage className="pl-4" />
-                                      </FormItem>
-                                      )}
-                                  />
-                            </div>
-                            <FormField
-                              control={form.control}
-                              name="phone"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                        <Label htmlFor="phone" className={cn(
+                                        <Label htmlFor="name" className={cn(
                                             "flex items-center p-6 rounded-lg border-2 bg-background cursor-text transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1",
                                             "hover:border-primary",
                                         )}>
-                                             <Phone className="w-6 h-6 text-muted-foreground mr-4" />
-                                              <Input id="phone" type="tel" placeholder="Phone Number (Optional)" {...field} className="flex-1 text-lg font-semibold border-0 p-0 h-auto bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" />
+                                             <User className="w-6 h-6 text-muted-foreground mr-4" />
+                                              <Input id="name" placeholder="Your Name" {...field} className="flex-1 text-lg font-semibold border-0 p-0 h-auto bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" />
                                         </Label>
-                                  </FormControl>
-                                  <FormMessage className="pl-4" />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={form.control}
-                              name="notes"
-                              render={({ field }) => (
-                                <FormItem>
-                                    <Label className="text-xl font-bold font-headline text-center block mb-4">Special Requests (Optional)</Label>
-                                    <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base p-6 rounded-lg border-2 bg-background shadow-sm" /></FormControl>
-                                    <FormMessage className="pl-4" />
-                                </FormItem>
-                              )}
-                            />
+                                      </FormControl>
+                                      <FormMessage className="pl-4" />
+                                  </FormItem>
+                                  )}
+                              />
+                              <FormField
+                                  control={form.control}
+                                  name="email"
+                                  render={({ field }) => (
+                                  <FormItem>
+                                      <FormControl>
+                                            <Label htmlFor="email" className={cn(
+                                                "flex items-center p-6 rounded-lg border-2 bg-background cursor-text transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1",
+                                                "hover:border-primary",
+                                            )}>
+                                                 <Mail className="w-6 h-6 text-muted-foreground mr-4" />
+                                                  <Input id="email" type="email" placeholder="Your Email" {...field} className="flex-1 text-lg font-semibold border-0 p-0 h-auto bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" />
+                                            </Label>
+                                      </FormControl>
+                                      <FormMessage className="pl-4" />
+                                  </FormItem>
+                                  )}
+                              />
                         </div>
-                      )}
+                        <FormField
+                          control={form.control}
+                          name="phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormControl>
+                                    <Label htmlFor="phone" className={cn(
+                                        "flex items-center p-6 rounded-lg border-2 bg-background cursor-text transition-all duration-300 shadow-sm hover:shadow-lg hover:-translate-y-1",
+                                        "hover:border-primary",
+                                    )}>
+                                         <Phone className="w-6 h-6 text-muted-foreground mr-4" />
+                                          <Input id="phone" type="tel" placeholder="Phone Number (Optional)" {...field} className="flex-1 text-lg font-semibold border-0 p-0 h-auto bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0" />
+                                    </Label>
+                              </FormControl>
+                              <FormMessage className="pl-4" />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="notes"
+                          render={({ field }) => (
+                            <FormItem>
+                                <Label className="text-xl font-bold font-headline text-center block mb-4">Special Requests (Optional)</Label>
+                                <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base p-6 rounded-lg border-2 bg-background shadow-sm" /></FormControl>
+                                <FormMessage className="pl-4" />
+                            </FormItem>
+                          )}
+                        />
+                    </div>
+                  )}
 
-                      {step === 3 && (
-                        <div className="text-center animate-in fade-in-0 duration-500 py-8">
-                            <div className="relative w-40 h-40 mx-auto mb-8">
-                                <svg className="w-full h-full" viewBox="0 0 100 100">
-                                    <circle className="text-border" strokeWidth="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
-                                    <circle
-                                    className="text-green-500"
-                                    strokeWidth="8"
-                                    strokeDasharray="264 264"
-                                    strokeLinecap="round"
-                                    stroke="currentColor"
-                                    fill="transparent"
-                                    r="42"
-                                    cx="50"
-                                    cy="50"
-                                    style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%", transition: "stroke-dasharray 1s ease-out" }}
-                                    />
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <Check className="h-16 w-16 text-green-500" />
-                                </div>
-                            </div>
-                            <h3 className="text-3xl font-bold font-headline">Booking Submitted!</h3>
-                            <p className="text-lg text-muted-foreground mt-4">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
-                            <div className="mt-8 flex justify-center gap-4">
-                              <Button asChild size="lg"><Link href="/">Back to Home</Link></Button>
-                              <Button asChild variant="outline" size="lg"><Link href="/#categories">Explore More Art</Link></Button>
+                  {step === 3 && (
+                    <div className="text-center animate-in fade-in-0 duration-500 py-8">
+                        <div className="relative w-40 h-40 mx-auto mb-8">
+                            <svg className="w-full h-full" viewBox="0 0 100 100">
+                                <circle className="text-border" strokeWidth="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                                <circle
+                                className="text-green-500"
+                                strokeWidth="8"
+                                strokeDasharray="264 264"
+                                strokeLinecap="round"
+                                stroke="currentColor"
+                                fill="transparent"
+                                r="42"
+                                cx="50"
+                                cy="50"
+                                style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%", transition: "stroke-dasharray 1s ease-out" }}
+                                />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <Check className="h-16 w-16 text-green-500" />
                             </div>
                         </div>
-                      )}
-                      
-                      {step < 3 && (
-                          <div className="mt-12 text-center flex justify-center gap-4">
-                              {step === 2 && (
-                                  <Button type="button" variant="outline" size="lg" onClick={handlePreviousStep}>
-                                  Back
-                                  </Button>
-                              )}
-                              <Button type={step === 1 ? "button" : "submit"} size="lg" onClick={step === 1 ? handleNextStep : undefined}>
-                                {step === 1 ? "Next Step" : "Submit Booking"}
-                                {step === 1 && <ArrowRight className="ml-2 h-5 w-5" />}
+                        <h3 className="text-3xl font-bold font-headline">Booking Submitted!</h3>
+                        <p className="text-lg text-muted-foreground mt-4">Thank you, <span className="font-semibold text-primary">{form.getValues("name")}</span>! Your request has been received. A confirmation will be sent to <span className="font-semibold text-primary">{form.getValues("email")}</span> shortly.</p>
+                        <div className="mt-8 flex justify-center gap-4">
+                          <Button asChild size="lg"><Link href="/">Back to Home</Link></Button>
+                          <Button asChild variant="outline" size="lg"><Link href="/#categories">Explore More Art</Link></Button>
+                        </div>
+                    </div>
+                  )}
+                  
+                  {step < 3 && (
+                      <div className="mt-12 text-center flex justify-center gap-4">
+                          {step === 2 && (
+                              <Button type="button" variant="outline" size="lg" onClick={handlePreviousStep}>
+                              Back
                               </Button>
-                          </div>
-                      )}
-                    </form>
-                  </Form>
+                          )}
+                          <Button type={step === 1 ? "button" : "submit"} size="lg" onClick={step === 1 ? handleNextStep : undefined}>
+                            {step === 1 ? "Next Step" : "Submit Booking"}
+                            {step === 1 && <ArrowRight className="ml-2 h-5 w-5" />}
+                          </Button>
+                      </div>
+                  )}
+                </form>
+              </Form>
           </div>
         </section>
       </main>
@@ -1008,6 +978,3 @@ export default function BookingPage() {
     </div>
   );
 }
-
-
-    
