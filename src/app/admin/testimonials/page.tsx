@@ -10,6 +10,8 @@ import {
   Quote,
   Star,
   MessageSquare,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -81,6 +83,12 @@ export default function TestimonialsPage() {
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
 
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 10;
+    
+    const totalPages = Math.ceil(testimonials.length / itemsPerPage);
+    const paginatedTestimonials = testimonials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -136,6 +144,26 @@ export default function TestimonialsPage() {
         ? (testimonials.reduce((acc: number, t: Testimonial) => acc + t.rating, 0) / testimonials.length).toFixed(1)
         : '0.0', [testimonials]);
 
+    const handleExport = () => {
+        const headers = ["ID", "Author", "Comment", "Rating", "Avatar URL"];
+        const rows = testimonials.map((testimonial: Testimonial) => [
+            testimonial._id,
+            `"${testimonial.name.replace(/"/g, '""')}"`,
+            `"${testimonial.comment.replace(/"/g, '""')}"`,
+            testimonial.rating,
+            testimonial.avatar || '',
+        ].join(','));
+        
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "testimonials.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -145,7 +173,7 @@ export default function TestimonialsPage() {
              <p className="text-muted-foreground mt-1">Manage your client testimonials and reviews.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
-            <Button size="sm" variant="outline" className="h-8 gap-1">
+            <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                 Export
@@ -209,8 +237,8 @@ export default function TestimonialsPage() {
               <TableBody>
                 {isLoading ? (
                     <TableRow><TableCell colSpan={4} className="text-center">Loading...</TableCell></TableRow>
-                ) : (
-                testimonials.map((testimonial: Testimonial) => (
+                ) : paginatedTestimonials.length > 0 ? (
+                paginatedTestimonials.map((testimonial: Testimonial) => (
                   <TableRow key={testimonial._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
@@ -244,14 +272,41 @@ export default function TestimonialsPage() {
                       </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )))}
+                ))) : (
+                    <TableRow><TableCell colSpan={4} className="text-center h-24">No testimonials found.</TableCell></TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-{testimonials.length}</strong> of <strong>{testimonials.length}</strong> testimonials
+              Showing <strong>{(currentPage - 1) * itemsPerPage + 1}-{(currentPage - 1) * itemsPerPage + paginatedTestimonials.length}</strong> of <strong>{testimonials.length}</strong> testimonials
             </div>
+             {totalPages > 1 && (
+                <div className="ml-auto flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="sr-only">Previous</span>
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                        <span className="sr-only">Next</span>
+                    </Button>
+                </div>
+            )}
           </CardFooter>
         </Card>
       </main>

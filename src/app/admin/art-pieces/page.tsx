@@ -8,6 +8,8 @@ import {
   MoreHorizontal,
   ListFilter,
   Paintbrush,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -49,7 +51,6 @@ import {
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from "@/hooks/use-toast";
@@ -75,7 +76,7 @@ type ArtPiece = {
   category: string;
   price: string;
   creationTime: number;
-  status: string;
+  status: 'Active' | 'Draft' | 'Archived';
   images: string[];
   hint: string;
   editorsPick?: boolean;
@@ -105,6 +106,17 @@ export default function ArtPiecesPage() {
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+    
+    const [statusFilter, setStatusFilter] = React.useState<string>('All');
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 10;
+
+    const filteredArtPieces = React.useMemo(() => {
+        return artPieces.filter((piece: ArtPiece) => statusFilter === 'All' || piece.status === statusFilter);
+    }, [artPieces, statusFilter]);
+
+    const totalPages = Math.ceil(filteredArtPieces.length / itemsPerPage);
+    const paginatedArtPieces = filteredArtPieces.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -170,6 +182,29 @@ export default function ArtPiecesPage() {
         return placeholderImages.defaultSquare;
     };
 
+    const handleExport = () => {
+        const headers = ["ID", "Name", "Category", "Price", "Creation Time (mins)", "Status", "Editor's Pick", "Image URLs"];
+        const rows = filteredArtPieces.map((piece: ArtPiece) => [
+            piece._id,
+            `"${piece.name.replace(/"/g, '""')}"`,
+            piece.category,
+            piece.price,
+            piece.creationTime,
+            piece.status,
+            piece.editorsPick ? 'Yes' : 'No',
+            `"${piece.images.join(', ')}"`
+        ].join(','));
+        
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "art_pieces.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
 
   return (
     <>
@@ -180,6 +215,35 @@ export default function ArtPiecesPage() {
              <p className="text-muted-foreground mt-1">Manage your studio's art pieces and designs.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 gap-1">
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Filter
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {['All', 'Active', 'Draft', 'Archived'].map(status => (
+                    <DropdownMenuCheckboxItem
+                        key={status}
+                        checked={statusFilter === status}
+                        onSelect={() => { setStatusFilter(status); setCurrentPage(1); }}
+                    >
+                        {status}
+                    </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
+              <File className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Export
+              </span>
+            </Button>
             <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
               <PlusCircle className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -188,122 +252,111 @@ export default function ArtPiecesPage() {
             </Button>
           </div>
         </div>
-        <Tabs defaultValue="all">
-          <div className="flex items-center">
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
-              <TabsTrigger value="active">Active</TabsTrigger>
-              <TabsTrigger value="draft">Draft</TabsTrigger>
-              <TabsTrigger value="archived" className="hidden sm:flex">
-                Archived
-              </TabsTrigger>
-            </TabsList>
-            <div className="ml-auto flex items-center gap-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 gap-1">
-                    <ListFilter className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                      Filter
-                    </span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuCheckboxItem checked>
-                    Category
-                  </DropdownMenuCheckboxItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button size="sm" variant="outline" className="h-8 gap-1">
-                <File className="h-3.5 w-3.5" />
-                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                  Export
-                </span>
-              </Button>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Art Pieces</CardTitle>
+            <CardDescription>
+              Manage your art pieces and view their sales performance.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="hidden w-[100px] sm:table-cell">
+                    <span className="sr-only">Image</span>
+                  </TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Price</TableHead>
+                  <TableHead className="hidden md:table-cell">Creation Time</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                    <TableRow><TableCell colSpan={6} className="text-center">Loading...</TableCell></TableRow>
+                ) : paginatedArtPieces.length > 0 ? (
+                paginatedArtPieces.map((artPiece: ArtPiece) => (
+                  <TableRow key={artPiece._id}>
+                    <TableCell className="hidden sm:table-cell">
+                      <Image
+                        alt={artPiece.name}
+                        className="aspect-square rounded-md object-cover"
+                        height="64"
+                        src={getSafeImage(artPiece.images)}
+                        width="64"
+                        data-ai-hint={artPiece.hint}
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{artPiece.name}</TableCell>
+                    <TableCell>
+                       <Badge variant={artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline'}>
+                         {artPiece.status}
+                       </Badge>
+                    </TableCell>
+                    <TableCell>${artPiece.price}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {artPiece.creationTime} mins
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button aria-haspopup="true" size="icon" variant="ghost">
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleViewClick(artPiece)}>View</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))) : (
+                    <TableRow><TableCell colSpan={6} className="text-center h-24">No art pieces found.</TableCell></TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+          <CardFooter>
+            <div className="text-xs text-muted-foreground">
+              Showing <strong>{(currentPage - 1) * itemsPerPage + 1}-{(currentPage - 1) * itemsPerPage + paginatedArtPieces.length}</strong> of <strong>{filteredArtPieces.length}</strong> products
             </div>
-          </div>
-          <TabsContent value="all">
-            <Card>
-              <CardHeader>
-                <CardTitle>Art Pieces</CardTitle>
-                <CardDescription>
-                  Manage your art pieces and view their sales performance.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="hidden w-[100px] sm:table-cell">
-                        <span className="sr-only">Image</span>
-                      </TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead className="hidden md:table-cell">Creation Time</TableHead>
-                      <TableHead>
-                        <span className="sr-only">Actions</span>
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {isLoading ? (
-                        <TableRow><TableCell colSpan={6} className="text-center">Loading...</TableCell></TableRow>
-                    ) : (
-                    artPieces.map((artPiece: ArtPiece) => (
-                      <TableRow key={artPiece._id}>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt={artPiece.name}
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src={getSafeImage(artPiece.images)}
-                            width="64"
-                            data-ai-hint={artPiece.hint}
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">{artPiece.name}</TableCell>
-                        <TableCell>
-                          <Badge variant={artPiece.editorsPick ? "default" : (artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline')}>
-                            {artPiece.editorsPick ? "Editor's Pick" : artPiece.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{artPiece.price}</TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          {artPiece.creationTime} mins
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button aria-haspopup="true" size="icon" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handleViewClick(artPiece)}>View</DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    )))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-              <CardFooter>
-                <div className="text-xs text-muted-foreground">
-                  Showing <strong>1-{artPieces.length}</strong> of <strong>{artPieces.length}</strong> products
+            {totalPages > 1 && (
+                <div className="ml-auto flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="sr-only">Previous</span>
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                        <span className="sr-only">Next</span>
+                    </Button>
                 </div>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            )}
+          </CardFooter>
+        </Card>
       </div>
 
       {/* Add/Edit Modal */}
@@ -428,7 +481,7 @@ export default function ArtPiecesPage() {
                         </div>
                          <div className="grid gap-1.5">
                             <Label>Price</Label>
-                            <p className="text-muted-foreground">{selectedArtPiece.price}</p>
+                            <p className="text-muted-foreground">${selectedArtPiece.price}</p>
                         </div>
                         <div className="grid gap-1.5">
                             <Label>Creation Time (in minutes)</Label>
@@ -437,10 +490,14 @@ export default function ArtPiecesPage() {
                         <div className="grid gap-1.5">
                             <Label>Status</Label>
                             <p>
-                                <Badge variant={selectedArtPiece.editorsPick ? 'default' : (selectedArtPiece.status === 'Active' ? 'default' : selectedArtPiece.status === 'Draft' ? 'secondary' : 'outline')}>
-                                  {selectedArtPiece.editorsPick ? "Editor's Pick" : selectedArtPiece.status}
+                                <Badge variant={selectedArtPiece.status === 'Active' ? 'default' : selectedArtPiece.status === 'Draft' ? 'secondary' : 'outline'}>
+                                  {selectedArtPiece.status}
                                 </Badge>
                             </p>
+                        </div>
+                         <div className="grid gap-1.5">
+                            <Label>Editor's Pick</Label>
+                            <p className="text-muted-foreground">{selectedArtPiece.editorsPick ? "Yes" : "No"}</p>
                         </div>
                     </div>
                 </div>

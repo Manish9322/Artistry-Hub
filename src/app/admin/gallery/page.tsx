@@ -13,6 +13,9 @@ import {
   FilePen,
   Upload,
   Video,
+  ListFilter,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +35,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
 import {
   Table,
@@ -97,6 +101,17 @@ export default function GalleryPage() {
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
 
+    const [statusFilter, setStatusFilter] = React.useState<string>('All');
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const itemsPerPage = 10;
+    
+    const filteredImages = React.useMemo(() => {
+        return galleryImages.filter((image: GalleryImage) => statusFilter === 'All' || image.status === statusFilter);
+    }, [galleryImages, statusFilter]);
+
+    const totalPages = Math.ceil(filteredImages.length / itemsPerPage);
+    const paginatedImages = filteredImages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -154,6 +169,26 @@ export default function GalleryPage() {
         archived: galleryImages.filter((img: GalleryImage) => img.status === 'Archived').length,
     }), [galleryImages]);
 
+    const handleExport = () => {
+        const headers = ["ID", "Title", "Gallery", "Status", "Image URL"];
+        const rows = filteredImages.map((image: GalleryImage) => [
+            image._id,
+            `"${image.title.replace(/"/g, '""')}"`,
+            image.gallery,
+            image.status,
+            image.image,
+        ].join(','));
+        
+        const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "gallery_media.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -163,6 +198,35 @@ export default function GalleryPage() {
              <p className="text-muted-foreground mt-1">Manage images and videos for your website's galleries.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="h-8 gap-1">
+                  <ListFilter className="h-3.5 w-3.5" />
+                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                    Filter
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {['All', 'Published', 'Draft', 'Archived'].map(status => (
+                    <DropdownMenuCheckboxItem
+                        key={status}
+                        checked={statusFilter === status}
+                        onSelect={() => { setStatusFilter(status); setCurrentPage(1); }}
+                    >
+                        {status}
+                    </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
+              <File className="h-3.5 w-3.5" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                Export
+              </span>
+            </Button>
             <Button size="sm" variant="outline" className="h-8 gap-1">
               <Upload className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -269,8 +333,8 @@ export default function GalleryPage() {
               <TableBody>
                 {isLoading ? (
                     <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
-                ) : (
-                galleryImages.map((image: GalleryImage) => {
+                ) : paginatedImages.length > 0 ? (
+                paginatedImages.map((image: GalleryImage) => {
                   const imageSrc = isValidUrl(image.image) ? image.image : placeholderImages.defaultSquare;
                   return (
                   <TableRow key={image._id}>
@@ -309,14 +373,41 @@ export default function GalleryPage() {
                     </TableCell>
                   </TableRow>
                   );
-                }))}
+                })) : (
+                  <TableRow><TableCell colSpan={5} className="text-center h-24">No media found.</TableCell></TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">
-              Showing <strong>1-{galleryImages.length}</strong> of <strong>{galleryImages.length}</strong> images
+              Showing <strong>{(currentPage - 1) * itemsPerPage + 1}-{(currentPage - 1) * itemsPerPage + paginatedImages.length}</strong> of <strong>{filteredImages.length}</strong> images
             </div>
+            {totalPages > 1 && (
+                <div className="ml-auto flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="sr-only">Previous</span>
+                    </Button>
+                    <span className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={currentPage === totalPages}
+                    >
+                        <ChevronRight className="h-4 w-4" />
+                        <span className="sr-only">Next</span>
+                    </Button>
+                </div>
+            )}
           </CardFooter>
         </Card>
       </main>
