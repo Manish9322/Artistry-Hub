@@ -1,4 +1,3 @@
-
 // This file will handle the bulk creation of art pieces.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
