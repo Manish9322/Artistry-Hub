@@ -20,8 +20,12 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const newClient = await Client.create(body);
+    // In a real app, you would hash the password here before saving
     return NextResponse.json(newClient, { status: 201 });
   } catch (error) {
+    if (error.code === 11000) { // Duplicate key error
+        return NextResponse.json({ message: 'A client with this email already exists.' }, { status: 409 });
+    }
     return NextResponse.json({ message: 'Failed to create client', error: error.message }, { status: 400 });
   }
 }

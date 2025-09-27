@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Copyright } from "@/components/copyright";
-import { Palette, Instagram, Twitter, Facebook, MessageCircle, Mail, User, Phone } from "lucide-react";
+import { Palette, Instagram, Twitter, Facebook, MessageCircle, Mail, User, Phone, LogIn } from "lucide-react";
 
 export default function ContactPage() {
   return (
@@ -18,7 +18,11 @@ export default function ContactPage() {
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" asChild><Link href="/login">Login</Link></Button>
+              <Button size="sm" variant="outline" asChild><Link href="/register">Register</Link></Button>
+            </div>
           </nav>
         </div>
       </header>

@@ -14,6 +14,11 @@ const ClientSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  password: {
+    type: String,
+    required: [true, 'Please provide a password'],
+    minlength: 6,
+  },
   phone: {
     type: String,
   },

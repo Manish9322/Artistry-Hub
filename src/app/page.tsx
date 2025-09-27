@@ -8,7 +8,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap, Leaf, PartyPopper } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap, Leaf, PartyPopper, LogIn } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -204,7 +204,11 @@ export default function Home() {
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" asChild><Link href="/login">Login</Link></Button>
+              <Button size="sm" variant="outline" asChild><Link href="/register">Register</Link></Button>
+            </div>
           </nav>
         </div>
       </header>

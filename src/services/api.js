@@ -84,6 +84,14 @@ export const api = createApi({
       query: () => 'clients',
       providesTags: ['Clients'],
     }),
+    addClient: builder.mutation({
+      query: (body) => ({
+        url: 'clients',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Clients'],
+    }),
 
     // Testimonials Endpoints
     getTestimonials: builder.query({
@@ -217,6 +225,7 @@ export const {
     useGetBookingsQuery,
     useUpdateBookingMutation,
     useGetClientsQuery,
+    useAddClientMutation,
     useGetTestimonialsQuery,
     useAddTestimonialMutation,
     useUpdateTestimonialMutation,

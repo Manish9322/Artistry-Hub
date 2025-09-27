@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Palette, ShoppingCart, User, Mail, Phone, Home } from "lucide-react";
+import { Palette, ShoppingCart, User, Mail, Phone, Home, LogIn } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -187,7 +187,11 @@ function OrderPageContent() {
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
+            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
+            <div className="flex items-center gap-2">
+              <Button size="sm" asChild><Link href="/login">Login</Link></Button>
+              <Button size="sm" variant="outline" asChild><Link href="/register">Register</Link></Button>
+            </div>
           </nav>
         </div>
       </header>
