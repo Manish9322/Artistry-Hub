@@ -31,7 +31,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
-import { useGetBookingsQuery, useUpdateBookingMutation } from '@/services/api';
+import { useGetBookingsQuery, useUpdateBookingMutation, useGetArtPiecesQuery } from '@/services/api';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import Image from 'next/image';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import placeholderImages from '@/lib/placeholder-images.json';
+
+type ArtPiece = {
+  _id: string;
+  name: string;
+  category: string;
+  images: string[];
+  hint: string;
+};
 
 type Booking = {
   _id: string;
@@ -40,16 +53,26 @@ type Booking = {
   date: string;
   status: 'Confirmed' | 'Completed' | 'Pending' | 'Canceled';
   total: string;
+  artPieceId?: string;
+  email: string;
+  phone?: string;
+  notes?: string;
+  bookingTime: string;
 };
 
 export default function BookingsPage() {
   const { toast } = useToast();
-  const { data: bookings = [], isLoading } = useGetBookingsQuery();
+  const { data: bookings = [], isLoading: bookingsLoading } = useGetBookingsQuery();
+  const { data: artPieces = [], isLoading: artPiecesLoading } = useGetArtPiecesQuery();
   const [updateBooking] = useUpdateBookingMutation();
   
   const [statusFilter, setStatusFilter] = React.useState<string>('All');
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
+  
+  const [selectedBooking, setSelectedBooking] = React.useState<Booking | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+
 
   const filteredBookings = React.useMemo(() => {
     return bookings.filter((booking: Booking) => statusFilter === 'All' || booking.status === statusFilter);
@@ -57,6 +80,8 @@ export default function BookingsPage() {
 
   const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
   const paginatedBookings = filteredBookings.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  
+  const isLoading = bookingsLoading || artPiecesLoading;
 
   const handleStatusChange = async (bookingId: string, newStatus: Booking['status']) => {
     try {
@@ -66,6 +91,11 @@ export default function BookingsPage() {
        console.error("Failed to update booking status:", error);
        toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
     }
+  };
+  
+  const handleViewDetails = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsViewModalOpen(true);
   };
   
   const stats = React.useMemo(() => ({
@@ -116,6 +146,7 @@ export default function BookingsPage() {
 
 
   return (
+    <>
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
        <div className="flex items-center pt-6">
         <div className="flex-1">
@@ -254,7 +285,7 @@ export default function BookingsPage() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleViewDetails(booking)}>View Details</DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuLabel>Update Status</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => handleStatusChange(booking._id, 'Confirmed')}>Confirm</DropdownMenuItem>
@@ -302,5 +333,80 @@ export default function BookingsPage() {
             </CardFooter>
         </Card>
     </main>
+
+    <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Booking Details</DialogTitle>
+            <DialogDescription>
+                ID: {selectedBooking?._id.slice(-6).toUpperCase()}
+            </DialogDescription>
+          </DialogHeader>
+          {selectedBooking && (
+                <div className="space-y-4 py-4 text-sm">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-1.5">
+                            <Label>Customer</Label>
+                            <p className="text-muted-foreground">{selectedBooking.customer}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Service</Label>
+                            <p className="text-muted-foreground">{selectedBooking.service}</p>
+                        </div>
+                         <div className="grid gap-1.5">
+                            <Label>Email</Label>
+                            <p className="text-muted-foreground">{selectedBooking.email}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Phone</Label>
+                            <p className="text-muted-foreground">{selectedBooking.phone || "N/A"}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Date</Label>
+                            <p className="text-muted-foreground">{formatDate(selectedBooking.date)} at {selectedBooking.bookingTime}</p>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label>Status</Label>
+                             <p><Badge variant={getStatusVariant(selectedBooking.status)}>{selectedBooking.status}</Badge></p>
+                        </div>
+                    </div>
+                    {selectedBooking.notes && (
+                        <>
+                        <Separator />
+                        <div className="grid gap-1.5">
+                            <Label>Notes</Label>
+                            <p className="text-muted-foreground">{selectedBooking.notes}</p>
+                        </div>
+                        </>
+                    )}
+                     {selectedBooking.artPieceId && (() => {
+                        const artPiece = artPieces.find((p: ArtPiece) => p._id === selectedBooking.artPieceId);
+                        if (!artPiece) return null;
+                        return (
+                             <>
+                            <Separator />
+                            <div className="grid gap-1.5">
+                                <Label>Requested Art Piece</Label>
+                                <div className="flex items-center gap-4 mt-2">
+                                     <Image src={artPiece.images[0] || placeholderImages.defaultSquare} alt={artPiece.name} width={80} height={80} className="rounded-md object-cover" data-ai-hint={artPiece.hint} />
+                                     <div>
+                                        <p className="font-semibold">{artPiece.name}</p>
+                                        <p className="text-xs text-muted-foreground">{artPiece.category}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            </>
+                        );
+                    })()}
+                </div>
+          )}
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button>Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

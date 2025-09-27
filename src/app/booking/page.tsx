@@ -1,8 +1,9 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -82,6 +83,7 @@ const bookingSchema = z.object({
   phone: z.string().optional(),
   email: z.string().email({ message: "Please enter a valid email." }),
   notes: z.string().optional(),
+  artPieceId: z.string().optional(),
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -97,51 +99,57 @@ const isValidUrl = (string: string | undefined): boolean => {
     }
 };
 
-export default function BookingPage() {
+function BookingPageContent() {
+  const searchParams = useSearchParams();
+  const artPieceId = searchParams.get('artPieceId');
+  
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
   const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
   const [visitorImages, setVisitorImages] = useState<GalleryImage[]>([]);
-
+  const [requestedArtPiece, setRequestedArtPiece] = useState<ArtPiece | null>(null);
+  const [isLoadingArtPiece, setIsLoadingArtPiece] = useState(true);
 
   useEffect(() => {
-    async function fetchEditorsPick() {
+    async function fetchPageData() {
+      setIsLoadingArtPiece(true);
       try {
-        const response = await fetch('/api/art-pieces');
-        if (response.ok) {
-          const artPieces: ArtPiece[] = await response.json();
+        const [artPiecesRes, galleryRes] = await Promise.all([
+          fetch('/api/art-pieces'),
+          fetch('/api/gallery')
+        ]);
+
+        if (artPiecesRes.ok) {
+          const artPieces: ArtPiece[] = await artPiecesRes.json();
           const picked = artPieces.find(p => p.editorsPick);
           setEditorsPick(picked || artPieces[0] || null);
-        }
-      } catch (error) {
-        console.error("Failed to fetch art pieces:", error);
-      }
-    }
 
-    async function fetchGalleryImages() {
-        try {
-          const response = await fetch('/api/gallery');
-          if (response.ok) {
-            const allImages: GalleryImage[] = await response.json();
+          if(artPieceId) {
+             const foundPiece = artPieces.find(p => p._id === artPieceId);
+             setRequestedArtPiece(foundPiece || null);
+          }
+        }
+
+        if (galleryRes.ok) {
+            const allImages: GalleryImage[] = await galleryRes.json();
             setExhibitionImages(allImages.filter(img => img.gallery === "Exhibition Highlights"));
 
             const clientImages = allImages.filter(img => img.gallery === "From Our Visitors");
-             // Assign classNames for styling as in the original static component
             const visitorImagesWithStyles = clientImages.map((img, index) => {
               const classNames = ['w-80', 'w-[30rem]', 'w-72'];
               return { ...img, className: classNames[index % classNames.length] };
             });
             setVisitorImages(visitorImagesWithStyles);
-          }
-        } catch (error) {
-          console.error("Failed to fetch gallery images:", error);
         }
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setIsLoadingArtPiece(false);
+      }
     }
-
-    fetchEditorsPick();
-    fetchGalleryImages();
-  }, []);
+    fetchPageData();
+  }, [artPieceId]);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -150,8 +158,13 @@ export default function BookingPage() {
       email: "",
       phone: "",
       notes: "",
+      artPieceId: artPieceId || "",
     },
   });
+  
+  useEffect(() => {
+    form.setValue('artPieceId', artPieceId || '');
+  }, [artPieceId, form]);
 
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
@@ -406,6 +419,34 @@ export default function BookingPage() {
                     </p>
                 )}
               </div>
+               {artPieceId && (
+                <div className="mb-12">
+                  <h3 className="text-2xl font-bold font-headline text-center mb-6">Your Requested Design</h3>
+                  {isLoadingArtPiece ? (
+                    <p className="text-center text-muted-foreground">Loading design details...</p>
+                  ) : requestedArtPiece ? (
+                    <Card className="overflow-hidden">
+                      <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
+                        <Image
+                          src={isValidUrl(requestedArtPiece.images[0]) ? requestedArtPiece.images[0] : placeholderImages.default}
+                          alt={requestedArtPiece.name}
+                          width={150}
+                          height={150}
+                          className="rounded-lg object-cover w-full sm:w-[150px] aspect-square"
+                          data-ai-hint={requestedArtPiece.hint}
+                        />
+                        <div className="text-center sm:text-left">
+                          <p className="text-sm text-muted-foreground">{requestedArtPiece.category}</p>
+                          <CardTitle className="text-xl font-bold font-headline">{requestedArtPiece.name}</CardTitle>
+                          <p className="text-lg font-semibold text-primary mt-1">${requestedArtPiece.price}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <p className="text-center text-destructive">Could not find the requested art piece.</p>
+                  )}
+                </div>
+              )}
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
                     {step < 3 && (
@@ -417,6 +458,18 @@ export default function BookingPage() {
                             <Progress value={progressValue} className="h-2" />
                           </div>
                     )}
+                    
+                    <FormField
+                      control={form.control}
+                      name="artPieceId"
+                      render={({ field }) => (
+                        <FormItem className="hidden">
+                          <FormControl>
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
 
                     {step === 1 && (
                       <div className="space-y-8 animate-in fade-in-0 duration-500">
@@ -993,4 +1046,10 @@ export default function BookingPage() {
 }
 
 
-    
+export default function BookingPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <BookingPageContent />
+        </Suspense>
+    )
+}

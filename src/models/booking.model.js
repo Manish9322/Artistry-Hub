@@ -1,3 +1,4 @@
+
 // This file defines the schema model for bookings.
 import mongoose from 'mongoose';
 
@@ -22,6 +23,26 @@ const BookingSchema = new mongoose.Schema({
   total: {
     type: String,
     required: true,
+  },
+  artPieceId: {
+    type: String,
+    required: false,
+  },
+  email: {
+    type: String,
+    required: [true, 'Please provide an email'],
+  },
+  phone: {
+    type: String,
+    required: false,
+  },
+  notes: {
+    type: String,
+    required: false,
+  },
+  bookingTime: {
+    type: String,
+    required: [true, 'Please provide a time'],
   }
 }, {
   timestamps: true,

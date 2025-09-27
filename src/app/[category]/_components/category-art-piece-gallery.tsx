@@ -11,6 +11,7 @@ import { Clock, Tag, DollarSign, ChevronLeft, ChevronRight } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 
 type ArtPiece = {
+    _id: string;
     title: string;
     price: number;
     images: string[];
@@ -170,7 +171,7 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
             </div>
             <DialogFooter>
               <Button asChild className="w-full sm:w-auto">
-                  <Link href="/booking">Book This Design</Link>
+                  <Link href={`/booking?artPieceId=${selectedArt._id}`}>Book This Design</Link>
               </Button>
             </DialogFooter>
           </DialogContent>
