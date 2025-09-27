@@ -52,7 +52,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const salesData = [
   { name: 'Jan', sales: 4000 },
@@ -61,6 +61,25 @@ const salesData = [
   { name: 'Apr', sales: 4500 },
   { name: 'May', sales: 6000 },
   { name: 'Jun', sales: 5500 },
+];
+
+const revenueData = [
+  { month: 'Jan', revenue: 2500, expenses: 1500 },
+  { month: 'Feb', revenue: 2800, expenses: 1700 },
+  { month: 'Mar', revenue: 3200, expenses: 1600 },
+  { month: 'Apr', revenue: 3000, expenses: 1800 },
+  { month: 'May', revenue: 3500, expenses: 2000 },
+  { month: 'Jun', revenue: 3800, expenses: 2100 },
+];
+
+const bookingsData = [
+    { day: 'Mon', Mehndi: 5, Rangoli: 3, 'Nail Art': 4 },
+    { day: 'Tue', Mehndi: 6, Rangoli: 2, 'Nail Art': 5 },
+    { day: 'Wed', Mehndi: 8, Rangoli: 4, 'Nail Art': 6 },
+    { day: 'Thu', Mehndi: 7, Rangoli: 5, 'Nail Art': 5 },
+    { day: 'Fri', Mehndi: 10, Rangoli: 6, 'Nail Art': 8 },
+    { day: 'Sat', Mehndi: 12, Rangoli: 8, 'Nail Art': 10 },
+    { day: 'Sun', Mehndi: 9, Rangoli: 7, 'Nail Art': 9 },
 ];
 
 export default function Dashboard() {
@@ -118,6 +137,49 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+       <div className="grid gap-4 md:grid-cols-2 md:gap-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Revenue vs. Expenses</CardTitle>
+            <CardDescription>Monthly revenue and expenses overview.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={{}} className="h-80">
+              <LineChart data={revenueData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip content={<ChartTooltipContent />} />
+                <Legend content={<ChartLegendContent />} />
+                <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} />
+                <Line type="monotone" dataKey="expenses" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" />
+              </LineChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Bookings by Service</CardTitle>
+            <CardDescription>Number of bookings per service for the current week.</CardDescription>
+          </CardHeader>
+          <CardContent>
+             <ChartContainer config={{}} className="h-80">
+                  <BarChart data={bookingsData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="day" />
+                    <YAxis />
+                    <Tooltip content={<ChartTooltipContent />} />
+                    <Legend content={<ChartLegendContent />} />
+                    <Bar dataKey="Mehndi" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Rangoli" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="Nail Art" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ChartContainer>
+          </CardContent>
+        </Card>
+      </div>
+
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
         <Card className="xl:col-span-2">
           <CardHeader>
