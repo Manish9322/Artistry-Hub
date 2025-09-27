@@ -178,12 +178,12 @@ export default function WorkshopsPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-4">
+        <div className="flex flex-col sm:flex-row sm:items-center pt-6 gap-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><BookOpen className="h-6 w-6"/>Workshop Management</h1>
              <p className="text-muted-foreground mt-1">Create, manage, and publish workshops.</p>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -274,8 +274,8 @@ export default function WorkshopsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Title</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Location</TableHead>
+                  <TableHead className="hidden sm:table-cell">Date</TableHead>
+                  <TableHead className="hidden md:table-cell">Location</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -289,8 +289,8 @@ export default function WorkshopsPage() {
                 paginatedWorkshops.map((workshop: Workshop) => (
                   <TableRow key={workshop._id}>
                     <TableCell className="font-medium">{workshop.title}</TableCell>
-                    <TableCell>{new Date(workshop.date).toLocaleDateString()}</TableCell>
-                    <TableCell>{workshop.location}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{new Date(workshop.date).toLocaleDateString()}</TableCell>
+                    <TableCell className="hidden md:table-cell">{workshop.location}</TableCell>
                     <TableCell>
                       <Badge variant={workshop.status === 'Published' ? 'default' : 'outline'}>{workshop.status}</Badge>
                     </TableCell>

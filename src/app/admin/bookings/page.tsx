@@ -148,12 +148,12 @@ export default function BookingsPage() {
   return (
     <>
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-       <div className="flex items-center pt-6">
+       <div className="flex flex-col sm:flex-row sm:items-center pt-6 gap-4">
         <div className="flex-1">
           <h1 className="font-semibold text-2xl flex items-center gap-2"><Calendar className="h-6 w-6"/>Booking Management</h1>
           <p className="text-muted-foreground mt-1">View and manage all appointments.</p>
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                 <Button
@@ -250,10 +250,10 @@ export default function BookingsPage() {
             <Table>
                 <TableHeader>
                 <TableRow>
-                    <TableHead>Booking ID</TableHead>
+                    <TableHead className="hidden md:table-cell">Booking ID</TableHead>
                     <TableHead>Customer</TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Date</TableHead>
+                    <TableHead className="hidden sm:table-cell">Service</TableHead>
+                    <TableHead className="hidden lg:table-cell">Date</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead className="text-right">Total</TableHead>
                     <TableHead><span className="sr-only">Actions</span></TableHead>
@@ -265,10 +265,10 @@ export default function BookingsPage() {
                 ) : paginatedBookings.length > 0 ? (
                 paginatedBookings.map((booking: Booking) => (
                     <TableRow key={booking._id}>
-                    <TableCell className="font-medium">{booking._id.slice(-6).toUpperCase()}</TableCell>
+                    <TableCell className="font-medium hidden md:table-cell">{booking._id.slice(-6).toUpperCase()}</TableCell>
                     <TableCell>{booking.customer}</TableCell>
-                    <TableCell>{booking.service}</TableCell>
-                    <TableCell>{formatDate(booking.date)}</TableCell>
+                    <TableCell className="hidden sm:table-cell">{booking.service}</TableCell>
+                    <TableCell className="hidden lg:table-cell">{formatDate(booking.date)}</TableCell>
                     <TableCell>
                         <Badge variant={getStatusVariant(booking.status)}>
                         {booking.status}

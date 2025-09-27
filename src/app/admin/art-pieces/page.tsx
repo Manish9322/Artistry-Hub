@@ -209,12 +209,12 @@ export default function ArtPiecesPage() {
   return (
     <>
       <div className="flex flex-col gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-6">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><Paintbrush className="h-6 w-6"/>Art Piece Management</h1>
              <p className="text-muted-foreground mt-1">Manage your studio's art pieces and designs.</p>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -269,8 +269,8 @@ export default function ArtPiecesPage() {
                   </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead className="hidden md:table-cell">Creation Time</TableHead>
+                  <TableHead className="hidden md:table-cell">Price</TableHead>
+                  <TableHead className="hidden lg:table-cell">Creation Time</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
                   </TableHead>
@@ -298,8 +298,8 @@ export default function ArtPiecesPage() {
                          {artPiece.status}
                        </Badge>
                     </TableCell>
-                    <TableCell>${artPiece.price}</TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="hidden md:table-cell">${artPiece.price}</TableCell>
+                    <TableCell className="hidden lg:table-cell">
                       {artPiece.creationTime} mins
                     </TableCell>
                     <TableCell>

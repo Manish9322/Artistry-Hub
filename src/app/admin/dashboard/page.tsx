@@ -138,22 +138,22 @@ export default function Dashboard() {
         </Card>
       </div>
 
-       <div className="grid gap-4 md:grid-cols-2 md:gap-8">
+       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Revenue vs. Expenses</CardTitle>
             <CardDescription>Monthly revenue and expenses overview.</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={{}} className="h-80 w-full">
-              <LineChart accessibilityLayer data={revenueData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
+          <CardContent className="pl-2">
+            <ChartContainer config={{}} className="h-[300px] w-full">
+              <LineChart accessibilityLayer data={revenueData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
+                <YAxis tickLine={false} axisLine={false} tickMargin={8}/>
                 <Tooltip content={<ChartTooltipContent />} />
                 <Legend content={<ChartLegendContent />} />
-                <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} />
-                <Line type="monotone" dataKey="expenses" stroke="hsl(var(--muted-foreground))" strokeWidth={2} strokeDasharray="5 5" />
+                <Line type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="expenses" stroke="hsl(var(--muted-foreground))" strokeWidth={2} dot={false} strokeDasharray="5 5" />
               </LineChart>
             </ChartContainer>
           </CardContent>
@@ -163,12 +163,12 @@ export default function Dashboard() {
             <CardTitle>Bookings by Service</CardTitle>
             <CardDescription>Number of bookings per service for the current week.</CardDescription>
           </CardHeader>
-          <CardContent>
-             <ChartContainer config={{}} className="h-80 w-full">
-                  <BarChart accessibilityLayer data={bookingsData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="day" />
-                    <YAxis />
+          <CardContent className="pl-2">
+             <ChartContainer config={{}} className="h-[300px] w-full">
+                  <BarChart accessibilityLayer data={bookingsData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
+                    <YAxis tickLine={false} axisLine={false} tickMargin={8}/>
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend content={<ChartLegendContent />} />
                     <Bar dataKey="Mehndi" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
@@ -188,13 +188,13 @@ export default function Dashboard() {
               A chart showing sales over the last 6 months.
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={{}} className="h-80 w-full">
+          <CardContent className="pl-2">
+            <ChartContainer config={{}} className="h-[300px] w-full">
                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={salesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
+                  <BarChart data={salesData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                    <CartesianGrid vertical={false} />
+                    <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
+                    <YAxis tickLine={false} axisLine={false} tickMargin={8} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend content={<ChartLegendContent />} />
                     <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />

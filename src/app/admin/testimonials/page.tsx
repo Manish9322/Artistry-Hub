@@ -167,12 +167,12 @@ export default function TestimonialsPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-4 sm:pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center pt-6 gap-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><Quote className="h-6 w-6"/>Testimonial Management</h1>
              <p className="text-muted-foreground mt-1">Manage your client testimonials and reviews.</p>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -227,7 +227,7 @@ export default function TestimonialsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Author</TableHead>
-                  <TableHead className="w-[50%]">Comment</TableHead>
+                  <TableHead className="w-[50%] hidden md:table-cell">Comment</TableHead>
                   <TableHead>Rating</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -242,14 +242,14 @@ export default function TestimonialsPage() {
                   <TableRow key={testimonial._id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9">
+                          <Avatar className="hidden h-9 w-9 sm:flex">
                               {testimonial.avatar && <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />}
                               <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <span className="font-medium">{testimonial.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell className="max-w-md truncate">{testimonial.comment}</TableCell>
+                    <TableCell className="max-w-md truncate hidden md:table-cell">{testimonial.comment}</TableCell>
                     <TableCell>
                         <div className="flex items-center gap-1">
                             {testimonial.rating} <Star className="w-4 h-4 text-yellow-400 fill-current" />

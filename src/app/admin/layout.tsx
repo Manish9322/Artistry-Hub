@@ -103,15 +103,17 @@ export default function AdminLayout({
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <div className="flex flex-col flex-1">
-          <AdminHeader />
-          <SidebarInset>{children}</SidebarInset>
+    <StoreProvider>
+      <SidebarProvider>
+        <div className="flex min-h-screen w-full">
+          <AdminSidebar />
+          <div className="flex flex-col flex-1">
+            <AdminHeader />
+            <SidebarInset>{children}</SidebarInset>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </StoreProvider>
   );
 }
 

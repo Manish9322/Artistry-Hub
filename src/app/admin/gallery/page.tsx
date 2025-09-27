@@ -192,12 +192,12 @@ export default function GalleryPage() {
   return (
     <>
       <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-        <div className="flex items-center pt-4 sm:pt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center pt-6 gap-4">
           <div className="flex-1">
              <h1 className="font-semibold text-2xl flex items-center gap-2"><ImageIcon className="h-6 w-6"/>Gallery Management</h1>
              <p className="text-muted-foreground mt-1">Manage images and videos for your website's galleries.</p>
           </div>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -227,12 +227,6 @@ export default function GalleryPage() {
                 Export
               </span>
             </Button>
-            <Button size="sm" variant="outline" className="h-8 gap-1">
-              <Upload className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Upload Media
-              </span>
-            </Button>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button size="sm" className="h-8 gap-1">
@@ -256,7 +250,7 @@ export default function GalleryPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Media</CardTitle>
@@ -265,7 +259,7 @@ export default function GalleryPage() {
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.total}</div>
                     <p className="text-xs text-muted-foreground">
-                        Images and videos in your galleries
+                        Images and videos
                     </p>
                 </CardContent>
             </Card>
@@ -277,7 +271,7 @@ export default function GalleryPage() {
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.published}</div>
                      <p className="text-xs text-muted-foreground">
-                        Currently live on the website
+                        Live on website
                     </p>
                 </CardContent>
             </Card>
@@ -301,7 +295,7 @@ export default function GalleryPage() {
                 <CardContent>
                     <div className="text-2xl font-bold">{stats.archived}</div>
                      <p className="text-xs text-muted-foreground">
-                        Removed from public view
+                        Removed from view
                     </p>
                 </CardContent>
             </Card>
@@ -323,7 +317,7 @@ export default function GalleryPage() {
                     <span className="sr-only">Image</span>
                   </TableHead>
                   <TableHead>Title</TableHead>
-                  <TableHead>Gallery</TableHead>
+                  <TableHead className="hidden md:table-cell">Gallery</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>
                     <span className="sr-only">Actions</span>
@@ -349,7 +343,7 @@ export default function GalleryPage() {
                       />
                     </TableCell>
                     <TableCell className="font-medium">{image.title}</TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <Badge variant="secondary">{image.gallery}</Badge>
                     </TableCell>
                     <TableCell>

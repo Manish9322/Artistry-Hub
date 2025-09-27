@@ -96,12 +96,12 @@ export default function ClientsPage() {
   return (
     <>
     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-       <div className="flex items-center pt-4">
+       <div className="flex flex-col sm:flex-row sm:items-center pt-6 gap-4">
         <div className="flex-1">
           <h1 className="font-semibold text-2xl flex items-center gap-2"><Users className="h-6 w-6"/>Client Management</h1>
           <p className="text-muted-foreground mt-1">View, add, and manage your clients.</p>
         </div>
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
             <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
                 <File className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -118,7 +118,7 @@ export default function ClientsPage() {
       </div>
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
             <div>
               <CardTitle>Client List</CardTitle>
               <CardDescription>
@@ -126,7 +126,7 @@ export default function ClientsPage() {
               </CardDescription>
             </div>
             <div className="flex items-center gap-2">
-                <Input placeholder="Search clients..." className="max-w-sm" onChange={(e) => setSearchTerm(e.target.value)} />
+                <Input placeholder="Search clients..." className="max-w-xs" onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
           </div>
         </CardHeader>
@@ -135,8 +135,8 @@ export default function ClientsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Booked Pieces</TableHead>
+                <TableHead className="hidden sm:table-cell">Contact</TableHead>
+                <TableHead className="hidden md:table-cell text-center">Booked Pieces</TableHead>
                 <TableHead className="text-right">Total Spent</TableHead>
                 <TableHead>
                     <span className="sr-only">Actions</span>
@@ -151,20 +151,20 @@ export default function ClientsPage() {
                 <TableRow key={client._id}>
                   <TableCell>
                     <div className="flex items-center gap-4">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="hidden h-10 w-10 sm:flex">
                         {client.avatar && <AvatarImage src={client.avatar} alt={client.name} data-ai-hint={client.hint} />}
                         <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <span className="font-medium">{client.name}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden sm:table-cell">
                     <div className="flex flex-col">
                         <span className="flex items-center gap-2 text-sm"><Mail className="h-4 w-4 text-muted-foreground"/>{client.email}</span>
                         {client.phone && <span className="flex items-center gap-2 text-sm text-muted-foreground"><Phone className="h-4 w-4 text-muted-foreground"/>{client.phone}</span>}
                     </div>
                   </TableCell>
-                   <TableCell className="text-center">{client.bookedArtPieces?.length || 0}</TableCell>
+                   <TableCell className="hidden md:table-cell text-center">{client.bookedArtPieces?.length || 0}</TableCell>
                   <TableCell className="text-right font-medium">${client.totalSpent.toFixed(2)}</TableCell>
                   <TableCell>
                       <DropdownMenu>
