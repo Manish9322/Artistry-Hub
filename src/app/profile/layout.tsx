@@ -36,7 +36,7 @@ function ProfileSidebar() {
 
     return (
         <Card>
-            <CardHeader className="flex flex-col items-center text-center">
+            <CardHeader className="flex flex-col items-center text-center p-4 sm:p-6">
                 <Avatar className="h-24 w-24 mb-4 border-4 border-primary">
                     <AvatarImage src="https://picsum.photos/seed/jessica-l/100/100" alt="Jessica L." data-ai-hint="woman smiling portrait" />
                     <AvatarFallback>JL</AvatarFallback>
@@ -44,7 +44,7 @@ function ProfileSidebar() {
                 <CardTitle className="text-xl">Jessica L.</CardTitle>
                 <CardDescription>jessica.l@example.com</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-2 sm:p-4">
                 <nav className="flex flex-col gap-2">
                     {menuItems.map(item => (
                         <Button
@@ -106,7 +106,7 @@ export default function ProfileLayout({
                             <SheetTrigger asChild>
                                 <Button variant="ghost" size="icon"><Menu className="h-6 w-6"/></Button>
                             </SheetTrigger>
-                            <SheetContent side="left" className="w-72">
+                            <SheetContent side="left" className="w-72 p-0">
                                 <div className="p-4">
                                   <ProfileSidebar/>
                                 </div>
@@ -117,15 +117,15 @@ export default function ProfileLayout({
             </div>
         </header>
 
-        <main className="flex-1 py-12">
+        <main className="flex-1 py-6 sm:py-12">
             <div className="container">
                 <div className="grid md:grid-cols-12 gap-8">
-                    <aside className="hidden md:block md:col-span-3">
+                    <aside className="hidden md:block md:col-span-3 lg:col-span-3">
                        <ProfileSidebar/>
                     </aside>
-                    <div className="md:col-span-9">
+                    <div className="md:col-span-9 lg:col-span-9">
                         <Card className="min-h-full">
-                            <CardContent className="p-6">
+                            <CardContent className="p-4 sm:p-6">
                                 {children}
                             </CardContent>
                         </Card>

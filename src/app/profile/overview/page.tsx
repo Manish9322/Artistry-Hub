@@ -9,8 +9,8 @@ import { ArrowRight, Calendar, ShoppingCart, DollarSign, Heart, User, Settings, 
 export default function OverviewPage() {
     return (
         <div>
-            <h2 className="text-2xl font-bold font-headline mb-6">Welcome back, Jessica!</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <h2 className="text-xl sm:text-2xl font-bold font-headline mb-6">Welcome back, Jessica!</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Upcoming Bookings</CardTitle>

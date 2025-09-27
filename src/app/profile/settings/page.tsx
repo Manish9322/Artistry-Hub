@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 export default function SettingsPage() {
     return (
         <div>
-            <h2 className="text-2xl font-bold font-headline mb-6">Account Settings</h2>
+            <h2 className="text-xl sm:text-2xl font-bold font-headline mb-6">Account Settings</h2>
             <div className="space-y-8">
                  <div>
                     <h3 className="text-lg font-semibold">Personal Information</h3>
@@ -36,7 +36,7 @@ export default function SettingsPage() {
                 <Separator/>
                 <div>
                     <h3 className="text-lg font-semibold">Change Password</h3>
-                    <form className="mt-4 space-y-4 max-w-sm">
+                    <form className="mt-4 space-y-4 max-w-md">
                         <div className="space-y-2">
                             <Label htmlFor="current-password">Current Password</Label>
                             <Input id="current-password" type="password" />
