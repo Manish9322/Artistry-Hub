@@ -36,28 +36,28 @@ function ProfileSidebar() {
 
     return (
         <Card>
-            <CardHeader className="flex flex-col items-center text-center p-4 sm:p-6">
-                <Avatar className="h-24 w-24 mb-4 border-4 border-primary">
+            <CardHeader className="flex flex-col items-center text-center p-4">
+                <Avatar className="h-20 w-20 mb-3 border-4 border-primary">
                     <AvatarImage src="https://picsum.photos/seed/jessica-l/100/100" alt="Jessica L." data-ai-hint="woman smiling portrait" />
                     <AvatarFallback>JL</AvatarFallback>
                 </Avatar>
-                <CardTitle className="text-xl">Jessica L.</CardTitle>
-                <CardDescription>jessica.l@example.com</CardDescription>
+                <CardTitle className="text-lg">Jessica L.</CardTitle>
+                <CardDescription className="text-xs">jessica.l@example.com</CardDescription>
             </CardHeader>
-            <CardContent className="p-2 sm:p-4">
-                <nav className="flex flex-col gap-2">
+            <CardContent className="p-2">
+                <nav className="flex flex-col gap-1">
                     {menuItems.map(item => (
                         <Button
                             key={item.id}
                             variant={pathname === item.href ? "default" : "ghost"}
-                            className="justify-start gap-3"
+                            className="justify-start gap-3 px-3"
                             asChild
                         >
                             <Link href={item.href}><item.icon className="h-5 w-5" /><span>{item.label}</span></Link>
                         </Button>
                     ))}
                     <Separator className="my-2"/>
-                    <Button variant="ghost" className="justify-start text-destructive hover:text-destructive-foreground hover:bg-destructive/90 gap-3" onClick={handleLogout}>
+                    <Button variant="ghost" className="justify-start text-destructive hover:text-destructive-foreground hover:bg-destructive/90 gap-3 px-3" onClick={handleLogout}>
                         <LogOut className="h-5 w-5" /><span>Logout</span>
                     </Button>
                 </nav>
@@ -82,37 +82,33 @@ export default function ProfileLayout({
     <div className="flex flex-col min-h-screen bg-secondary/30">
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-14 items-center">
-                <Link href="/" className="flex items-center space-x-2">
+                <div className="md:hidden">
+                    <Sheet>
+                        <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon"><Menu className="h-6 w-6"/></Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-72 p-4 pt-12">
+                            <ProfileSidebar/>
+                        </SheetContent>
+                    </Sheet>
+                </div>
+                <Link href="/" className="flex items-center space-x-2 mx-auto md:mx-0">
                     <Palette className="h-6 w-6 text-primary" />
                     <span className="font-bold text-lg font-headline">Artistry Hub</span>
                 </Link>
-                <nav className="ml-auto flex items-center space-x-4">
+                <nav className="ml-auto hidden md:flex items-center space-x-4">
                     <Button variant="ghost" size="sm" asChild>
                         <Link href="/">Home</Link>
                     </Button>
-                    <div className="hidden md:flex items-center gap-4">
-                        <Link href="/profile/overview">
-                            <Avatar className="h-8 w-8">
-                                <AvatarImage src="https://picsum.photos/seed/jessica-l/100/100" alt="Jessica L." data-ai-hint="woman smiling portrait" />
-                                <AvatarFallback>JL</AvatarFallback>
-                            </Avatar>
-                        </Link>
-                        <Button variant="ghost" size="icon" onClick={handleLogout}>
-                            <LogOut className="h-5 w-5"/>
-                        </Button>
-                    </div>
-                     <div className="md:hidden">
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button variant="ghost" size="icon"><Menu className="h-6 w-6"/></Button>
-                            </SheetTrigger>
-                            <SheetContent side="left" className="w-72 p-0">
-                                <div className="p-4">
-                                  <ProfileSidebar/>
-                                </div>
-                            </SheetContent>
-                        </Sheet>
-                    </div>
+                    <Link href="/profile/overview">
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src="https://picsum.photos/seed/jessica-l/100/100" alt="Jessica L." data-ai-hint="woman smiling portrait" />
+                            <AvatarFallback>JL</AvatarFallback>
+                        </Avatar>
+                    </Link>
+                    <Button variant="ghost" size="icon" onClick={handleLogout}>
+                        <LogOut className="h-5 w-5"/>
+                    </Button>
                 </nav>
             </div>
         </header>
