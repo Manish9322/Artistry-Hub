@@ -145,8 +145,8 @@ export default function Dashboard() {
             <CardDescription>Monthly revenue and expenses overview.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{}} className="h-80">
-              <LineChart data={revenueData}>
+            <ChartContainer config={{}} className="h-80 w-full">
+              <LineChart accessibilityLayer data={revenueData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
@@ -164,8 +164,8 @@ export default function Dashboard() {
             <CardDescription>Number of bookings per service for the current week.</CardDescription>
           </CardHeader>
           <CardContent>
-             <ChartContainer config={{}} className="h-80">
-                  <BarChart data={bookingsData}>
+             <ChartContainer config={{}} className="h-80 w-full">
+                  <BarChart accessibilityLayer data={bookingsData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="day" />
                     <YAxis />
@@ -189,7 +189,7 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{}} className="h-80">
+            <ChartContainer config={{}} className="h-80 w-full">
                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={salesData}>
                     <CartesianGrid strokeDasharray="3 3" />
