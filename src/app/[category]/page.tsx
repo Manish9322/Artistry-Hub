@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Copyright } from "@/components/copyright";
-import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Droplets, Sun, Wind, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight, Paintbrush, Gem, Trash2, ShieldCheck, Ruler } from "lucide-react";
+import { Palette, MessageSquare, Lightbulb, Scissors, Sparkles, Droplets, Sun, Wind, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight, Paintbrush, Gem, Trash2, ShieldCheck, Ruler, LogIn, UserPlus } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import _db from "@/lib/db";
@@ -61,6 +61,10 @@ export default async function CategoryPage({ params }: { params: { category: str
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
             <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
+             <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
+                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
+             </div>
           </nav>
         </div>
       </header>

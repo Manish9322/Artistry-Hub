@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, ArrowRight, LogIn } from "lucide-react";
+import { Palette, ArrowRight, LogIn, UserPlus } from "lucide-react";
 import { AboutHero } from "@/components/about/about-hero";
 import { OurStory } from "@/components/about/our-story";
 import { VisionMission } from "@/components/about/vision-mission";
@@ -31,8 +31,8 @@ export default function AboutPage() {
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
             <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
             <div className="flex items-center gap-2">
-              <Button size="sm" asChild><Link href="/login">Login</Link></Button>
-              <Button size="sm" variant="outline" asChild><Link href="/register">Register</Link></Button>
+              <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
+              <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
             </div>
           </nav>
         </div>

@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart, Coffee, DraftingCompass, Sparkles as SparklesIcon, Smile, LogIn } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart, Coffee, DraftingCompass, Sparkles as SparklesIcon, Smile, LogIn, UserPlus } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -361,8 +361,8 @@ function BookingPageContent() {
             <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
             <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
              <div className="flex items-center gap-2">
-              <Button size="sm" asChild><Link href="/login">Login</Link></Button>
-              <Button size="sm" variant="outline" asChild><Link href="/register">Register</Link></Button>
+                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
+                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
             </div>
           </nav>
         </div>
