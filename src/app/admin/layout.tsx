@@ -23,6 +23,7 @@ import {
   Quote,
   BookOpen,
   HelpCircle,
+  PanelLeft,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -98,21 +99,19 @@ export default function AdminLayout({
   const pathname = usePathname();
 
   if (pathname === '/admin/login') {
-    return <StoreProvider>{children}</StoreProvider>;
+    return children;
   }
 
   return (
-    <StoreProvider>
-      <SidebarProvider>
-        <div className="flex min-h-screen w-full">
-          <AdminSidebar />
-          <div className="flex flex-col flex-1">
-            <AdminHeader />
-            <SidebarInset>{children}</SidebarInset>
-          </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full">
+        <AdminSidebar />
+        <div className="flex flex-col flex-1">
+          <AdminHeader />
+          <SidebarInset>{children}</SidebarInset>
         </div>
-      </SidebarProvider>
-    </StoreProvider>
+      </div>
+    </SidebarProvider>
   );
 }
 
@@ -130,95 +129,77 @@ function AdminSidebar() {
       <SidebarContent>
         <SidebarMenu>
           <SidebarMenuItem>
-            <Link href="/admin/dashboard" passHref>
-              <SidebarMenuButton asChild tooltip="Dashboard" isActive={pathname === '/admin/dashboard'}>
-                <span>
-                  <Home />
-                  <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Dashboard" isActive={pathname === '/admin/dashboard'}>
+              <Link href="/admin/dashboard">
+                <Home />
+                <span className="group-data-[collapsible=icon]:hidden">Dashboard</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
-            <Link href="/admin/categories" passHref>
               <SidebarMenuButton asChild tooltip="Categories" isActive={pathname === '/admin/categories'}>
-                <span>
+                <Link href="/admin/categories">
                   <Shapes />
                   <span className="group-data-[collapsible=icon]:hidden">Categories</span>
-                </span>
+                </Link>
               </SidebarMenuButton>
-            </Link>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="/admin/art-pieces" passHref>
-              <SidebarMenuButton asChild tooltip="Art Pieces" isActive={pathname === '/admin/art-pieces'}>
-                <span>
-                  <Paintbrush />
-                  <span className="group-data-[collapsible=icon]:hidden">Art Pieces</span>
-                  <SidebarMenuBadge className="group-data-[collapsible=icon]:hidden">12</SidebarMenuBadge>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Art Pieces" isActive={pathname === '/admin/art-pieces'}>
+              <Link href="/admin/art-pieces">
+                <Paintbrush />
+                <span className="group-data-[collapsible=icon]:hidden">Art Pieces</span>
+                <SidebarMenuBadge className="group-data-[collapsible=icon]:hidden">12</SidebarMenuBadge>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="/admin/gallery" passHref>
-              <SidebarMenuButton asChild tooltip="Gallery" isActive={pathname === '/admin/gallery'}>
-                <span>
-                  <GalleryHorizontal />
-                  <span className="group-data-[collapsible=icon]:hidden">Gallery</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Gallery" isActive={pathname === '/admin/gallery'}>
+              <Link href="/admin/gallery">
+                <GalleryHorizontal />
+                <span className="group-data-[collapsible=icon]:hidden">Gallery</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="/admin/testimonials" passHref>
-              <SidebarMenuButton asChild tooltip="Testimonials" isActive={pathname === '/admin/testimonials'}>
-                <span>
-                  <Quote />
-                  <span className="group-data-[collapsible=icon]:hidden">Testimonials</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Testimonials" isActive={pathname === '/admin/testimonials'}>
+              <Link href="/admin/testimonials">
+                <Quote />
+                <span className="group-data-[collapsible=icon]:hidden">Testimonials</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
            <SidebarMenuItem>
-            <Link href="/admin/workshops" passHref>
-              <SidebarMenuButton asChild tooltip="Workshops" isActive={pathname === '/admin/workshops'}>
-                <span>
-                  <BookOpen />
-                  <span className="group-data-[collapsible=icon]:hidden">Workshops</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Workshops" isActive={pathname === '/admin/workshops'}>
+              <Link href="/admin/workshops">
+                <BookOpen />
+                <span className="group-data-[collapsible=icon]:hidden">Workshops</span>
+              </Link>
+            </SidebarMenuButton>
            </SidebarMenuItem>
            <SidebarMenuItem>
-            <Link href="/admin/faq" passHref>
-              <SidebarMenuButton asChild tooltip="FAQs" isActive={pathname === '/admin/faq'}>
-                <span>
-                  <HelpCircle />
-                  <span className="group-data-[collapsible=icon]:hidden">FAQs</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="FAQs" isActive={pathname === '/admin/faq'}>
+              <Link href="/admin/faq">
+                <HelpCircle />
+                <span className="group-data-[collapsible=icon]:hidden">FAQs</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="/admin/bookings" passHref>
-              <SidebarMenuButton asChild tooltip="Bookings" isActive={pathname === '/admin/bookings'}>
-                <span>
-                  <Calendar />
-                  <span className="group-data-[collapsible=icon]:hidden">Bookings</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Bookings" isActive={pathname === '/admin/bookings'}>
+              <Link href="/admin/bookings">
+                <Calendar />
+                <span className="group-data-[collapsible=icon]:hidden">Bookings</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="/admin/clients" passHref>
-              <SidebarMenuButton asChild tooltip="Clients" isActive={pathname === '/admin/clients'}>
-                <span>
-                  <Users />
-                  <span className="group-data-[collapsible=icon]:hidden">Clients</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Clients" isActive={pathname === '/admin/clients'}>
+              <Link href="/admin/clients">
+                <Users />
+                <span className="group-data-[collapsible=icon]:hidden">Clients</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarContent>
@@ -227,29 +208,28 @@ function AdminSidebar() {
           <SidebarMenuItem>
               <SidebarTrigger className="w-full justify-start hidden md:flex" asChild>
                 <Button variant="ghost" className="h-8">
-                  <span className="group-data-[collapsible=icon]:hidden">Collapse</span>
+                  <span>
+                    <PanelLeft />
+                    <span className="group-data-[collapsible=icon]:hidden">Collapse</span>
+                  </span>
                 </Button>
               </SidebarTrigger>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="#" passHref>
-              <SidebarMenuButton asChild tooltip="Settings">
-                <span>
-                  <Settings />
-                  <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Settings">
+              <Link href="#">
+                <Settings />
+                <span className="group-data-[collapsible=icon]:hidden">Settings</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <Link href="/admin/login" passHref>
-              <SidebarMenuButton asChild tooltip="Logout">
-                <span>
-                  <LogOut />
-                  <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-                </span>
-              </SidebarMenuButton>
-            </Link>
+            <SidebarMenuButton asChild tooltip="Logout">
+              <Link href="/admin/login">
+                <LogOut />
+                <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+              </Link>
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
