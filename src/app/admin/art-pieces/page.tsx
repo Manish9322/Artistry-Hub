@@ -54,7 +54,20 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from '@/lib/placeholder-images.json';
-import { useGetArtPiecesQuery, useAddArtPieceMutation, useUpdateArtPieceMutation, useDeleteArtPieceMutation } from '@/services/api';
+import { useGetArtPiecesQuery, useAddArtPieceMutation, useUpdateArtPieceMutation, useDeleteArtPieceMutation, useGetCategoriesQuery } from '@/services/api';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+
+type Category = {
+  _id: string;
+  name: string;
+};
 
 type ArtPiece = {
   _id: string;
@@ -82,6 +95,7 @@ const isValidUrl = (string: string): boolean => {
 export default function ArtPiecesPage() {
     const { toast } = useToast();
     const { data: artPieces = [], isLoading } = useGetArtPiecesQuery();
+    const { data: categories = [] } = useGetCategoriesQuery();
     const [addArtPiece] = useAddArtPieceMutation();
     const [updateArtPiece] = useUpdateArtPieceMutation();
     const [deleteArtPiece] = useDeleteArtPieceMutation();
@@ -313,7 +327,16 @@ export default function ArtPiecesPage() {
                 <Label htmlFor="category" className="text-right">
                   Category
                 </Label>
-                <Input id="category" name="category" defaultValue={selectedArtPiece?.category || ""} className="col-span-3" />
+                <Select name="category" defaultValue={selectedArtPiece?.category}>
+                    <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {categories.map((cat: Category) => (
+                            <SelectItem key={cat._id} value={cat.name}>{cat.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="price" className="text-right">
