@@ -29,6 +29,9 @@ const ClientSchema = new mongoose.Schema({
   avatar: {
     type: String,
   },
+  hint: {
+    type: String,
+  },
 }, {
   timestamps: true,
 });
