@@ -67,6 +67,12 @@ type ArtPiece = {
     editorsPick?: boolean;
 };
 
+type Category = {
+  _id: string;
+  name: string;
+  href: string;
+};
+
 type GalleryImage = {
   _id: string;
   title: string;
@@ -110,6 +116,7 @@ function BookingPageContent() {
   
   const { toast } = useToast();
   const [step, setStep] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
   const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
   const [visitorImages, setVisitorImages] = useState<GalleryImage[]>([]);
@@ -120,9 +127,10 @@ function BookingPageContent() {
     async function fetchPageData() {
       setIsLoadingArtPiece(true);
       try {
-        const [artPiecesRes, galleryRes] = await Promise.all([
+        const [artPiecesRes, galleryRes, categoriesRes] = await Promise.all([
           fetch('/api/art-pieces'),
-          fetch('/api/gallery')
+          fetch('/api/gallery'),
+          fetch('/api/categories'),
         ]);
 
         if (artPiecesRes.ok) {
@@ -134,6 +142,11 @@ function BookingPageContent() {
              const foundPiece = artPieces.find(p => p._id === artPieceId);
              setRequestedArtPiece(foundPiece || null);
           }
+        }
+        
+        if (categoriesRes.ok) {
+            const categoriesData: Category[] = await categoriesRes.json();
+            setCategories(categoriesData);
         }
 
         if (galleryRes.ok) {
@@ -172,6 +185,7 @@ function BookingPageContent() {
     if (isAuthenticated && user) {
         form.setValue('name', user.name);
         form.setValue('email', user.email);
+        form.setValue('phone', user.phone);
     }
   }, [artPieceId, form, isAuthenticated, user]);
 
@@ -368,6 +382,7 @@ function BookingPageContent() {
           ...bookingData,
           name: user?.name || bookingData.name,
           email: user?.email || bookingData.email,
+          phone: user?.phone || bookingData.phone
         });
         if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
           setStep(2);
@@ -509,10 +524,11 @@ function BookingPageContent() {
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                  <SelectItem value="mehndi">Mehndi</SelectItem>
-                                  <SelectItem value="rangoli">Rangoli</SelectItem>
-                                  <SelectItem value="nail-art">Nail Art</SelectItem>
-                                  <SelectItem value="jewelry">Custom Jewelry Consultation</SelectItem>
+                                   {categories.map((category) => (
+                                    <SelectItem key={category._id} value={category.name}>
+                                      {category.name}
+                                    </SelectItem>
+                                  ))}
                                 </SelectContent>
                               </Select>
                               <FormMessage />

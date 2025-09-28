@@ -102,6 +102,21 @@ export const api = createApi({
       }),
       invalidatesTags: ['Clients'],
     }),
+    updateClient: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `clients/${id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: ['Clients'],
+    }),
+    deleteClient: builder.mutation({
+      query: (id) => ({
+        url: `clients/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Clients'],
+    }),
 
     // Testimonials Endpoints
     getTestimonials: builder.query({
@@ -237,6 +252,8 @@ export const {
     useUpdateBookingMutation,
     useGetClientsQuery,
     useAddClientMutation,
+    useUpdateClientMutation,
+    useDeleteClientMutation,
     useGetTestimonialsQuery,
     useAddTestimonialMutation,
     useUpdateTestimonialMutation,
