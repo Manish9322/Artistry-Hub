@@ -57,6 +57,7 @@ export function useAuth() {
   const logout = useCallback(() => {
     localStorage.removeItem('user');
     localStorage.removeItem('jwt');
+    localStorage.removeItem('pendingBooking');
     setUser(null);
     setToken(null);
     router.push('/login');
