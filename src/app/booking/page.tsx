@@ -678,19 +678,25 @@ function BookingPageContent() {
                               <svg className="w-full h-full" viewBox="0 0 100 100">
                                   <circle className="text-border" strokeWidth="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
                                   <circle
-                                  className="text-green-500"
+                                  className="text-green-500 animate-in fade-in-0"
                                   strokeWidth="8"
-                                  strokeDasharray="264 264"
+                                  strokeDasharray="264"
+                                  strokeDashoffset="264"
                                   strokeLinecap="round"
                                   stroke="currentColor"
                                   fill="transparent"
                                   r="42"
                                   cx="50"
                                   cy="50"
-                                  style={{ transform: "rotate(-90deg)", transformOrigin: "50% 50%", transition: "stroke-dasharray 1s ease-out" }}
+                                  style={{ 
+                                      strokeDashoffset: 0,
+                                      transition: "stroke-dashoffset 1s ease-out",
+                                      transform: "rotate(-90deg)", 
+                                      transformOrigin: "50% 50%", 
+                                    }}
                                   />
                               </svg>
-                              <div className="absolute inset-0 flex items-center justify-center">
+                              <div className="absolute inset-0 flex items-center justify-center animate-in zoom-in-50 delay-500">
                                 <Check className="h-16 w-16 text-green-500" />
                               </div>
                           </div>
