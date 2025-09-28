@@ -5,8 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function SettingsPage() {
+    const { user } = useAuth();
+
     return (
         <div>
             <h2 className="text-xl sm:text-2xl font-bold font-headline mb-6">Account Settings</h2>
@@ -17,11 +20,11 @@ export default function SettingsPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Full Name</Label>
-                                <Input id="name" defaultValue="Jessica L." />
+                                <Input id="name" defaultValue={user?.name || ""} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email Address</Label>
-                                <Input id="email" type="email" defaultValue="jessica.l@example.com" disabled />
+                                <Input id="email" type="email" defaultValue={user?.email || ""} disabled />
                             </div>
                         </div>
                         <div className="space-y-2">
