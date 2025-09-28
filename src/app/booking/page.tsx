@@ -182,68 +182,70 @@ function BookingPageContent() {
       email: "",
       phone: "",
       notes: "",
-      artPieceId: artPieceIdFromUrl || "",
+      artPieceId: "",
     },
   });
   
   useEffect(() => {
-    if (!isAuthLoading) {
-      if (!isAuthenticated) {
+    if (isAuthLoading) return;
+
+    if (!isAuthenticated) {
         const pendingBooking = localStorage.getItem("pendingBooking");
-        if (!pendingBooking && !artPieceIdFromUrl) {
-           form.reset({
-            name: "",
-            email: "",
-            phone: "",
-            notes: "",
-            artPieceId: "",
-            category: undefined,
-            bookingDate: undefined,
-            bookingTime: undefined,
-          });
-          setStep(1);
+        if (!pendingBooking) {
+            form.reset({
+                name: "",
+                email: "",
+                phone: "",
+                notes: "",
+                artPieceId: artPieceIdFromUrl || "",
+                category: undefined,
+                bookingDate: undefined,
+                bookingTime: undefined,
+            });
+            if (!artPieceIdFromUrl) {
+                setStep(1);
+            }
         }
         return;
-      }
-  
-      if (isAuthenticated && user) {
+    }
+
+    if (isAuthenticated && user) {
         const pendingBooking = localStorage.getItem("pendingBooking");
         if (pendingBooking) {
-          try {
-            const bookingData = JSON.parse(pendingBooking);
-            form.reset({
-              ...bookingData,
-              name: user.name,
-              email: user.email,
-              phone: user.phone || bookingData.phone,
-            });
-             if (bookingData.category) {
-              const piecesForCategory = artPieces.filter(p => p.category === bookingData.category);
-              setFilteredArtPieces(piecesForCategory);
+            try {
+                const bookingData = JSON.parse(pendingBooking);
+                form.reset({
+                    ...bookingData,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone || bookingData.phone,
+                });
+                if (bookingData.category) {
+                    const piecesForCategory = artPieces.filter(p => p.category === bookingData.category);
+                    setFilteredArtPieces(piecesForCategory);
+                }
+                if (
+                    bookingData.category &&
+                    bookingData.artPieceId &&
+                    bookingData.bookingDate &&
+                    bookingData.bookingTime
+                ) {
+                    setStep(2);
+                }
+            } catch (e) {
+                console.error("Failed to parse pending booking data", e);
+                localStorage.removeItem("pendingBooking");
             }
-            if (
-              bookingData.category &&
-              bookingData.artPieceId &&
-              bookingData.bookingDate &&
-              bookingData.bookingTime
-            ) {
-              setStep(2);
-            }
-          } catch (e) {
-            console.error("Failed to parse pending booking data", e);
-            localStorage.removeItem("pendingBooking");
-          }
         } else {
-          form.reset({
-            name: user.name,
-            email: user.email,
-            phone: user.phone || "",
-            notes: "",
-            artPieceId: artPieceIdFromUrl || "",
-            category: requestedArtPiece?.category || undefined,
-          });
+            form.reset({
+                name: user.name,
+                email: user.email,
+                phone: user.phone || "",
+                notes: "",
+                artPieceId: artPieceIdFromUrl || "",
+                category: requestedArtPiece?.category || undefined,
+            });
         }
-      }
     }
   }, [artPieceIdFromUrl, form, isAuthenticated, user, isAuthLoading, requestedArtPiece, artPieces]);
 
@@ -254,7 +256,7 @@ function BookingPageContent() {
       const piecesForCategory = artPieces.filter(p => p.category === requestedArtPiece.category);
       setFilteredArtPieces(piecesForCategory);
     }
-  }, [requestedArtPiece, form, artPieces]);
+  }, [requestedArtPiece, artPieces, form]);
 
 
   const timeSlots = [
@@ -1163,3 +1165,5 @@ export default function BookingPage() {
         </Suspense>
     )
 }
+
+    
