@@ -14,15 +14,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Palette } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ClientLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { login } = useAuth();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would typically handle authentication logic
-    localStorage.setItem('isLoggedIn', 'true');
+    // Mock user data and token
+    const user = { name: "Jessica L.", email: "jessica.l@example.com" };
+    const token = "mock-jwt-token"; // In a real app, this would come from the server
+    
+    login(user, token);
+    
     const redirectUrl = searchParams.get('redirect') || '/profile/overview';
     router.push(redirectUrl);
   };

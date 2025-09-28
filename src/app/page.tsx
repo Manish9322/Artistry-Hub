@@ -8,12 +8,13 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap, Leaf, PartyPopper, LogIn, UserPlus } from "lucide-react";
+import { Palette, PenTool, Calendar, Gift, Star, Users, MapPin, Brush, Gem, Sparkles, Mail, Phone, Eye, Search, Pencil, CheckCircle, ArrowRight, Quote, Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Zap, Leaf, PartyPopper } from "lucide-react";
 import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import placeholderImages from '@/lib/placeholder-images.json';
+import { AppHeader } from "@/components/app-header";
 
 
 type Category = {
@@ -34,7 +35,7 @@ type ArtPiece = {
 };
 
 const isValidUrl = (string: string | undefined): boolean => {
-    if (!string || typeof string !== 'string' || string.trim() === '' || string === 'NA') return false;
+    if (!string || typeof string !== 'string' || string === 'NA') return false;
     try {
         if (string.startsWith('/')) return true; // Relative paths
         new URL(string); // Absolute URLs
@@ -194,24 +195,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Palette className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </Link>
-          <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
-                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <AppHeader />
 
       <div className="bg-primary/10 border-b">
         <div className="py-2 group flex overflow-hidden">

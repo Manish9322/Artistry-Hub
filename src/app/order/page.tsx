@@ -7,7 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Palette, ShoppingCart, User, Mail, Phone, Home, LogIn, UserPlus } from "lucide-react";
+import { ShoppingCart, User, Mail, Phone, Home } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Copyright } from "@/components/copyright";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { AppHeader } from "@/components/app-header";
 
 const orderSchema = z.object({
   itemName: z.string(),
@@ -177,24 +178,7 @@ function OrderPageContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Palette className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </Link>
-          <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
-                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="flex-1">
         <section className="py-12 bg-primary/10">

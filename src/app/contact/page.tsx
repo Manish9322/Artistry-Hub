@@ -3,29 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Copyright } from "@/components/copyright";
-import { Palette, Instagram, Twitter, Facebook, MessageCircle, Mail, User, Phone, LogIn, UserPlus } from "lucide-react";
+import { Instagram, Twitter, Facebook, MessageCircle, Mail, User, Phone } from "lucide-react";
+import { AppHeader } from "@/components/app-header";
 
 export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Palette className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </Link>
-          <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
-                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <AppHeader />
       
       <main className="flex-1">
         <section className="py-12 bg-primary/10">

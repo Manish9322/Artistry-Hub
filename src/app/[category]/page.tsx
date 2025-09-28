@@ -1,4 +1,5 @@
 
+
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -12,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import _db from "@/lib/db";
 import Category from "@/models/category.model.js";
 import { CategoryArtPieceGallery } from "./_components/category-art-piece-gallery";
+import { AppHeader } from "@/components/app-header";
 
 const iconMap: { [key: string]: React.ElementType } = {
     MessageSquare, Lightbulb, Scissors, Sparkles, Droplets, Sun, Wind, User, Award, Handshake, Heart, Star, BookOpen, Send, Clock, Tag, DollarSign, ChevronLeft, ChevronRight, Paintbrush, Gem, Trash2, ShieldCheck, Ruler
@@ -50,24 +52,7 @@ export default async function CategoryPage({ params }: { params: { category: str
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Palette className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </Link>
-          <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button size="sm" asChild><Link href="/contact">Contact</Link></Button>
-             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
-                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
-             </div>
-          </nav>
-        </div>
-      </header>
+       <AppHeader />
 
       <main className="flex-1">
         <section className="py-12 bg-primary/10">

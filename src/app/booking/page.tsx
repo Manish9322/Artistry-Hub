@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart, Coffee, DraftingCompass, Sparkles as SparklesIcon, Smile, LogIn, UserPlus } from "lucide-react";
+import { CalendarIcon, Palette, Ticket, ShieldCheck, Star, ArrowRight, Check, Users, MapPin, Car, Train, Accessibility, Clock, Hand, Brush, Paintbrush, Mic, BookOpen, Camera, Award, HelpCircle, Lightbulb, RefreshCw, X, User, Mail, Phone, Home as HomeIcon, Heart, Coffee, DraftingCompass, Sparkles as SparklesIcon, Smile } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
@@ -52,6 +52,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Separator } from "@/components/ui/separator";
+import { AppHeader } from "@/components/app-header";
+import { useAuth } from "@/hooks/use-auth";
 
 type ArtPiece = {
     _id: string;
@@ -88,17 +90,6 @@ const bookingSchema = z.object({
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
 
-// Mock authentication check
-const useAuth = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    useEffect(() => {
-        // In a real app, you'd check for a token in localStorage or a cookie
-        const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
-        setIsAuthenticated(loggedIn);
-    }, []);
-    return { isAuthenticated };
-}
-
 
 const isValidUrl = (string: string | undefined): boolean => {
     if (!string || typeof string !== 'string' || string.trim() === '') return false;
@@ -115,7 +106,7 @@ function BookingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const artPieceId = searchParams.get('artPieceId');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -178,7 +169,11 @@ function BookingPageContent() {
   
   useEffect(() => {
     form.setValue('artPieceId', artPieceId || '');
-  }, [artPieceId, form]);
+    if (isAuthenticated && user) {
+        form.setValue('name', user.name);
+        form.setValue('email', user.email);
+    }
+  }, [artPieceId, form, isAuthenticated, user]);
 
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
@@ -340,14 +335,7 @@ function BookingPageContent() {
     
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
-      if (isAuthenticated) {
-        setStep(step + 1);
-      } else {
-        // Store form data and redirect to login
-        const formData = form.getValues();
-        localStorage.setItem('pendingBooking', JSON.stringify(formData));
-        router.push('/login?redirect=/booking');
-      }
+      setStep(step + 1);
     }
   }
 
@@ -374,14 +362,22 @@ function BookingPageContent() {
   useEffect(() => {
     const pendingBooking = localStorage.getItem('pendingBooking');
     if (pendingBooking && isAuthenticated) {
-      const bookingData = JSON.parse(pendingBooking);
-      form.reset(bookingData);
-      // Decide which step to show. If basic details are filled, go to step 2.
-      if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
-        setStep(2);
+      try {
+        const bookingData = JSON.parse(pendingBooking);
+        form.reset({
+          ...bookingData,
+          name: user?.name || bookingData.name,
+          email: user?.email || bookingData.email,
+        });
+        if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
+          setStep(2);
+        }
+      } catch (e) {
+        console.error("Failed to parse pending booking data", e);
+        localStorage.removeItem('pendingBooking');
       }
     }
-  }, [isAuthenticated, form]);
+  }, [isAuthenticated, form, user]);
   
   const progressValue = step === 1 ? 33 : step === 2 ? 66 : 100;
   const stepTitles = ["Select Service & Time", "Your Contact Details", "Booking Confirmed!"];
@@ -389,24 +385,7 @@ function BookingPageContent() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Palette className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </Link>
-          <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
-             <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
-                <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="flex-1">
          <section className="py-16 md:py-24 bg-background">

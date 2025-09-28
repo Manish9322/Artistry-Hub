@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Copyright } from "@/components/copyright";
-import { Palette, ArrowRight, LogIn, UserPlus } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AboutHero } from "@/components/about/about-hero";
 import { OurStory } from "@/components/about/our-story";
 import { VisionMission } from "@/components/about/vision-mission";
@@ -14,29 +14,13 @@ import { Accolades } from "@/components/about/accolades";
 import { StudioGlimpse } from "@/components/about/studio-glimpse";
 import { ClientsLens } from "@/components/about/clients-lens";
 import { CommunityCollaboration } from "@/components/about/community-collaboration";
+import { AppHeader } from "@/components/app-header";
 
 
 export default function AboutPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <Palette className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg font-headline">Artistry Hub</span>
-          </Link>
-          <nav className="ml-auto flex items-center space-x-1 sm:space-x-4">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/#categories">Gallery</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/about">About</Link></Button>
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild><Link href="/booking">Booking</Link></Button>
-            <Button variant="ghost" size="sm" asChild><Link href="/contact">Contact</Link></Button>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" asChild><Link href="/login"><LogIn /></Link></Button>
-              <Button variant="ghost" size="icon" asChild><Link href="/register"><UserPlus /></Link></Button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="flex-1">
         <AboutHero />
