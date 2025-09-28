@@ -84,14 +84,14 @@ type GalleryImage = {
 };
 
 const bookingSchema = z.object({
-  serviceType: z.string({ required_error: "Please select a service type." }),
+  category: z.string({ required_error: "Please select a category." }),
+  artPieceId: z.string({ required_error: "Please select a service." }),
+  notes: z.string().optional(),
   bookingDate: z.date({ required_error: "A date is required." }),
   bookingTime: z.string({ required_error: "Please select a time slot." }),
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   phone: z.string().optional(),
   email: z.string().email({ message: "Please enter a valid email." }),
-  notes: z.string().optional(),
-  artPieceId: z.string().optional(),
 });
 
 type BookingFormValues = z.infer<typeof bookingSchema>;
@@ -111,19 +111,22 @@ const isValidUrl = (string: string | undefined): boolean => {
 function BookingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const artPieceId = searchParams.get('artPieceId');
+  const artPieceIdFromUrl = searchParams.get('artPieceId');
   const { isAuthenticated, user, isLoading: isAuthLoading } = useAuth();
   
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [artPieces, setArtPieces] = useState<ArtPiece[]>([]);
+  const [filteredArtPieces, setFilteredArtPieces] = useState<ArtPiece[]>([]);
+
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
   const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
   const [visitorImages, setVisitorImages] = useState<GalleryImage[]>([]);
   const [requestedArtPiece, setRequestedArtPiece] = useState<ArtPiece | null>(null);
   const [isLoadingArtPiece, setIsLoadingArtPiece] = useState(true);
 
-  useEffect(() => {
+   useEffect(() => {
     async function fetchPageData() {
       setIsLoadingArtPiece(true);
       try {
@@ -133,22 +136,30 @@ function BookingPageContent() {
           fetch('/api/categories'),
         ]);
 
-        if (artPiecesRes.ok) {
-          const artPieces: ArtPiece[] = await artPiecesRes.json();
-          const picked = artPieces.find(p => p.editorsPick);
-          setEditorsPick(picked || artPieces[0] || null);
-
-          if(artPieceId) {
-             const foundPiece = artPieces.find(p => p._id === artPieceId);
-             setRequestedArtPiece(foundPiece || null);
-          }
-        }
-        
         if (categoriesRes.ok) {
             const categoriesData: Category[] = await categoriesRes.json();
             setCategories(categoriesData);
         }
 
+        if (artPiecesRes.ok) {
+          const allArtPieces: ArtPiece[] = await artPiecesRes.json();
+          setArtPieces(allArtPieces);
+          const picked = allArtPieces.find(p => p.editorsPick);
+          setEditorsPick(picked || allArtPieces[0] || null);
+
+          if(artPieceIdFromUrl) {
+             const foundPiece = allArtPieces.find(p => p._id === artPieceIdFromUrl);
+             setRequestedArtPiece(foundPiece || null);
+              if (foundPiece) {
+                // Pre-fill form if art piece is from URL
+                form.setValue('category', foundPiece.category);
+                form.setValue('artPieceId', foundPiece._id);
+                const piecesForCategory = allArtPieces.filter(p => p.category === foundPiece.category);
+                setFilteredArtPieces(piecesForCategory);
+              }
+          }
+        }
+        
         if (galleryRes.ok) {
             const allImages: GalleryImage[] = await galleryRes.json();
             setExhibitionImages(allImages.filter(img => img.gallery === "Exhibition Highlights"));
@@ -167,7 +178,7 @@ function BookingPageContent() {
       }
     }
     fetchPageData();
-  }, [artPieceId]);
+  }, [artPieceIdFromUrl]);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -176,57 +187,61 @@ function BookingPageContent() {
       email: "",
       phone: "",
       notes: "",
-      artPieceId: artPieceId || "",
+      artPieceId: artPieceIdFromUrl || "",
     },
   });
   
-   useEffect(() => {
-    // If user is not authenticated, ensure form is reset and starts at step 1
+  useEffect(() => {
     if (!isAuthenticated) {
-        form.reset({
-            artPieceId: artPieceId || "",
-            name: "", 
-            email: "", 
-            phone: "", 
-            notes: "",
-            serviceType: undefined,
-            bookingDate: undefined,
-            bookingTime: undefined,
-        });
-        setStep(1);
-        return;
+      form.reset({
+        name: "",
+        email: "",
+        phone: "",
+        notes: "",
+        artPieceId: artPieceIdFromUrl || "",
+        category: requestedArtPiece?.category || undefined,
+        bookingDate: undefined,
+        bookingTime: undefined,
+      });
+      setStep(1);
+      return;
     }
 
-    // If user is authenticated
-    if (user) {
-        const pendingBooking = localStorage.getItem('pendingBooking');
-        if (pendingBooking) {
-            try {
-                const bookingData = JSON.parse(pendingBooking);
-                form.reset({
-                    ...bookingData,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone || bookingData.phone,
-                });
-                if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
-                    setStep(2);
-                }
-            } catch (e) {
-                console.error("Failed to parse pending booking data", e);
-                localStorage.removeItem('pendingBooking');
-            }
-        } else {
-            form.reset({
-                artPieceId: artPieceId || "",
-                name: user.name,
-                email: user.email,
-                phone: user.phone || "",
-                notes: "",
-            });
+    if (isAuthenticated && user) {
+      const pendingBooking = localStorage.getItem("pendingBooking");
+      if (pendingBooking) {
+        try {
+          const bookingData = JSON.parse(pendingBooking);
+          form.reset({
+            ...bookingData,
+            name: user.name,
+            email: user.email,
+            phone: user.phone || bookingData.phone,
+          });
+          if (
+            bookingData.category &&
+            bookingData.artPieceId &&
+            bookingData.bookingDate &&
+            bookingData.bookingTime
+          ) {
+            setStep(2);
+          }
+        } catch (e) {
+          console.error("Failed to parse pending booking data", e);
+          localStorage.removeItem("pendingBooking");
         }
+      } else {
+        form.reset({
+          name: user.name,
+          email: user.email,
+          phone: user.phone || "",
+          notes: "",
+          artPieceId: artPieceIdFromUrl || "",
+          category: requestedArtPiece?.category || undefined,
+        });
+      }
     }
-  }, [artPieceId, form, isAuthenticated, user]);
+  }, [artPieceIdFromUrl, form, isAuthenticated, user, requestedArtPiece]);
 
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
@@ -384,7 +399,7 @@ function BookingPageContent() {
 
   async function handleNextStep() {
     const fieldsToValidate: (keyof BookingFormValues)[] =
-      step === 1 ? ["serviceType", "bookingDate", "bookingTime"] : ["name", "email"];
+      step === 1 ? ["category", "artPieceId", "bookingDate", "bookingTime"] : ["name", "email"];
     
     const isValid = await form.trigger(fieldsToValidate);
     if (isValid) {
@@ -411,6 +426,13 @@ function BookingPageContent() {
       description: "We have received your request and will be in touch shortly.",
     });
   }
+  
+  const handleCategoryChange = (categoryName: string) => {
+    form.setValue('category', categoryName);
+    const piecesForCategory = artPieces.filter(p => p.category === categoryName);
+    setFilteredArtPieces(piecesForCategory);
+    form.setValue('artPieceId', ''); // Reset art piece selection
+  };
 
   
   const progressValue = step === 1 ? 33 : step === 2 ? 66 : 100;
@@ -476,12 +498,12 @@ function BookingPageContent() {
                     </p>
                 )}
               </div>
-               {artPieceId && (
+               {requestedArtPiece && (
                 <div className="mb-12">
                   <h3 className="text-2xl font-bold font-headline text-center mb-6">Your Requested Design</h3>
                   {isLoadingArtPiece ? (
                     <p className="text-center text-muted-foreground">Loading design details...</p>
-                  ) : requestedArtPiece ? (
+                  ) : (
                     <Card className="overflow-hidden">
                       <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
                         <Image
@@ -499,8 +521,6 @@ function BookingPageContent() {
                         </div>
                       </CardContent>
                     </Card>
-                  ) : (
-                    <p className="text-center text-destructive">Could not find the requested art piece.</p>
                   )}
                 </div>
               )}
@@ -516,44 +536,67 @@ function BookingPageContent() {
                           </div>
                     )}
                     
-                    <FormField
-                      control={form.control}
-                      name="artPieceId"
-                      render={({ field }) => (
-                        <FormItem className="hidden">
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
                     {step === 1 && (
                       <div className="space-y-8 animate-in fade-in-0 duration-500">
-                        <FormField
-                          control={form.control}
-                          name="serviceType"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Service Type</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
-                                    <SelectValue placeholder="Select a service" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                   {categories.map((category) => (
-                                    <SelectItem key={category._id} value={category.name}>
-                                      {category.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Category</FormLabel>
+                                <Select onValueChange={handleCategoryChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
+                                        <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    {categories.map((cat) => (
+                                        <SelectItem key={cat._id} value={cat.name}>
+                                        {cat.name}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                            <FormField
+                            control={form.control}
+                            name="artPieceId"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Service (Art Piece)</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value} disabled={!form.watch('category')}>
+                                    <FormControl>
+                                    <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
+                                        <SelectValue placeholder="Select a service" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    {filteredArtPieces.map(piece => <SelectItem key={piece._id} value={piece._id}>{piece.name}</SelectItem>)}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                        </div>
+
+                         <FormField
+                            control={form.control}
+                            name="notes"
+                            render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Special Requests (Optional)</FormLabel>
+                                  <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base p-6 rounded-lg border-2 bg-background shadow-sm" /></FormControl>
+                                  <FormMessage className="pl-4" />
+                              </FormItem>
+                            )}
+                          />
+
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <FormField
                             control={form.control}
@@ -674,17 +717,6 @@ function BookingPageContent() {
                                       </Label>
                                 </FormControl>
                                 <FormMessage className="pl-4" />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name="notes"
-                            render={({ field }) => (
-                              <FormItem>
-                                  <Label className="text-xl font-bold font-headline text-center block mb-4">Special Requests (Optional)</Label>
-                                  <FormControl><Textarea placeholder="Tell us about the occasion, design ideas, or any other details..." {...field} rows={4} className="text-base p-6 rounded-lg border-2 bg-background shadow-sm" /></FormControl>
-                                  <FormMessage className="pl-4" />
                               </FormItem>
                             )}
                           />
