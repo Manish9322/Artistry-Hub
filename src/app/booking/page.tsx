@@ -54,6 +54,7 @@ import placeholderImages from '@/lib/placeholder-images.json';
 import { Separator } from "@/components/ui/separator";
 import { AppHeader } from "@/components/app-header";
 import { useAuth } from "@/hooks/use-auth";
+import { useGetArtPiecesQuery, useGetCategoriesQuery, useGetGalleryImagesQuery } from "@/services/api";
 
 type ArtPiece = {
     _id: string;
@@ -116,61 +117,38 @@ function BookingPageContent() {
   
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [artPieces, setArtPieces] = useState<ArtPiece[]>([]);
   const [filteredArtPieces, setFilteredArtPieces] = useState<ArtPiece[]>([]);
-  const [allDataLoaded, setAllDataLoaded] = useState(false);
+
+  const { data: categories = [], isSuccess: categoriesLoaded } = useGetCategoriesQuery();
+  const { data: artPieces = [], isSuccess: artPiecesLoaded } = useGetArtPiecesQuery();
+  const { data: galleryImages = [], isSuccess: galleryLoaded } = useGetGalleryImagesQuery();
 
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
   const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
   const [visitorImages, setVisitorImages] = useState<GalleryImage[]>([]);
   const [requestedArtPiece, setRequestedArtPiece] = useState<ArtPiece | null>(null);
 
+  const allDataLoaded = categoriesLoaded && artPiecesLoaded && galleryLoaded;
+
    useEffect(() => {
-    async function fetchPageData() {
-      try {
-        const [artPiecesRes, galleryRes, categoriesRes] = await Promise.all([
-          fetch('/api/art-pieces'),
-          fetch('/api/gallery'),
-          fetch('/api/categories'),
-        ]);
+    if (allDataLoaded) {
+      const picked = artPieces.find(p => p.editorsPick) || artPieces[0] || null;
+      setEditorsPick(picked);
+      
+      setExhibitionImages(galleryImages.filter(img => img.gallery === "Exhibition Highlights"));
+      const clientImages = galleryImages.filter(img => img.gallery === "From Our Visitors");
+      const visitorImagesWithStyles = clientImages.map((img, index) => {
+          const classNames = ['w-80', 'w-[30rem]', 'w-72'];
+          return { ...img, className: classNames[index % classNames.length] };
+      });
+      setVisitorImages(visitorImagesWithStyles);
 
-        if (categoriesRes.ok) {
-            const categoriesData = await categoriesRes.json();
-            setCategories(categoriesData);
-        }
-
-        if (artPiecesRes.ok) {
-          const allArtPieces = await artPiecesRes.json();
-          setArtPieces(allArtPieces);
-          const picked = allArtPieces.find(p => p.editorsPick);
-          setEditorsPick(picked || allArtPieces[0] || null);
-
-          if(artPieceIdFromUrl) {
-             const foundPiece = allArtPieces.find(p => p._id === artPieceIdFromUrl);
-             setRequestedArtPiece(foundPiece || null);
-          }
-        }
-        
-        if (galleryRes.ok) {
-            const allImages: GalleryImage[] = await galleryRes.json();
-            setExhibitionImages(allImages.filter(img => img.gallery === "Exhibition Highlights"));
-
-            const clientImages = allImages.filter(img => img.gallery === "From Our Visitors");
-            const visitorImagesWithStyles = clientImages.map((img, index) => {
-              const classNames = ['w-80', 'w-[30rem]', 'w-72'];
-              return { ...img, className: classNames[index % classNames.length] };
-            });
-            setVisitorImages(visitorImagesWithStyles);
-        }
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setAllDataLoaded(true);
+      if(artPieceIdFromUrl) {
+         const foundPiece = artPieces.find(p => p._id === artPieceIdFromUrl);
+         setRequestedArtPiece(foundPiece || null);
       }
     }
-    fetchPageData();
-  }, [artPieceIdFromUrl]);
+  }, [allDataLoaded, artPieces, galleryImages, artPieceIdFromUrl]);
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -186,54 +164,50 @@ function BookingPageContent() {
   useEffect(() => {
     if (!allDataLoaded) return;
   
-    let initialValues: Partial<BookingFormValues> = {
-      name: "",
-      email: "",
-      phone: "",
-      notes: "",
-      artPieceId: "",
-      category: undefined,
-      bookingDate: undefined,
-      bookingTime: undefined,
-    };
+    let initialValues: Partial<BookingFormValues> = {};
   
     const pendingBookingRaw = localStorage.getItem("pendingBooking");
     let pendingBooking = null;
     if (pendingBookingRaw) {
       try {
         pendingBooking = JSON.parse(pendingBookingRaw);
+        if (pendingBooking.bookingDate) {
+           pendingBooking.bookingDate = new Date(pendingBooking.bookingDate);
+        }
       } catch (e) {
         console.error("Failed to parse pending booking", e);
         localStorage.removeItem("pendingBooking");
       }
     }
-  
+
     if (isAuthenticated && user) {
-      initialValues.name = user.name;
-      initialValues.email = user.email;
-      initialValues.phone = user.phone || "";
-  
-      if (pendingBooking) {
-        initialValues = { ...initialValues, ...pendingBooking };
-        setStep(2);
-      }
-    }
-  
-    if (requestedArtPiece) {
-      initialValues.category = requestedArtPiece.category;
-      initialValues.artPieceId = requestedArtPiece._id;
-      const piecesForCategory = artPieces.filter(p => p.category === requestedArtPiece.category);
-      setFilteredArtPieces(piecesForCategory);
-    }
-  
-    if (!isAuthenticated && !pendingBooking && !artPieceIdFromUrl) {
-      setStep(1);
+        initialValues.name = user.name;
+        initialValues.email = user.email;
+        initialValues.phone = user.phone || "";
+        if (pendingBooking) {
+            initialValues = { ...initialValues, ...pendingBooking };
+            setStep(2);
+        }
+    } else {
+        if (!artPieceIdFromUrl) {
+           form.reset({});
+           setStep(1);
+        }
     }
     
     // Type assertion to make TypeScript happy
     form.reset(initialValues as BookingFormValues);
   
-  }, [allDataLoaded, isAuthenticated, user, requestedArtPiece, artPieces, artPieceIdFromUrl, form]);
+  }, [allDataLoaded, isAuthenticated, user, form]);
+
+  useEffect(() => {
+    if (requestedArtPiece) {
+      form.setValue('category', requestedArtPiece.category);
+      form.setValue('artPieceId', requestedArtPiece._id);
+      const piecesForCategory = artPieces.filter(p => p.category === requestedArtPiece.category);
+      setFilteredArtPieces(piecesForCategory);
+    }
+  }, [requestedArtPiece, artPieces, form]);
 
 
   const timeSlots = [
@@ -1142,3 +1116,5 @@ export default function BookingPage() {
         </Suspense>
     )
 }
+
+    
