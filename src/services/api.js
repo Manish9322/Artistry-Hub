@@ -1,3 +1,4 @@
+
 // This file will be used for RTK Query setup.
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
@@ -7,6 +8,15 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
   tagTypes: ['ArtPieces', 'Categories', 'Bookings', 'Clients', 'Testimonials', 'Gallery', 'Workshops', 'Faqs'],
   endpoints: (builder) => ({
+    // Auth Endpoint
+    login: builder.mutation({
+      query: (credentials) => ({
+        url: 'auth/login',
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+    
     // ArtPieces Endpoints
     getArtPieces: builder.query({
       query: () => 'art-pieces',
@@ -214,6 +224,7 @@ export const api = createApi({
 
 // Export hooks for usage in functional components
 export const { 
+    useLoginMutation,
     useGetArtPiecesQuery,
     useAddArtPieceMutation,
     useUpdateArtPieceMutation,

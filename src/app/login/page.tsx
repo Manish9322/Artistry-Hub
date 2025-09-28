@@ -1,8 +1,12 @@
 
 "use client"
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,72 +15,122 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Palette } from "lucide-react";
+import { Palette, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useLoginMutation } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
+
+const loginSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function ClientLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login } = useAuth();
+  const [loginUser, { isLoading }] = useLoginMutation();
+  const { toast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Mock user data and token
-    const user = { name: "Jessica L.", email: "jessica.l@example.com" };
-    const token = "mock-jwt-token"; // In a real app, this would come from the server
-    
-    login(user, token);
-    
-    const redirectUrl = searchParams.get('redirect') || '/profile/overview';
-    router.push(redirectUrl);
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const handleLogin = async (data: LoginFormValues) => {
+    try {
+      const response = await loginUser(data).unwrap();
+      const { user, token } = response;
+      login(user, token);
+      
+      const redirectUrl = searchParams.get('redirect') || '/profile/overview';
+      router.push(redirectUrl);
+       toast({
+        title: "Login Successful!",
+        description: `Welcome back, ${user.name}!`,
+      });
+    } catch (error: any) {
+       toast({
+        variant: "destructive",
+        title: "Login Failed",
+        description: error?.data?.message || "An unexpected error occurred.",
+      });
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-secondary">
-      <Card className="mx-auto max-w-sm w-full">
+    <div className="flex items-center justify-center min-h-screen bg-secondary p-4">
+      <Card className="mx-auto max-w-md w-full">
         <CardHeader className="text-center">
           <Link href="/" className="inline-block mb-4">
             <Palette className="mx-auto h-10 w-10 text-primary" />
           </Link>
           <CardTitle className="text-2xl font-bold">Client Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="me@example.com"
-                required
-                defaultValue="jessica.l@example.com"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input type="email" placeholder="me@example.com" {...field} className="pl-10"/>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" type="password" required defaultValue="password" />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-            <Button variant="outline" className="w-full" asChild>
-                <Link href="/">Back to Home</Link>
-            </Button>
-          </form>
-          <div className="mt-4 text-center text-sm">
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                     <div className="flex items-center">
+                        <FormLabel>Password</FormLabel>
+                        <Link href="#" className="ml-auto inline-block text-sm underline">
+                            Forgot your password?
+                        </Link>
+                    </div>
+                    <FormControl>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="pl-10"/>
+                         <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
+                              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                         </Button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                 {isLoading ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </Form>
+          <div className="mt-6 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="underline">
               Sign up
