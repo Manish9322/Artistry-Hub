@@ -180,12 +180,17 @@ function BookingPageContent() {
     },
   });
   
-  useEffect(() => {
+   useEffect(() => {
     form.setValue('artPieceId', artPieceId || '');
     if (isAuthenticated && user) {
         form.setValue('name', user.name);
         form.setValue('email', user.email);
         form.setValue('phone', user.phone);
+    } else {
+        form.reset({
+            artPieceId: artPieceId || "",
+            name: "", email: "", phone: "", notes: ""
+        });
     }
   }, [artPieceId, form, isAuthenticated, user]);
 
@@ -375,22 +380,22 @@ function BookingPageContent() {
 
   useEffect(() => {
     const pendingBooking = localStorage.getItem('pendingBooking');
-    if (pendingBooking && isAuthenticated) {
-      try {
-        const bookingData = JSON.parse(pendingBooking);
-        form.reset({
-          ...bookingData,
-          name: user?.name || bookingData.name,
-          email: user?.email || bookingData.email,
-          phone: user?.phone || bookingData.phone
-        });
-        if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
-          setStep(2);
+    if (pendingBooking && isAuthenticated && user) {
+        try {
+            const bookingData = JSON.parse(pendingBooking);
+            form.reset({
+                ...bookingData,
+                name: user.name,
+                email: user.email,
+                phone: user.phone || bookingData.phone,
+            });
+            if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
+                setStep(2);
+            }
+        } catch (e) {
+            console.error("Failed to parse pending booking data", e);
+            localStorage.removeItem('pendingBooking');
         }
-      } catch (e) {
-        console.error("Failed to parse pending booking data", e);
-        localStorage.removeItem('pendingBooking');
-      }
     }
   }, [isAuthenticated, form, user]);
   
@@ -1098,3 +1103,5 @@ export default function BookingPage() {
         </Suspense>
     )
 }
+
+    
