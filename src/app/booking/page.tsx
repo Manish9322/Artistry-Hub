@@ -181,16 +181,50 @@ function BookingPageContent() {
   });
   
    useEffect(() => {
-    form.setValue('artPieceId', artPieceId || '');
-    if (isAuthenticated && user) {
-        form.setValue('name', user.name);
-        form.setValue('email', user.email);
-        form.setValue('phone', user.phone);
-    } else {
+    // If user is not authenticated, ensure form is reset and starts at step 1
+    if (!isAuthenticated) {
         form.reset({
             artPieceId: artPieceId || "",
-            name: "", email: "", phone: "", notes: ""
+            name: "", 
+            email: "", 
+            phone: "", 
+            notes: "",
+            serviceType: undefined,
+            bookingDate: undefined,
+            bookingTime: undefined,
         });
+        setStep(1);
+        return;
+    }
+
+    // If user is authenticated
+    if (user) {
+        const pendingBooking = localStorage.getItem('pendingBooking');
+        if (pendingBooking) {
+            try {
+                const bookingData = JSON.parse(pendingBooking);
+                form.reset({
+                    ...bookingData,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone || bookingData.phone,
+                });
+                if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
+                    setStep(2);
+                }
+            } catch (e) {
+                console.error("Failed to parse pending booking data", e);
+                localStorage.removeItem('pendingBooking');
+            }
+        } else {
+            form.reset({
+                artPieceId: artPieceId || "",
+                name: user.name,
+                email: user.email,
+                phone: user.phone || "",
+                notes: "",
+            });
+        }
     }
   }, [artPieceId, form, isAuthenticated, user]);
 
@@ -378,33 +412,6 @@ function BookingPageContent() {
     });
   }
 
-  useEffect(() => {
-    const pendingBooking = localStorage.getItem('pendingBooking');
-    if (pendingBooking && isAuthenticated && user) {
-        try {
-            const bookingData = JSON.parse(pendingBooking);
-            form.reset({
-                ...bookingData,
-                name: user.name,
-                email: user.email,
-                phone: user.phone || bookingData.phone,
-            });
-            if (bookingData.serviceType && bookingData.bookingDate && bookingData.bookingTime) {
-                setStep(2);
-            }
-        } catch (e) {
-            console.error("Failed to parse pending booking data", e);
-            localStorage.removeItem('pendingBooking');
-        }
-    } else if (!isAuthenticated) {
-        // If user logs out or is not authenticated, clear the form.
-        form.reset({
-             artPieceId: artPieceId || "",
-             name: "", email: "", phone: "", notes: ""
-        });
-        setStep(1);
-    }
-  }, [isAuthenticated, form, user, artPieceId]);
   
   const progressValue = step === 1 ? 33 : step === 2 ? 66 : 100;
   const stepTitles = ["Select Service & Time", "Your Contact Details", "Booking Confirmed!"];
