@@ -119,16 +119,15 @@ function BookingPageContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [artPieces, setArtPieces] = useState<ArtPiece[]>([]);
   const [filteredArtPieces, setFilteredArtPieces] = useState<ArtPiece[]>([]);
+  const [allDataLoaded, setAllDataLoaded] = useState(false);
 
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
   const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
   const [visitorImages, setVisitorImages] = useState<GalleryImage[]>([]);
   const [requestedArtPiece, setRequestedArtPiece] = useState<ArtPiece | null>(null);
-  const [isLoadingArtPiece, setIsLoadingArtPiece] = useState(true);
 
    useEffect(() => {
     async function fetchPageData() {
-      setIsLoadingArtPiece(true);
       try {
         const [artPiecesRes, galleryRes, categoriesRes] = await Promise.all([
           fetch('/api/art-pieces'),
@@ -136,15 +135,13 @@ function BookingPageContent() {
           fetch('/api/categories'),
         ]);
 
-        let categoriesData: Category[] = [];
         if (categoriesRes.ok) {
-            categoriesData = await categoriesRes.json();
+            const categoriesData = await categoriesRes.json();
             setCategories(categoriesData);
         }
 
-        let allArtPieces: ArtPiece[] = [];
         if (artPiecesRes.ok) {
-          allArtPieces = await artPiecesRes.json();
+          const allArtPieces = await artPiecesRes.json();
           setArtPieces(allArtPieces);
           const picked = allArtPieces.find(p => p.editorsPick);
           setEditorsPick(picked || allArtPieces[0] || null);
@@ -169,7 +166,7 @@ function BookingPageContent() {
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
-        setIsLoadingArtPiece(false);
+        setAllDataLoaded(true);
       }
     }
     fetchPageData();
@@ -187,76 +184,56 @@ function BookingPageContent() {
   });
   
   useEffect(() => {
-    if (isAuthLoading) return;
-
-    if (!isAuthenticated) {
-        const pendingBooking = localStorage.getItem("pendingBooking");
-        if (!pendingBooking) {
-            form.reset({
-                name: "",
-                email: "",
-                phone: "",
-                notes: "",
-                artPieceId: artPieceIdFromUrl || "",
-                category: undefined,
-                bookingDate: undefined,
-                bookingTime: undefined,
-            });
-            if (!artPieceIdFromUrl) {
-                setStep(1);
-            }
-        }
-        return;
+    if (!allDataLoaded) return;
+  
+    let initialValues: Partial<BookingFormValues> = {
+      name: "",
+      email: "",
+      phone: "",
+      notes: "",
+      artPieceId: "",
+      category: undefined,
+      bookingDate: undefined,
+      bookingTime: undefined,
+    };
+  
+    const pendingBookingRaw = localStorage.getItem("pendingBooking");
+    let pendingBooking = null;
+    if (pendingBookingRaw) {
+      try {
+        pendingBooking = JSON.parse(pendingBookingRaw);
+      } catch (e) {
+        console.error("Failed to parse pending booking", e);
+        localStorage.removeItem("pendingBooking");
+      }
     }
-
+  
     if (isAuthenticated && user) {
-        const pendingBooking = localStorage.getItem("pendingBooking");
-        if (pendingBooking) {
-            try {
-                const bookingData = JSON.parse(pendingBooking);
-                form.reset({
-                    ...bookingData,
-                    name: user.name,
-                    email: user.email,
-                    phone: user.phone || bookingData.phone,
-                });
-                if (bookingData.category) {
-                    const piecesForCategory = artPieces.filter(p => p.category === bookingData.category);
-                    setFilteredArtPieces(piecesForCategory);
-                }
-                if (
-                    bookingData.category &&
-                    bookingData.artPieceId &&
-                    bookingData.bookingDate &&
-                    bookingData.bookingTime
-                ) {
-                    setStep(2);
-                }
-            } catch (e) {
-                console.error("Failed to parse pending booking data", e);
-                localStorage.removeItem("pendingBooking");
-            }
-        } else {
-            form.reset({
-                name: user.name,
-                email: user.email,
-                phone: user.phone || "",
-                notes: "",
-                artPieceId: artPieceIdFromUrl || "",
-                category: requestedArtPiece?.category || undefined,
-            });
-        }
+      initialValues.name = user.name;
+      initialValues.email = user.email;
+      initialValues.phone = user.phone || "";
+  
+      if (pendingBooking) {
+        initialValues = { ...initialValues, ...pendingBooking };
+        setStep(2);
+      }
     }
-  }, [artPieceIdFromUrl, form, isAuthenticated, user, isAuthLoading, requestedArtPiece, artPieces]);
-
-   useEffect(() => {
+  
     if (requestedArtPiece) {
-      form.setValue('category', requestedArtPiece.category);
-      form.setValue('artPieceId', requestedArtPiece._id);
+      initialValues.category = requestedArtPiece.category;
+      initialValues.artPieceId = requestedArtPiece._id;
       const piecesForCategory = artPieces.filter(p => p.category === requestedArtPiece.category);
       setFilteredArtPieces(piecesForCategory);
     }
-  }, [requestedArtPiece, artPieces, form]);
+  
+    if (!isAuthenticated && !pendingBooking && !artPieceIdFromUrl) {
+      setStep(1);
+    }
+    
+    // Type assertion to make TypeScript happy
+    form.reset(initialValues as BookingFormValues);
+  
+  }, [allDataLoaded, isAuthenticated, user, requestedArtPiece, artPieces, artPieceIdFromUrl, form]);
 
 
   const timeSlots = [
@@ -517,10 +494,8 @@ function BookingPageContent() {
                {requestedArtPiece && (
                 <div className="mb-12">
                   <h3 className="text-2xl font-bold font-headline text-center mb-6">Your Requested Design</h3>
-                  {isLoadingArtPiece ? (
-                    <p className="text-center text-muted-foreground">Loading design details...</p>
-                  ) : (
-                    <Card className="overflow-hidden">
+                  {allDataLoaded ? (
+                     <Card className="overflow-hidden">
                       <CardContent className="p-6 flex flex-col sm:flex-row items-center gap-6">
                         <Image
                           src={isValidUrl(requestedArtPiece.images[0]) ? requestedArtPiece.images[0] : placeholderImages.default}
@@ -537,6 +512,8 @@ function BookingPageContent() {
                         </div>
                       </CardContent>
                     </Card>
+                  ) : (
+                    <p className="text-center text-muted-foreground">Loading design details...</p>
                   )}
                 </div>
               )}
@@ -1165,5 +1142,3 @@ export default function BookingPage() {
         </Suspense>
     )
 }
-
-    
