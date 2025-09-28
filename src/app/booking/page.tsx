@@ -396,8 +396,15 @@ function BookingPageContent() {
             console.error("Failed to parse pending booking data", e);
             localStorage.removeItem('pendingBooking');
         }
+    } else if (!isAuthenticated) {
+        // If user logs out or is not authenticated, clear the form.
+        form.reset({
+             artPieceId: artPieceId || "",
+             name: "", email: "", phone: "", notes: ""
+        });
+        setStep(1);
     }
-  }, [isAuthenticated, form, user]);
+  }, [isAuthenticated, form, user, artPieceId]);
   
   const progressValue = step === 1 ? 33 : step === 2 ? 66 : 100;
   const stepTitles = ["Select Service & Time", "Your Contact Details", "Booking Confirmed!"];
