@@ -136,13 +136,15 @@ function BookingPageContent() {
           fetch('/api/categories'),
         ]);
 
+        let categoriesData: Category[] = [];
         if (categoriesRes.ok) {
-            const categoriesData: Category[] = await categoriesRes.json();
+            categoriesData = await categoriesRes.json();
             setCategories(categoriesData);
         }
 
+        let allArtPieces: ArtPiece[] = [];
         if (artPiecesRes.ok) {
-          const allArtPieces: ArtPiece[] = await artPiecesRes.json();
+          allArtPieces = await artPiecesRes.json();
           setArtPieces(allArtPieces);
           const picked = allArtPieces.find(p => p.editorsPick);
           setEditorsPick(picked || allArtPieces[0] || null);
@@ -150,13 +152,6 @@ function BookingPageContent() {
           if(artPieceIdFromUrl) {
              const foundPiece = allArtPieces.find(p => p._id === artPieceIdFromUrl);
              setRequestedArtPiece(foundPiece || null);
-              if (foundPiece) {
-                // Pre-fill form if art piece is from URL
-                form.setValue('category', foundPiece.category);
-                form.setValue('artPieceId', foundPiece._id);
-                const piecesForCategory = allArtPieces.filter(p => p.category === foundPiece.category);
-                setFilteredArtPieces(piecesForCategory);
-              }
           }
         }
         
@@ -192,56 +187,75 @@ function BookingPageContent() {
   });
   
   useEffect(() => {
-    if (!isAuthenticated) {
-      form.reset({
-        name: "",
-        email: "",
-        phone: "",
-        notes: "",
-        artPieceId: artPieceIdFromUrl || "",
-        category: requestedArtPiece?.category || undefined,
-        bookingDate: undefined,
-        bookingTime: undefined,
-      });
-      setStep(1);
-      return;
-    }
-
-    if (isAuthenticated && user) {
-      const pendingBooking = localStorage.getItem("pendingBooking");
-      if (pendingBooking) {
-        try {
-          const bookingData = JSON.parse(pendingBooking);
+    if (!isAuthLoading) {
+      if (!isAuthenticated) {
+        const pendingBooking = localStorage.getItem("pendingBooking");
+        if (!pendingBooking && !artPieceIdFromUrl) {
+           form.reset({
+            name: "",
+            email: "",
+            phone: "",
+            notes: "",
+            artPieceId: "",
+            category: undefined,
+            bookingDate: undefined,
+            bookingTime: undefined,
+          });
+          setStep(1);
+        }
+        return;
+      }
+  
+      if (isAuthenticated && user) {
+        const pendingBooking = localStorage.getItem("pendingBooking");
+        if (pendingBooking) {
+          try {
+            const bookingData = JSON.parse(pendingBooking);
+            form.reset({
+              ...bookingData,
+              name: user.name,
+              email: user.email,
+              phone: user.phone || bookingData.phone,
+            });
+             if (bookingData.category) {
+              const piecesForCategory = artPieces.filter(p => p.category === bookingData.category);
+              setFilteredArtPieces(piecesForCategory);
+            }
+            if (
+              bookingData.category &&
+              bookingData.artPieceId &&
+              bookingData.bookingDate &&
+              bookingData.bookingTime
+            ) {
+              setStep(2);
+            }
+          } catch (e) {
+            console.error("Failed to parse pending booking data", e);
+            localStorage.removeItem("pendingBooking");
+          }
+        } else {
           form.reset({
-            ...bookingData,
             name: user.name,
             email: user.email,
-            phone: user.phone || bookingData.phone,
+            phone: user.phone || "",
+            notes: "",
+            artPieceId: artPieceIdFromUrl || "",
+            category: requestedArtPiece?.category || undefined,
           });
-          if (
-            bookingData.category &&
-            bookingData.artPieceId &&
-            bookingData.bookingDate &&
-            bookingData.bookingTime
-          ) {
-            setStep(2);
-          }
-        } catch (e) {
-          console.error("Failed to parse pending booking data", e);
-          localStorage.removeItem("pendingBooking");
         }
-      } else {
-        form.reset({
-          name: user.name,
-          email: user.email,
-          phone: user.phone || "",
-          notes: "",
-          artPieceId: artPieceIdFromUrl || "",
-          category: requestedArtPiece?.category || undefined,
-        });
       }
     }
-  }, [artPieceIdFromUrl, form, isAuthenticated, user, requestedArtPiece]);
+  }, [artPieceIdFromUrl, form, isAuthenticated, user, isAuthLoading, requestedArtPiece, artPieces]);
+
+   useEffect(() => {
+    if (requestedArtPiece) {
+      form.setValue('category', requestedArtPiece.category);
+      form.setValue('artPieceId', requestedArtPiece._id);
+      const piecesForCategory = artPieces.filter(p => p.category === requestedArtPiece.category);
+      setFilteredArtPieces(piecesForCategory);
+    }
+  }, [requestedArtPiece, form, artPieces]);
+
 
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
@@ -545,7 +559,7 @@ function BookingPageContent() {
                             render={({ field }) => (
                                 <FormItem>
                                 <FormLabel className="text-xl font-bold font-headline text-center block mb-4">Category</FormLabel>
-                                <Select onValueChange={handleCategoryChange} defaultValue={field.value}>
+                                <Select onValueChange={handleCategoryChange} value={field.value} defaultValue={field.value}>
                                     <FormControl>
                                     <SelectTrigger className="h-14 text-base p-6 rounded-lg border-2 bg-background shadow-sm">
                                         <SelectValue placeholder="Select a category" />
@@ -1149,5 +1163,3 @@ export default function BookingPage() {
         </Suspense>
     )
 }
-
-    
