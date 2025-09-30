@@ -12,10 +12,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogT
 
 type ArtPiece = {
     _id: string;
-    title: string;
+    name: string;
     price: number;
     images: string[];
-    tags: string[];
+    // tags are on the category, but we might want to filter art pieces by sub-tags in the future
+    // tags: string[];
     hint: string;
     creationTime: string;
 };
@@ -26,15 +27,22 @@ type Props = {
 }
 
 export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
+  // The 'tags' prop on artPieces is not consistently available,
+  // so we'll use the main category tags for now.
   const [selectedTag, setSelectedTag] = useState("All");
   const [selectedArt, setSelectedArt] = useState<ArtPiece | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const duplicatedArt = [...artPieces, ...artPieces];
+  // We duplicate the art pieces to create a seamless looping effect in the marquee.
+  const duplicatedArt = artPieces.length > 0 ? [...artPieces, ...artPieces] : [];
 
   const filteredArt = selectedTag === "All"
     ? duplicatedArt
-    : duplicatedArt.filter(piece => piece.tags.includes(selectedTag));
+    : duplicatedArt.filter(piece => {
+        // Since art pieces don't have their own tags, we show all for any filter other than "All"
+        // This can be expanded if art pieces get their own specific tags.
+        return true;
+    });
 
   const reversedFilteredArt = [...filteredArt].reverse();
 
@@ -54,6 +62,19 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
   const openModal = (art: ArtPiece) => {
     setSelectedArt(art);
     setCurrentImageIndex(0);
+  }
+
+  if (artPieces.length === 0) {
+      return (
+          <section className="py-16 sm:py-24">
+              <div className="container text-center">
+                  <h2 className="text-3xl font-bold font-headline text-primary">Our Gallery</h2>
+                  <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
+                      No art pieces have been added to this category yet. Please check back later!
+                  </p>
+              </div>
+          </section>
+      )
   }
 
   return (
@@ -86,13 +107,13 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
                       <div className="relative h-64 w-full">
                         <Image
                           src={piece.images[0]}
-                          alt={piece.title}
+                          alt={piece.name}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                           data-ai-hint={piece.hint}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                          <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
+                          <h3 className="text-xl font-bold font-headline mb-1">{piece.name}</h3>
                           <p className="text-2xl font-bold text-primary">${piece.price}</p>
                         </div>
                       </div>
@@ -109,13 +130,13 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
                       <div className="relative h-64 w-full">
                         <Image
                           src={piece.images[0]}
-                          alt={piece.title}
+                          alt={piece.name}
                           fill
                           className="object-cover transition-transform duration-500 group-hover:scale-110"
                           data-ai-hint={piece.hint}
                         />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                          <h3 className="text-xl font-bold font-headline mb-1">{piece.title}</h3>
+                          <h3 className="text-xl font-bold font-headline mb-1">{piece.name}</h3>
                            <p className="text-2xl font-bold text-primary">${piece.price}</p>
                         </div>
                       </div>
@@ -130,12 +151,12 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
         {selectedArt && (
           <DialogContent className="max-w-4xl">
             <DialogHeader>
-              <DialogTitle className="font-headline text-3xl text-primary">{selectedArt.title}</DialogTitle>
+              <DialogTitle className="font-headline text-3xl text-primary">{selectedArt.name}</DialogTitle>
             </DialogHeader>
             <div className="grid md:grid-cols-2 gap-8">
               <div className="space-y-4">
                  <div className="relative aspect-square rounded-lg overflow-hidden group">
-                      <Image src={selectedArt.images[currentImageIndex]} alt={selectedArt.title} fill className="object-cover transition-opacity duration-300" data-ai-hint={selectedArt.hint} />
+                      <Image src={selectedArt.images[currentImageIndex]} alt={selectedArt.name} fill className="object-cover transition-opacity duration-300" data-ai-hint={selectedArt.hint} />
                       <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-between p-2">
                          <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 hover:text-white" onClick={prevImage}><ChevronLeft className="w-6 h-6" /></Button>
                          <Button size="icon" variant="ghost" className="text-white hover:bg-white/20 hover:text-white" onClick={nextImage}><ChevronRight className="w-6 h-6" /></Button>
@@ -144,7 +165,7 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
                   <div className="flex gap-2">
                       {selectedArt.images.map((img, index) => (
                           <div key={index} className={`w-1/3 h-24 rounded-md overflow-hidden cursor-pointer border-2 ${index === currentImageIndex ? 'border-primary' : 'border-transparent'}`} onClick={() => setCurrentImageIndex(index)}>
-                             <Image src={img} alt={`${selectedArt.title} thumbnail ${index+1}`} width={150} height={100} className="object-cover w-full h-full"/>
+                             <Image src={img} alt={`${selectedArt.name} thumbnail ${index+1}`} width={150} height={100} className="object-cover w-full h-full"/>
                           </div>
                       ))}
                   </div>
@@ -152,20 +173,11 @@ export function CategoryArtPieceGallery({ artPieces, tags }: Props) {
               <div className="space-y-4">
                  <div className="flex items-center gap-2 text-muted-foreground">
                       <Clock className="w-5 h-5 text-primary" />
-                      <span><strong>Creation Time:</strong> {selectedArt.creationTime}</span>
+                      <span><strong>Creation Time:</strong> {selectedArt.creationTime} minutes</span>
                   </div>
                   <div className="flex items-center gap-2 text-muted-foreground">
                       <DollarSign className="w-5 h-5 text-primary" />
                        <span><strong>Price:</strong> ${selectedArt.price}</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-muted-foreground">
-                      <Tag className="w-5 h-5 text-primary mt-1" />
-                      <div>
-                          <strong>Tags:</strong>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                              {selectedArt.tags.map((tag:string) => <Badge key={tag} variant="secondary">{tag}</Badge>)}
-                          </div>
-                      </div>
                   </div>
               </div>
             </div>

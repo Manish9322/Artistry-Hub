@@ -12,6 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import _db from "@/lib/db";
 import Category from "@/models/category.model.js";
+import ArtPiece from "@/models/artPiece.model.js";
 import { CategoryArtPieceGallery } from "./_components/category-art-piece-gallery";
 import { AppHeader } from "@/components/app-header";
 
@@ -25,7 +26,9 @@ async function getCategoryData(slug: string) {
   if (!categoryData) {
     return null;
   }
-  return JSON.parse(JSON.stringify(categoryData));
+  const artPieces = await ArtPiece.find({ category: categoryData.name }).lean();
+  
+  return JSON.parse(JSON.stringify({ ...categoryData, artPieces }));
 }
 
 export default async function CategoryPage({ params }: { params: { category: string } }) {
