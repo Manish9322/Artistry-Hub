@@ -33,7 +33,7 @@
     {
       "icon": "Award",
       "title": "Artistic Excellence",
-      "description": "Our artists are masters of jejich craft, dedicated to delivering intricate and flawless designs every time."
+      "description": "Our artists are masters of their craft, dedicated to delivering intricate and flawless designs every time."
     },
     {
       "icon": "Handshake",
@@ -44,6 +44,16 @@
       "icon": "Heart",
       "title": "Quality & Safety",
       "description": "We exclusively use organic, chemical-free henna to guarantee a beautiful, dark stain that is completely safe for your skin."
+    },
+    {
+        "icon": "Clock",
+        "title": "Punctuality & Professionalism",
+        "description": "We respect your time. Our artists arrive on schedule and provide a professional, seamless experience from beginning to end."
+    },
+    {
+        "icon": "Sparkles",
+        "title": "Creative Innovation",
+        "description": "While honoring tradition, we continuously explore new styles and techniques to offer you unique and modern Mehndi designs."
     }
   ],
   "bespokeCreations": [
@@ -76,6 +86,54 @@
       "comment": "I booked for an Eid celebration and was so impressed. The artist was so creative with the Arabic design, and I received endless compliments. Highly recommend!",
       "image": "https://picsum.photos/seed/aisha-testimonial/100/100",
       "hint": "woman portrait smiling"
+    },
+    {
+        "name": "Jessica Lee",
+        "comment": "As someone new to henna, I was a bit nervous. The artist was so patient and helped me pick a minimalist design I adored. The whole experience was so relaxing.",
+        "image": "https://picsum.photos/seed/jessica-testimonial/100/100",
+        "hint": "woman smiling candid"
+    },
+    {
+        "name": "Samantha Peters",
+        "comment": "Booked Artistry Hub for my sister's baby shower. The belly henna was gorgeous, a real centerpiece for the event. The artist was professional and a joy to work with.",
+        "image": "https://picsum.photos/seed/samantha-testimonial/100/100",
+        "hint": "pregnant woman smiling"
+    },
+    {
+        "name": "Emily Rose",
+        "comment": "The Indo-Western design was perfect for my fusion-themed engagement party. It was modern yet traditional. Absolutely loved it!",
+        "image": "https://picsum.photos/seed/emily-testimonial/100/100",
+        "hint": "woman at party"
+    },
+    {
+        "name": "Maria Garcia",
+        "comment": "The artists are true professionals. The studio is clean and has a great vibe. The final stain was the darkest I've ever had. 10/10 service.",
+        "image": "https://picsum.photos/seed/maria-testimonial/100/100",
+        "hint": "woman headshot professional"
+    },
+    {
+        "name": "Fatima Al-Jamil",
+        "comment": "I got a beautiful peacock design for a family wedding. The level of intricacy was stunning. I felt like royalty. Will definitely be coming back.",
+        "image": "https://picsum.photos/seed/fatima-testimonial/100/100",
+        "hint": "woman in traditional dress"
+    },
+    {
+        "name": "Chloe Johnson",
+        "comment": "I wanted something different and opted for a white henna design for a photoshoot. It looked absolutely ethereal. The team at Artistry Hub is incredibly talented.",
+        "image": "https://picsum.photos/seed/chloe-testimonial/100/100",
+        "hint": "fashion model portrait"
+    },
+    {
+        "name": "Nkechi Adebayo",
+        "comment": "The care and attention to detail are unmatched. They took the time to understand exactly what I wanted and executed it perfectly. A wonderful experience.",
+        "image": "https://picsum.photos/seed/nkechi-testimonial/100/100",
+        "hint": "african woman smiling"
+    },
+    {
+        "name": "Isabella Rossi",
+        "comment": "I've been to many henna artists, but the quality of the paste and the artistry here is top-tier. My design lasted for weeks and faded beautifully.",
+        "image": "https://picsum.photos/seed/isabella-testimonial/100/100",
+        "hint": "italian woman portrait"
     }
   ],
   "blogPosts": [
@@ -90,6 +148,24 @@
       "description": "Learn the secrets from our expert artists on how to care for your mehndi to achieve that coveted deep, dark stain that lasts.",
       "image": "https://picsum.photos/seed/mehndi-blog2/600/400",
       "hint": "henna aftercare product"
+    },
+    {
+      "title": "Mehndi for Men: Breaking Stereotypes with Bold Designs",
+      "description": "Explore the growing trend of men embracing henna art, from geometric patterns to symbolic tattoos.",
+      "image": "https://picsum.photos/seed/mehndi-blog3/600/400",
+      "hint": "man hand henna"
+    },
+    {
+        "title": "The Global Journey of Henna: From Ancient Egypt to Modern Art",
+        "description": "Trace the fascinating history of henna across continents and cultures, and see how it has evolved over millennia.",
+        "image": "https://picsum.photos/seed/mehndi-blog4/600/400",
+        "hint": "ancient map scroll"
+    },
+    {
+        "title": "White, Black, or Jagua: Exploring Modern Henna Alternatives",
+        "description": "What's the difference between traditional henna and modern alternatives? We break down the pros and cons of each.",
+        "image": "https://picsum.photos/seed/mehndi-blog5/600/400",
+        "hint": "white henna design"
     }
   ],
   "careTips": [
@@ -107,6 +183,11 @@
       "icon": "Wind",
       "title": "Scrape, Don't Wash",
       "description": "Once the paste is dry and crumbly, gently scrape it off. Do not wash it off with water for the best results."
+    },
+    {
+      "icon": "Ruler",
+      "title": "Moisturize Daily",
+      "description": "After the paste is removed and the stain has set, moisturize the area daily with a natural oil (like coconut or olive oil) to protect the design and prolong its life."
     }
   ],
   "faqs": [
@@ -121,6 +202,14 @@
     {
       "question": "How long will my mehndi stain last?",
       "answer": "With proper aftercare, a mehndi stain can last anywhere from 1 to 3 weeks, gradually fading over time as your skin naturally exfoliates."
+    },
+    {
+      "question": "Can I choose a custom design?",
+      "answer": "Absolutely! We encourage you to bring your ideas and inspiration. Our artists specialize in creating custom designs that are unique to you."
+    },
+    {
+        "question": "Do you offer services for events and parties?",
+        "answer": "Yes, we love being part of your celebrations! We offer packages for weddings, bridal showers, baby showers, birthdays, and corporate events. Contact us to discuss your event needs."
     }
   ]
 }
