@@ -50,6 +50,9 @@ export async function PUT(request, { params }) {
     return NextResponse.json(updatedMedia, { status: 200 });
   } catch (error) {
     console.error("Failed to update gallery item:", error);
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to update media', error: error.message }, { status: 400 });
   }
 }

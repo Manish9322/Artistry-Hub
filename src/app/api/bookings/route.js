@@ -1,3 +1,4 @@
+
 // This file will handle backend logic for bookings.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
@@ -19,9 +20,13 @@ export async function POST(request) {
   await _db();
   try {
     const body = await request.json();
-    const newBooking = await Booking.create(body);
+    const newBooking = new Booking(body);
+    await newBooking.save();
     return NextResponse.json(newBooking, { status: 201 });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to create booking', error: error.message }, { status: 400 });
   }
 }

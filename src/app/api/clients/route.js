@@ -1,3 +1,4 @@
+
 // This file will handle backend logic for clients.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
@@ -21,7 +22,8 @@ export async function POST(request) {
   try {
     const body = await request.json();
     // The password will be hashed automatically by the pre-save hook in the model
-    const newClient = await Client.create(body);
+    const newClient = new Client(body);
+    await newClient.save();
     
     // We don't want to send the password back, even if it's hashed
     const { password, ...user } = newClient.toObject();
@@ -30,6 +32,9 @@ export async function POST(request) {
   } catch (error) {
     if (error.code === 11000) { // Duplicate key error
         return NextResponse.json({ message: 'A client with this email already exists.' }, { status: 409 });
+    }
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
     }
     return NextResponse.json({ message: 'Failed to create client', error: error.message }, { status: 400 });
   }

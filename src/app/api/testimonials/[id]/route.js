@@ -28,6 +28,9 @@ export async function PUT(request, { params }) {
     }
     return NextResponse.json(updatedTestimonial, { status: 200 });
   } catch (error) {
+     if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to update testimonial', error: error.message }, { status: 400 });
   }
 }

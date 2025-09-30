@@ -40,12 +40,14 @@ export async function POST(request) {
         mediaType: 'Image',
     };
 
-    const newMedia = await Gallery.create(newMediaData);
+    const newMedia = new Gallery(newMediaData);
+    await newMedia.save();
     return NextResponse.json(newMedia, { status: 201 });
   } catch (error) {
     console.error('Failed to create gallery media:', error);
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to create gallery media', error: error.message }, { status: 400 });
   }
 }
-
-    

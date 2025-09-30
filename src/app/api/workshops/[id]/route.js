@@ -28,6 +28,9 @@ export async function PUT(request, { params }) {
     }
     return NextResponse.json(updatedWorkshop, { status: 200 });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to update workshop', error: error.message }, { status: 400 });
   }
 }

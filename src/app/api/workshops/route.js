@@ -1,3 +1,4 @@
+
 // This file will handle backend logic for workshops.
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
@@ -19,9 +20,13 @@ export async function POST(request) {
   await _db();
   try {
     const body = await request.json();
-    const newWorkshop = await Workshop.create(body);
+    const newWorkshop = new Workshop(body);
+    await newWorkshop.save();
     return NextResponse.json(newWorkshop, { status: 201 });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to create workshop', error: error.message }, { status: 400 });
   }
 }

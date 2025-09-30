@@ -153,6 +153,9 @@ export async function PUT(request, { params }) {
     return NextResponse.json(updatedCategory, { status: 200 });
   } catch (error) {
     console.error("Failed to update category:", error);
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to update category', error: error.message }, { status: 400 });
   }
 }

@@ -62,6 +62,9 @@ export async function PUT(request, { params }) {
     return NextResponse.json(updatedArtPiece, { status: 200 });
   } catch (error) {
     console.error('Failed to update art piece:', error);
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to update art piece', error: error.message }, { status: 400 });
   }
 }

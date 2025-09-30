@@ -128,10 +128,14 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Unsupported Content-Type' }, { status: 415 });
     }
 
-    const newCategory = await Category.create(categoryData);
+    const newCategory = new Category(categoryData);
+    await newCategory.save();
     return NextResponse.json(newCategory, { status: 201 });
   } catch (error) {
     console.error("Error creating category:", error);
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to create category', error: error.message }, { status: 400 });
   }
 }

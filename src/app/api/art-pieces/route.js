@@ -56,10 +56,14 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Unsupported Content-Type' }, { status: 415 });
     }
 
-    const newArtPiece = await ArtPiece.create(newArtPieceData);
+    const newArtPiece = new ArtPiece(newArtPieceData);
+    await newArtPiece.save();
     return NextResponse.json(newArtPiece, { status: 201 });
   } catch (error) {
     console.error('Failed to create art piece:', error);
+    if (error.name === 'ValidationError') {
+        return NextResponse.json({ message: 'Validation failed', errors: error.errors }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Failed to create art piece', error: error.message }, { status: 400 });
   }
 }
