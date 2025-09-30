@@ -11,9 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Palette, Eye, EyeOff } from "lucide-react";
 import { useAdminLoginMutation } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
-import { useForm, FormProvider, useFormContext } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -26,6 +27,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function AdminLoginPage() {
     const router = useRouter();
     const { toast } = useToast();
+    const { login } = useAdminAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [adminLogin, { isLoading }] = useAdminLoginMutation();
 
@@ -39,8 +41,7 @@ export default function AdminLoginPage() {
           const response = await adminLogin(data).unwrap();
           const { user, token } = response;
           
-          localStorage.setItem('user', JSON.stringify(user));
-          localStorage.setItem('jwt', token);
+          login(user, token);
           
           toast({
             title: "Login Successful!",

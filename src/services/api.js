@@ -7,9 +7,16 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ 
     baseUrl: '/api',
-    prepareHeaders: (headers, { getState }) => {
-      // Attempt to get the token from localStorage
-      const token = typeof window !== 'undefined' ? localStorage.getItem('jwt') : null;
+    prepareHeaders: (headers, { getState, endpoint }) => {
+      // Determine if the endpoint is an admin endpoint
+      const isAdminEndpoint = endpoint.startsWith('admin');
+      
+      const token = typeof window !== 'undefined' 
+        ? isAdminEndpoint 
+          ? localStorage.getItem('admin_jwt') 
+          : localStorage.getItem('jwt')
+        : null;
+        
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
       }

@@ -49,9 +49,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import StoreProvider from './StoreProvider';
+import { useAdminAuth } from '@/hooks/useAdminAuth';
 
 function AdminHeader() {
   const { toggleSidebar } = useSidebar();
+  const { logout } = useAdminAuth();
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
        <SidebarTrigger className="md:hidden" />
@@ -82,7 +84,7 @@ function AdminHeader() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild><Link href="/admin/login">Logout</Link></DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -118,6 +120,7 @@ export default function AdminLayout({
 
 function AdminSidebar() {
   const { state } = useSidebar();
+  const { logout } = useAdminAuth();
   const pathname = usePathname();
   return (
     <Sidebar collapsible="icon">
@@ -225,7 +228,7 @@ function AdminSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild tooltip="Logout">
+            <SidebarMenuButton onClick={logout} asChild tooltip="Logout">
               <Link href="/admin/login">
                 <LogOut />
                 <span className="group-data-[collapsible=icon]:hidden">Logout</span>
