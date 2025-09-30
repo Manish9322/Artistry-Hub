@@ -59,6 +59,7 @@ import { useToast } from '@/hooks/use-toast';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Separator } from '@/components/ui/separator';
 import { useGetCategoriesQuery, useAddCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation } from '@/services/api';
+import withAdminAuth from '../withAdminAuth';
 
 type Category = {
   _id: string;
@@ -89,7 +90,7 @@ const isValidUrl = (string: string | undefined): boolean => {
     }
 };
 
-export default function CategoriesPage() {
+function CategoriesPage() {
     const { toast } = useToast();
     const { data: categories = [], isLoading } = useGetCategoriesQuery();
     const [addCategory] = useAddCategoryMutation();
@@ -625,3 +626,5 @@ export default function CategoriesPage() {
     </>
   );
 }
+
+export default withAdminAuth(CategoriesPage);

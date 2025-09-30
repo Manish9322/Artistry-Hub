@@ -34,6 +34,11 @@ const ClientSchema = new mongoose.Schema({
   hint: {
     type: String,
   },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
+  },
   bookedArtPieces: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'ArtPiece'

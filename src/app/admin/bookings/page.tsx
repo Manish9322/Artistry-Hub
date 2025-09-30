@@ -44,6 +44,7 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import placeholderImages from '@/lib/placeholder-images.json';
+import withAdminAuth from '../withAdminAuth';
 
 type ArtPiece = {
   _id: string;
@@ -67,7 +68,7 @@ type Booking = {
   bookingTime: string;
 };
 
-export default function BookingsPage() {
+function BookingsPage() {
   const { toast } = useToast();
   const { data: bookings = [], isLoading: bookingsLoading } = useGetBookingsQuery();
   const { data: artPieces = [], isLoading: artPiecesLoading } = useGetArtPiecesQuery();
@@ -500,3 +501,5 @@ export default function BookingsPage() {
     </>
   );
 }
+
+export default withAdminAuth(BookingsPage);

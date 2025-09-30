@@ -55,6 +55,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
 import { useGetBookingsQuery } from '@/services/api';
 import { useMemo } from 'react';
+import withAdminAuth from '../withAdminAuth';
 
 type Booking = {
   _id: string;
@@ -71,7 +72,7 @@ type Booking = {
 };
 
 
-export default function Dashboard() {
+function Dashboard() {
   const { data: bookings = [], isLoading } = useGetBookingsQuery();
 
   const chartData = useMemo(() => {
@@ -309,3 +310,5 @@ export default function Dashboard() {
     </main>
   );
 }
+
+export default withAdminAuth(Dashboard);

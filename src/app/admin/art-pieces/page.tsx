@@ -63,6 +63,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import withAdminAuth from '../withAdminAuth';
 
 
 type Category = {
@@ -93,7 +94,7 @@ const isValidUrl = (string: string): boolean => {
     }
 };
 
-export default function ArtPiecesPage() {
+function ArtPiecesPage() {
     const { toast } = useToast();
     const { data: artPieces = [], isLoading } = useGetArtPiecesQuery();
     const { data: categories = [] } = useGetCategoriesQuery();
@@ -512,3 +513,5 @@ export default function ArtPiecesPage() {
     </>
   );
 }
+
+export default withAdminAuth(ArtPiecesPage);

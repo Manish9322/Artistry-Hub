@@ -63,6 +63,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useGetWorkshopsQuery, useAddWorkshopMutation, useUpdateWorkshopMutation, useDeleteWorkshopMutation } from '@/services/api';
+import withAdminAuth from '../withAdminAuth';
 
 
 type Workshop = {
@@ -74,7 +75,7 @@ type Workshop = {
   description: string;
 };
 
-export default function WorkshopsPage() {
+function WorkshopsPage() {
     const { toast } = useToast();
     const { data: workshopsData = [], isLoading } = useGetWorkshopsQuery();
     const [addWorkshop] = useAddWorkshopMutation();
@@ -432,3 +433,5 @@ export default function WorkshopsPage() {
     </>
   );
 }
+
+export default withAdminAuth(WorkshopsPage);

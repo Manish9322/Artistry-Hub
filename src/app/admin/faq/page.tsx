@@ -52,6 +52,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { useGetFaqsQuery, useAddFaqMutation, useUpdateFaqMutation, useDeleteFaqMutation } from '@/services/api';
+import withAdminAuth from '../withAdminAuth';
 
 
 type FAQ = {
@@ -61,7 +62,7 @@ type FAQ = {
   category: string;
 };
 
-export default function FaqPage() {
+function FaqPage() {
     const { toast } = useToast();
     const { data: faqsData = [], isLoading } = useGetFaqsQuery();
     const [addFaq] = useAddFaqMutation();
@@ -345,3 +346,5 @@ export default function FaqPage() {
     </>
   );
 }
+
+export default withAdminAuth(FaqPage);

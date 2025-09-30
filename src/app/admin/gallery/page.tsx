@@ -67,6 +67,7 @@ import {
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useToast } from '@/hooks/use-toast';
 import { useGetGalleryImagesQuery, useAddGalleryImageMutation, useUpdateGalleryImageMutation, useDeleteGalleryImageMutation } from '@/services/api';
+import withAdminAuth from '../withAdminAuth';
 
 type GalleryImage = {
   _id: string;
@@ -89,7 +90,7 @@ const isValidUrl = (string: string | undefined): boolean => {
 };
 
 
-export default function GalleryPage() {
+function GalleryPage() {
     const { toast } = useToast();
     const { data: galleryImages = [], isLoading } = useGetGalleryImagesQuery();
     const [addGalleryImage] = useAddGalleryImageMutation();
@@ -472,7 +473,7 @@ export default function GalleryPage() {
       </Dialog>
       
       {/* Delete Confirmation Modal */}
-      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+      <Dialog open={isDeleteModalOpen} onOpenChange={handleCloseModals}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
@@ -492,3 +493,5 @@ export default function GalleryPage() {
     </>
   );
 }
+
+export default withAdminAuth(GalleryPage);

@@ -61,6 +61,7 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useGetTestimonialsQuery, useAddTestimonialMutation, useUpdateTestimonialMutation, useDeleteTestimonialMutation } from '@/services/api';
+import withAdminAuth from '../withAdminAuth';
 
 type Testimonial = {
   _id: string;
@@ -71,7 +72,7 @@ type Testimonial = {
   hint?: string;
 };
 
-export default function TestimonialsPage() {
+function TestimonialsPage() {
     const { toast } = useToast();
     const { data: testimonials = [], isLoading } = useGetTestimonialsQuery();
     const [addTestimonial] = useAddTestimonialMutation();
@@ -391,3 +392,5 @@ export default function TestimonialsPage() {
     </>
   );
 }
+
+export default withAdminAuth(TestimonialsPage);

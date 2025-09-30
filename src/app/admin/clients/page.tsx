@@ -32,6 +32,7 @@ import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useToast } from '@/hooks/use-toast';
+import withAdminAuth from '../withAdminAuth';
 
 type ArtPiece = {
   _id: string;
@@ -51,7 +52,7 @@ type Client = {
   bookedArtPieces?: ArtPiece[];
 };
 
-export default function ClientsPage() {
+function ClientsPage() {
   const { toast } = useToast();
   const { data: clients = [], isLoading } = useGetClientsQuery();
   const [addClient] = useAddClientMutation();
@@ -335,3 +336,5 @@ export default function ClientsPage() {
     </>
   );
 }
+
+export default withAdminAuth(ClientsPage);

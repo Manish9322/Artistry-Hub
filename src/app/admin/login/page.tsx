@@ -9,15 +9,54 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Palette, Eye, EyeOff } from "lucide-react";
+import { useAdminLoginMutation } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
+import { useForm, FormProvider, useFormContext } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const loginSchema = z.object({
+  email: z.string().email({ message: "Please enter a valid email." }),
+  password: z.string().min(1, { message: "Password is required." }),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
 
 export default function AdminLoginPage() {
     const router = useRouter();
+    const { toast } = useToast();
     const [showPassword, setShowPassword] = useState(false);
+    const [adminLogin, { isLoading }] = useAdminLoginMutation();
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.push('/admin/dashboard');
-    }
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: { email: "admin@artistryhub.com", password: "password" },
+    });
+
+    const handleLogin = async (data: LoginFormValues) => {
+        try {
+          const response = await adminLogin(data).unwrap();
+          const { user, token } = response;
+          
+          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('jwt', token);
+          
+          toast({
+            title: "Login Successful!",
+            description: `Welcome back, ${user.name}!`,
+          });
+
+          router.push('/admin/dashboard');
+
+        } catch (error: any) {
+           toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: error?.data?.message || "An unexpected error occurred.",
+          });
+        }
+    };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-secondary">
@@ -30,7 +69,7 @@ export default function AdminLoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="grid gap-4">
+          <form onSubmit={form.handleSubmit(handleLogin)} className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -38,8 +77,9 @@ export default function AdminLoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                defaultValue="admin@artistryhub.com"
+                {...form.register("email")}
               />
+               {form.formState.errors.email && <p className="text-sm font-medium text-destructive">{form.formState.errors.email.message}</p>}
             </div>
             <div className="grid gap-2">
               <div className="flex items-center">
@@ -49,7 +89,7 @@ export default function AdminLoginPage() {
                 </Link>
               </div>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} required defaultValue="password" />
+                <Input id="password" type={showPassword ? "text" : "password"} required {...form.register("password")} />
                 <Button 
                     type="button" 
                     variant="ghost" 
@@ -61,9 +101,10 @@ export default function AdminLoginPage() {
                     <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
                 </Button>
               </div>
+               {form.formState.errors.password && <p className="text-sm font-medium text-destructive">{form.formState.errors.password.message}</p>}
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

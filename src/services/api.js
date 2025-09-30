@@ -26,6 +26,13 @@ export const api = createApi({
         body: credentials,
       }),
     }),
+    adminLogin: builder.mutation({
+        query: (credentials) => ({
+            url: 'auth/admin/login',
+            method: 'POST',
+            body: credentials,
+        })
+    }),
     
     // ArtPieces Endpoints
     getArtPieces: builder.query({
@@ -258,6 +265,7 @@ export const api = createApi({
 // Export hooks for usage in functional components
 export const { 
     useLoginMutation,
+    useAdminLoginMutation,
     useGetArtPiecesQuery,
     useAddArtPieceMutation,
     useUpdateArtPieceMutation,
