@@ -8,15 +8,17 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'your-default-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Public routes that do not require authentication for POST requests
-  const publicPostRoutes = [
+  // Public routes that do not require authentication for POST/PUT/DELETE requests
+  const publicRoutes = [
     '/api/auth/login',
+    '/api/auth/admin/login',
+    '/api/clients', // For user registration
   ];
   
   // All non-GET requests to the API are protected by default
-  if (pathname.startsWith('/api/') && request.method !== 'GET') {
-    // If the route is a public POST route, allow it
-    if (publicPostRoutes.includes(pathname)) {
+  if (request.method !== 'GET' && pathname.startsWith('/api/')) {
+    // If the route is public, allow it to pass through without a token
+    if (publicRoutes.includes(pathname)) {
         return NextResponse.next();
     }
 
