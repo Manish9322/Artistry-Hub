@@ -7,23 +7,19 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'your-default-
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  
-  // Define protected API routes
-  const protectedApiRoutes = [
-      '/api/art-pieces',
-      '/api/bookings',
-      '/api/categories',
-      '/api/clients',
-      '/api/faqs',
-      '/api/gallery',
-      '/api/testimonials',
-      '/api/workshops'
+
+  // Public routes that do not require authentication for POST requests
+  const publicPostRoutes = [
+    '/api/auth/login',
   ];
+  
+  // All non-GET requests to the API are protected by default
+  if (pathname.startsWith('/api/') && request.method !== 'GET') {
+    // If the route is a public POST route, allow it
+    if (publicPostRoutes.includes(pathname)) {
+        return NextResponse.next();
+    }
 
-  const isProtectedRoute = protectedApiRoutes.some(route => pathname.startsWith(route));
-
-  // Only apply middleware to protected API routes that are not GET requests
-  if (isProtectedRoute && request.method !== 'GET') {
     const authHeader = request.headers.get('Authorization');
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -48,11 +44,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Allow all other requests to pass through
+  // Allow all other requests (e.g., all GET requests) to pass through
   return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
+// Configure the middleware to run on all API routes
 export const config = {
   matcher: '/api/:path*',
 }
