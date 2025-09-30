@@ -32,6 +32,8 @@ export function useAdminAuth() {
              // Clear invalid data from admin storage
             localStorage.removeItem('admin_user');
             localStorage.removeItem('admin_jwt');
+            setToken(null);
+            setUser(null);
         }
       } else {
         setToken(null);
@@ -48,7 +50,11 @@ export function useAdminAuth() {
 
   useEffect(() => {
     loadAuthData();
-    window.addEventListener('storage', loadAuthData);
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'admin_jwt' || event.key === 'admin_user') {
+            loadAuthData();
+        }
+    });
     return () => {
       window.removeEventListener('storage', loadAuthData);
     };
@@ -59,6 +65,8 @@ export function useAdminAuth() {
     localStorage.setItem('admin_jwt', jwtToken);
     setUser(userData);
     setToken(jwtToken);
+    // Manually dispatch a storage event to sync tabs
+    window.dispatchEvent(new StorageEvent('storage', { key: 'admin_jwt' }));
   }, []);
 
   const logout = useCallback(() => {
@@ -66,6 +74,8 @@ export function useAdminAuth() {
     localStorage.removeItem('admin_jwt');
     setUser(null);
     setToken(null);
+     // Manually dispatch a storage event to sync tabs
+    window.dispatchEvent(new StorageEvent('storage', { key: 'admin_jwt' }));
     router.push('/admin/login');
   }, [router]);
 

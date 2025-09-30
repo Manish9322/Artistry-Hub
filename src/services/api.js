@@ -8,11 +8,11 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({ 
     baseUrl: '/api',
     prepareHeaders: (headers, { getState, endpoint }) => {
-      // Determine if the endpoint is an admin endpoint
-      const isAdminEndpoint = endpoint.startsWith('admin');
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+      const isAdminRoute = pathname.startsWith('/admin');
       
       const token = typeof window !== 'undefined' 
-        ? isAdminEndpoint 
+        ? isAdminRoute
           ? localStorage.getItem('admin_jwt') 
           : localStorage.getItem('jwt')
         : null;

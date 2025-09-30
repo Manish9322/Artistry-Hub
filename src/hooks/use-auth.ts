@@ -41,7 +41,11 @@ export function useAuth() {
   useEffect(() => {
     loadAuthData();
      // Listen for storage changes to sync across tabs
-    window.addEventListener('storage', loadAuthData);
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'jwt' || event.key === 'user') {
+            loadAuthData();
+        }
+    });
     return () => {
       window.removeEventListener('storage', loadAuthData);
     };
@@ -52,6 +56,8 @@ export function useAuth() {
     localStorage.setItem('jwt', jwtToken);
     setUser(userData);
     setToken(jwtToken);
+    // Manually dispatch a storage event to sync tabs
+    window.dispatchEvent(new StorageEvent('storage', { key: 'jwt' }));
   }, []);
 
   const logout = useCallback(() => {
@@ -60,6 +66,8 @@ export function useAuth() {
     localStorage.removeItem('pendingBooking');
     setUser(null);
     setToken(null);
+    // Manually dispatch a storage event to sync tabs
+    window.dispatchEvent(new StorageEvent('storage', { key: 'jwt' }));
     router.push('/login');
   }, [router]);
 
