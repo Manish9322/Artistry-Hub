@@ -13,7 +13,6 @@ import { Copyright } from "@/components/copyright";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import placeholderImages from '@/lib/placeholder-images.json';
 import { AppHeader } from "@/components/app-header";
 
 
@@ -265,7 +264,7 @@ export default function Home() {
                             <Card className="overflow-hidden group/card cursor-pointer">
                             <CardContent className="p-0 relative">
                                 <Image
-                                src={isValidUrl(art.images[0]) ? art.images[0] : placeholderImages.default}
+                                src={isValidUrl(art.images[0]) ? art.images[0] : "https://placehold.co/320x224.png"}
                                 alt={art.name}
                                 width={600}
                                 height={400}
@@ -296,7 +295,7 @@ export default function Home() {
                             <Card className="overflow-hidden group/card cursor-pointer">
                             <CardContent className="p-0 relative">
                                 <Image
-                                src={isValidUrl(art.images[0]) ? art.images[0] : placeholderImages.default}
+                                src={isValidUrl(art.images[0]) ? art.images[0] : "https://placehold.co/320x224.png"}
                                 alt={art.name}
                                 width={600}
                                 height={400}
@@ -332,7 +331,7 @@ export default function Home() {
                 <Link href={category.href} key={category._id}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                      <Image
-                        src={isValidUrl(category.image) ? category.image! : placeholderImages.default}
+                        src={isValidUrl(category.image) ? category.image! : "https://placehold.co/320x224.png"}
                         alt={category.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
