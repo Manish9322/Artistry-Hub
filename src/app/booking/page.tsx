@@ -54,7 +54,7 @@ import placeholderImages from '@/lib/placeholder-images.json';
 import { Separator } from "@/components/ui/separator";
 import { AppHeader } from "@/components/app-header";
 import { useAuth } from "@/hooks/use-auth";
-import { useGetArtPiecesQuery, useGetCategoriesQuery, useGetGalleryImagesQuery } from "@/services/api";
+import { useGetArtPiecesQuery, useGetCategoriesQuery, useGetGalleryImagesQuery, useAddBookingMutation } from "@/services/api";
 
 type ArtPiece = {
     _id: string;
@@ -122,6 +122,7 @@ function BookingPageContent() {
   const { data: categories = [], isSuccess: categoriesLoaded } = useGetCategoriesQuery();
   const { data: artPieces = [], isSuccess: artPiecesLoaded } = useGetArtPiecesQuery();
   const { data: galleryImages = [], isSuccess: galleryLoaded } = useGetGalleryImagesQuery();
+  const [addBooking, { isLoading: isBookingLoading }] = useAddBookingMutation();
 
   const [editorsPick, setEditorsPick] = useState<ArtPiece | null>(null);
   const [exhibitionImages, setExhibitionImages] = useState<GalleryImage[]>([]);
@@ -183,26 +184,20 @@ function BookingPageContent() {
             }
             initialValues = { ...initialValues, ...pendingBooking };
             setStep(2);
+            form.reset(initialValues as BookingFormValues);
           } catch (e) { console.error(e) }
         }
-      } else {
-        // Not authenticated
-        form.reset({ name: "", email: "", phone: "", notes: "", artPieceId: "", category: "" });
-        setStep(1);
+      } 
+      
+      if (artPieceIdFromUrl && requestedArtPiece) {
+         initialValues.category = requestedArtPiece.category;
+         initialValues.artPieceId = requestedArtPiece._id;
+         setFilteredArtPieces(artPieces.filter(p => p.category === requestedArtPiece.category));
       }
       
-      // Don't reset if artPieceIdFromUrl is present
-      if (artPieceIdFromUrl) {
-        if(requestedArtPiece){
-           initialValues.category = requestedArtPiece.category;
-           initialValues.artPieceId = requestedArtPiece._id;
-           setFilteredArtPieces(artPieces.filter(p => p.category === requestedArtPiece.category));
-        }
-      } else {
-        form.reset(initialValues as BookingFormValues);
-      }
+      form.reset(initialValues as BookingFormValues);
     }
-  }, [isAuthenticated, user, isAuthLoading, requestedArtPiece]);
+  }, [isAuthenticated, user, isAuthLoading, requestedArtPiece, artPieces, artPieceIdFromUrl, form, allDataLoaded]);
 
   useEffect(() => {
     if (requestedArtPiece && allDataLoaded) {
@@ -380,20 +375,44 @@ function BookingPageContent() {
     setStep(step - 1);
   }
 
-  function onSubmit(data: BookingFormValues) {
+  async function onSubmit(data: BookingFormValues) {
     if (!isAuthenticated) {
       const formData = form.getValues();
       localStorage.setItem('pendingBooking', JSON.stringify(formData));
       router.push('/login?redirect=/booking');
       return;
     }
-    console.log(data);
-    setStep(3)
-    localStorage.removeItem('pendingBooking');
-    toast({
-      title: "Booking Submitted!",
-      description: "We have received your request and will be in touch shortly.",
-    });
+    
+    const selectedArtPiece = artPieces.find(p => p._id === data.artPieceId);
+
+    const bookingData = {
+        customer: data.name,
+        email: data.email,
+        phone: data.phone,
+        service: selectedArtPiece ? selectedArtPiece.name : 'Unknown Service',
+        artPieceId: data.artPieceId,
+        date: format(data.bookingDate, 'yyyy-MM-dd'),
+        bookingTime: data.bookingTime,
+        notes: data.notes,
+        total: selectedArtPiece ? `$${selectedArtPiece.price}` : '$0',
+        status: 'Pending',
+    };
+
+    try {
+        await addBooking(bookingData).unwrap();
+        setStep(3);
+        localStorage.removeItem('pendingBooking');
+        toast({
+            title: "Booking Submitted!",
+            description: "We have received your request and will be in touch shortly.",
+        });
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Booking Failed",
+            description: "Something went wrong. Please try again.",
+        });
+    }
   }
   
   const handleCategoryChange = (categoryName: string) => {
@@ -740,8 +759,8 @@ function BookingPageContent() {
                                 Back
                                 </Button>
                             )}
-                            <Button type={step === 1 ? "button" : "submit"} size="lg" onClick={step === 1 ? handleNextStep : undefined}>
-                              {step === 1 ? "Next Step" : "Submit Booking"}
+                            <Button type={step === 1 ? "button" : "submit"} size="lg" onClick={step === 1 ? handleNextStep : undefined} disabled={isBookingLoading}>
+                              {isBookingLoading ? "Submitting..." : step === 1 ? "Next Step" : "Submit Booking"}
                               {step === 1 && <ArrowRight className="ml-2 h-5 w-5" />}
                             </Button>
                         </div>
@@ -1122,5 +1141,3 @@ export default function BookingPage() {
         </Suspense>
     )
 }
-
-    
