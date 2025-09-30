@@ -130,6 +130,18 @@ function BookingPageContent() {
 
   const allDataLoaded = categoriesLoaded && artPiecesLoaded && galleryLoaded;
 
+  const form = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      notes: "",
+      artPieceId: "",
+      category: "",
+    },
+  });
+
    useEffect(() => {
     if (allDataLoaded) {
       const picked = artPieces.find(p => p.editorsPick) || artPieces[0] || null;
@@ -145,70 +157,60 @@ function BookingPageContent() {
 
       if(artPieceIdFromUrl) {
          const foundPiece = artPieces.find(p => p._id === artPieceIdFromUrl);
-         setRequestedArtPiece(foundPiece || null);
+         if(foundPiece){
+            setRequestedArtPiece(foundPiece);
+         }
       }
     }
   }, [allDataLoaded, artPieces, galleryImages, artPieceIdFromUrl]);
 
-  const form = useForm<BookingFormValues>({
-    resolver: zodResolver(bookingSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      notes: "",
-      artPieceId: "",
-    },
-  });
   
   useEffect(() => {
-    if (!allDataLoaded) return;
-  
-    let initialValues: Partial<BookingFormValues> = {};
-  
-    const pendingBookingRaw = localStorage.getItem("pendingBooking");
-    let pendingBooking = null;
-    if (pendingBookingRaw) {
-      try {
-        pendingBooking = JSON.parse(pendingBookingRaw);
-        if (pendingBooking.bookingDate) {
-           pendingBooking.bookingDate = new Date(pendingBooking.bookingDate);
-        }
-      } catch (e) {
-        console.error("Failed to parse pending booking", e);
-        localStorage.removeItem("pendingBooking");
-      }
-    }
+    if (!isAuthLoading) {
+      let initialValues: Partial<BookingFormValues> = {};
+      const pendingBookingRaw = localStorage.getItem("pendingBooking");
 
-    if (isAuthenticated && user) {
+      if (isAuthenticated && user) {
         initialValues.name = user.name;
         initialValues.email = user.email;
         initialValues.phone = user.phone || "";
-        if (pendingBooking) {
+
+        if (pendingBookingRaw) {
+          try {
+            const pendingBooking = JSON.parse(pendingBookingRaw);
+             if (pendingBooking.bookingDate) {
+              pendingBooking.bookingDate = new Date(pendingBooking.bookingDate);
+            }
             initialValues = { ...initialValues, ...pendingBooking };
             setStep(2);
+          } catch (e) { console.error(e) }
         }
-    } else {
-        if (!artPieceIdFromUrl) {
-           form.reset({});
-           setStep(1);
+      } else {
+        // Not authenticated
+        form.reset({ name: "", email: "", phone: "", notes: "", artPieceId: "", category: "" });
+        setStep(1);
+      }
+      
+      // Don't reset if artPieceIdFromUrl is present
+      if (artPieceIdFromUrl) {
+        if(requestedArtPiece){
+           initialValues.category = requestedArtPiece.category;
+           initialValues.artPieceId = requestedArtPiece._id;
+           setFilteredArtPieces(artPieces.filter(p => p.category === requestedArtPiece.category));
         }
+      } else {
+        form.reset(initialValues as BookingFormValues);
+      }
     }
-    
-    // Type assertion to make TypeScript happy
-    form.reset(initialValues as BookingFormValues);
-  
-  }, [allDataLoaded, isAuthenticated, user, form]);
+  }, [isAuthenticated, user, isAuthLoading, requestedArtPiece]);
 
   useEffect(() => {
-    if (requestedArtPiece) {
-      form.setValue('category', requestedArtPiece.category);
-      form.setValue('artPieceId', requestedArtPiece._id);
-      const piecesForCategory = artPieces.filter(p => p.category === requestedArtPiece.category);
-      setFilteredArtPieces(piecesForCategory);
+    if (requestedArtPiece && allDataLoaded) {
+      form.setValue('category', requestedArtPiece.category, { shouldValidate: true });
+      form.setValue('artPieceId', requestedArtPiece._id, { shouldValidate: true });
+      setFilteredArtPieces(artPieces.filter(p => p.category === requestedArtPiece.category));
     }
-  }, [requestedArtPiece, artPieces, form]);
-
+  }, [requestedArtPiece, allDataLoaded, artPieces, form]);
 
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
@@ -543,7 +545,11 @@ function BookingPageContent() {
                                     </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                    {filteredArtPieces.map(piece => <SelectItem key={piece._id} value={piece._id}>{piece.name}</SelectItem>)}
+                                    {form.watch('category') && filteredArtPieces.length === 0 ? (
+                                        <SelectItem value="no-service" disabled>No service available</SelectItem>
+                                    ) : (
+                                        filteredArtPieces.map(piece => <SelectItem key={piece._id} value={piece._id}>{piece.name}</SelectItem>)
+                                    )}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
