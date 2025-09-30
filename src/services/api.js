@@ -5,7 +5,17 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // Define a service using a base URL and expected endpoints
 export const api = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
+  baseQuery: fetchBaseQuery({ 
+    baseUrl: '/api',
+    prepareHeaders: (headers, { getState }) => {
+      // Attempt to get the token from localStorage
+      const token = typeof window !== 'undefined' ? localStorage.getItem('jwt') : null;
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
+      return headers;
+    },
+  }),
   tagTypes: ['ArtPieces', 'Categories', 'Bookings', 'Clients', 'Testimonials', 'Gallery', 'Workshops', 'Faqs'],
   endpoints: (builder) => ({
     // Auth Endpoint
@@ -79,6 +89,14 @@ export const api = createApi({
     getBookings: builder.query({
       query: () => 'bookings',
       providesTags: ['Bookings'],
+    }),
+     addBooking: builder.mutation({
+      query: (body) => ({
+        url: 'bookings',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Bookings'],
     }),
     updateBooking: builder.mutation({
       query: ({ id, body }) => ({
@@ -249,6 +267,7 @@ export const {
     useUpdateCategoryMutation,
     useDeleteCategoryMutation,
     useGetBookingsQuery,
+    useAddBookingMutation,
     useUpdateBookingMutation,
     useGetClientsQuery,
     useAddClientMutation,

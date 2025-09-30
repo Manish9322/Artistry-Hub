@@ -31,11 +31,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useToast } from '@/hooks/use-toast';
-import { useGetBookingsQuery, useUpdateBookingMutation, useGetArtPiecesQuery } from '@/services/api';
+import { useGetBookingsQuery, useUpdateBookingMutation, useGetArtPiecesQuery, useAddBookingMutation } from '@/services/api';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import Image from 'next/image';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarIcon } from 'lucide-react';
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import placeholderImages from '@/lib/placeholder-images.json';
 
 type ArtPiece = {
@@ -65,6 +72,7 @@ export default function BookingsPage() {
   const { data: bookings = [], isLoading: bookingsLoading } = useGetBookingsQuery();
   const { data: artPieces = [], isLoading: artPiecesLoading } = useGetArtPiecesQuery();
   const [updateBooking] = useUpdateBookingMutation();
+  const [addBooking] = useAddBookingMutation();
   
   const [statusFilter, setStatusFilter] = React.useState<string>('All');
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -72,6 +80,7 @@ export default function BookingsPage() {
   
   const [selectedBooking, setSelectedBooking] = React.useState<Booking | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
 
 
   const filteredBookings = React.useMemo(() => {
@@ -98,6 +107,21 @@ export default function BookingsPage() {
     setIsViewModalOpen(true);
   };
   
+  const handleAddBooking = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        await addBooking(data).unwrap();
+        toast({ title: "Success!", description: "New booking has been added." });
+        setIsAddModalOpen(false);
+    } catch (error) {
+        console.error("Failed to add booking:", error);
+        toast({ variant: "destructive", title: "Error", description: "Could not add booking." });
+    }
+  };
+
   const stats = React.useMemo(() => ({
       total: bookings.length,
       confirmed: bookings.filter((b: Booking) => b.status === 'Confirmed').length,
@@ -192,7 +216,7 @@ export default function BookingsPage() {
                     Export
                 </span>
             </Button>
-           <Button size="sm" className="h-8 gap-1">
+           <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
             <PlusCircle className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
               Add Booking
@@ -405,6 +429,72 @@ export default function BookingsPage() {
               <Button>Close</Button>
             </DialogClose>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+                <DialogTitle>Add New Booking</DialogTitle>
+                <DialogDescription>
+                    Manually create a new booking for a client.
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddBooking} className="space-y-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="customer">Customer Name</Label>
+                    <Input id="customer" name="customer" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" name="email" type="email" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input id="phone" name="phone" type="tel" />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="service">Service</Label>
+                    <Input id="service" name="service" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="total">Total ($)</Label>
+                    <Input id="total" name="total" type="text" required />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                     <div className="grid gap-2">
+                        <Label htmlFor="date">Date</Label>
+                        <Input id="date" name="date" type="date" required />
+                    </div>
+                     <div className="grid gap-2">
+                        <Label htmlFor="bookingTime">Time</Label>
+                        <Input id="bookingTime" name="bookingTime" type="time" required />
+                    </div>
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="status">Status</Label>
+                    <Select name="status" defaultValue="Pending">
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Confirmed">Confirmed</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="Canceled">Canceled</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="notes">Notes</Label>
+                    <Textarea id="notes" name="notes" />
+                </div>
+                 <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit">Add Booking</Button>
+                </DialogFooter>
+            </form>
         </DialogContent>
       </Dialog>
     </>

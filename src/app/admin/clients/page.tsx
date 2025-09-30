@@ -23,13 +23,15 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { useGetClientsQuery } from '@/services/api';
+import { useGetClientsQuery, useAddClientMutation } from '@/services/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
+import { useToast } from '@/hooks/use-toast';
 
 type ArtPiece = {
   _id: string;
@@ -50,11 +52,14 @@ type Client = {
 };
 
 export default function ClientsPage() {
+  const { toast } = useToast();
   const { data: clients = [], isLoading } = useGetClientsQuery();
+  const [addClient] = useAddClientMutation();
   const [currentPage, setCurrentPage] = React.useState(1);
   const [searchTerm, setSearchTerm] = React.useState('');
   const [selectedClient, setSelectedClient] = React.useState<Client | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
   const itemsPerPage = 10;
 
   const filteredClients = React.useMemo(() => {
@@ -90,7 +95,23 @@ export default function ClientsPage() {
   const handleViewDetails = (client: Client) => {
     setSelectedClient(client);
     setIsViewModalOpen(true);
-  }
+  };
+  
+  const handleAddClient = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+        await addClient(data).unwrap();
+        toast({ title: "Success!", description: "New client has been added." });
+        setIsAddModalOpen(false);
+    } catch (error) {
+        console.error("Failed to add client:", error);
+        const errorMsg = (error as any)?.data?.message || 'Could not add client.';
+        toast({ variant: "destructive", title: "Error", description: errorMsg });
+    }
+  };
 
 
   return (
@@ -108,7 +129,7 @@ export default function ClientsPage() {
                 Export
                 </span>
             </Button>
-            <Button size="sm" className="h-8 gap-1">
+            <Button size="sm" className="h-8 gap-1" onClick={() => setIsAddModalOpen(true)}>
                 <PlusCircle className="h-3.5 w-3.5" />
                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                 Add Client
@@ -271,6 +292,44 @@ export default function ClientsPage() {
                     <Button>Close</Button>
                 </DialogClose>
             </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Add New Client</DialogTitle>
+                <DialogDescription>
+                    Create a new client account. A password is required.
+                </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleAddClient} className="space-y-4">
+                <div className="grid gap-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input id="name" name="name" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" name="email" type="email" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input id="phone" name="phone" type="tel" />
+                </div>
+                 <div className="grid gap-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" name="password" type="password" required />
+                </div>
+                <div className="grid gap-2">
+                    <Label htmlFor="totalSpent">Total Spent ($)</Label>
+                    <Input id="totalSpent" name="totalSpent" type="number" step="0.01" defaultValue="0" />
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button variant="outline" type="button">Cancel</Button>
+                    </DialogClose>
+                    <Button type="submit">Add Client</Button>
+                </DialogFooter>
+            </form>
         </DialogContent>
     </Dialog>
     </>
