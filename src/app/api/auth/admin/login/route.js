@@ -1,11 +1,8 @@
 
 import { NextResponse } from 'next/server';
-import _db from '@/lib/db';
-import Client from '@/models/client.model.js';
 import jwt from 'jsonwebtoken';
 
 export async function POST(request) {
-  await _db();
   try {
     const { email, password } = await request.json();
 
@@ -13,24 +10,20 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Email and password are required.' }, { status: 400 });
     }
 
-    const client = await Client.findOne({ email }).select('+password');
+    const isAdminUser = email === 'admin@artistryhub.com';
+    const isPasswordCorrect = password === 'password';
 
-    if (!client) {
+    if (!isAdminUser || !isPasswordCorrect) {
       return NextResponse.json({ message: 'Invalid email or password.' }, { status: 401 });
     }
     
-    // Check if the user is an admin
-    if (client.role !== 'admin') {
-      return NextResponse.json({ message: 'Access denied. Not an administrator.' }, { status: 403 });
-    }
-
-    const isMatch = await client.comparePassword(password);
-
-    if (!isMatch) {
-       return NextResponse.json({ message: 'Invalid email or password.' }, { status: 401 });
-    }
-    
-    const { password: _, ...user } = client.toObject();
+    // Hardcoded user object for the admin
+    const user = {
+        _id: 'admin-user-id',
+        name: 'Admin',
+        email: 'admin@artistryhub.com',
+        role: 'admin'
+    };
 
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'your-default-secret', {
       expiresIn: '1d',
