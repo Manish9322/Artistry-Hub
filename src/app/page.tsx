@@ -14,7 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AppHeader } from "@/components/app-header";
-
+import { useGetArtPiecesQuery, useGetCategoriesQuery, useGetFaqsQuery, useGetTestimonialsQuery } from "@/services/api";
 
 type Category = {
   _id: string;
@@ -33,6 +33,22 @@ type ArtPiece = {
     hint: string;
 };
 
+type Testimonial = {
+  _id: string;
+  name: string;
+  avatar?: string;
+  hint?: string;
+  rating: number;
+  comment: string;
+}
+
+type FAQ = {
+    _id: string;
+    question: string;
+    answer: string;
+    category: string;
+}
+
 const isValidUrl = (string: string | undefined): boolean => {
     if (!string || typeof string !== 'string' || string === 'NA') return false;
     try {
@@ -47,64 +63,13 @@ const isValidUrl = (string: string | undefined): boolean => {
 
 export default function Home() {
   const [dynamicHeadline, setDynamicHeadline] = useState(0);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [artPieces, setArtPieces] = useState<ArtPiece[]>([]);
 
+  const { data: categories = [] } = useGetCategoriesQuery();
+  const { data: artPieces = [] } = useGetArtPiecesQuery();
+  const { data: testimonials = [] } = useGetTestimonialsQuery();
+  const { data: faqs = [] } = useGetFaqsQuery();
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const [catResponse, artResponse] = await Promise.all([
-          fetch('/api/categories'),
-          fetch('/api/art-pieces')
-        ]);
-        
-        if (catResponse.ok) {
-          const catData = await catResponse.json();
-          setCategories(catData);
-        }
-        if(artResponse.ok) {
-            const artData = await artResponse.json();
-            setArtPieces(artData);
-        }
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
-    }
-    fetchData();
-  }, []);
   
-  const testimonials = [
-    {
-      name: "Priya S.",
-      avatar: "https://placehold.co/100x100.png",
-      hint: "woman portrait",
-      rating: 5,
-      comment: "The bridal mehndi was absolutely breathtaking! The artists are so talented and professional. I received so many compliments.",
-    },
-    {
-      name: "Michael B.",
-      avatar: "https://placehold.co/100x100.png",
-      hint: "man portrait",
-      rating: 5,
-      comment: "Ordered a custom necklace and it exceeded all my expectations. The quality is fantastic and it's so unique. Highly recommend!",
-    },
-    {
-      name: "Anjali K.",
-      avatar: "https://placehold.co/100x100.png",
-      hint: "woman smiling",
-      rating: 5,
-      comment: "I love getting my nails done here. The artists always come up with the most creative designs. The best nail art in town!",
-    },
-    {
-      name: "Sarah L.",
-      avatar: "https://placehold.co/100x100.png",
-      hint: "woman portrait",
-      rating: 5,
-      comment: "The rangoli for our event was stunning. It was the centerpiece of our decorations and everyone loved it. Thank you!",
-    },
-  ];
-
   const whyChooseUsItems = [
     {
       icon: Award,
@@ -146,25 +111,6 @@ export default function Home() {
     }
   ];
 
-  const faqs = [
-    {
-      question: "How do I book an appointment?",
-      answer: "You can easily book an appointment through our website's booking page. Simply select your desired service, artist, date, and time, and we'll confirm your session via email.",
-    },
-    {
-      question: "Do you offer services for events and weddings?",
-      answer: "Absolutely! We specialize in providing artistic services for weddings, parties, corporate events, and other special occasions. Contact us to discuss your event needs.",
-    },
-    {
-      question: "How long does a Mehndi/Henna design last?",
-      answer: "Our natural henna designs typically last for 1-3 weeks, depending on your skin type and aftercare. We provide detailed aftercare instructions to help you prolong the life of your design.",
-    },
-     {
-      question: "Can I request a custom design?",
-      answer: "Yes, we love creating custom designs! You can provide us with inspiration, or our artists can create a unique design for you based on your preferences.",
-    },
-  ];
-
   const marqueeNews = [
     "New 'Bridal Collection' for Mehndi is now available!",
     "Join our 'Rangoli for Beginners' workshop next month.",
@@ -188,7 +134,7 @@ export default function Home() {
 
   
   const duplicatedArtPieces = artPieces.length > 0 ? [...artPieces, ...artPieces] : [];
-  const duplicatedTestimonials = [...testimonials, ...testimonials];
+  const duplicatedTestimonials = testimonials.length > 0 ? [...testimonials, ...testimonials] : [];
   const duplicatedNews = [...marqueeNews, ...marqueeNews];
 
 
@@ -547,8 +493,8 @@ export default function Home() {
             </div>
             <div className="max-w-3xl mx-auto">
               <Accordion type="single" collapsible className="w-full">
-                {faqs.map((faq, index) => (
-                  <AccordionItem key={index} value={`item-${index}`}>
+                {faqs.map((faq: FAQ) => (
+                  <AccordionItem key={faq._id} value={faq._id}>
                     <AccordionTrigger className="text-lg font-semibold text-left">{faq.question}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground text-base">
                       {faq.answer}
