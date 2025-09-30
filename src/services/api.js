@@ -69,6 +69,14 @@ export const api = createApi({
       }),
       invalidatesTags: ['ArtPieces'],
     }),
+    reorderArtPieces: builder.mutation({
+      query: (body) => ({
+        url: 'art-pieces/reorder',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['ArtPieces'],
+    }),
 
     // Categories Endpoints
     getCategories: builder.query({
@@ -95,6 +103,14 @@ export const api = createApi({
       query: (id) => ({
         url: `categories/${id}`,
         method: 'DELETE',
+      }),
+      invalidatesTags: ['Categories'],
+    }),
+    reorderCategories: builder.mutation({
+      query: (body) => ({
+        url: 'categories/reorder',
+        method: 'POST',
+        body,
       }),
       invalidatesTags: ['Categories'],
     }),
@@ -178,6 +194,14 @@ export const api = createApi({
         }),
         invalidatesTags: ['Testimonials'],
     }),
+    reorderTestimonials: builder.mutation({
+      query: (body) => ({
+        url: 'testimonials/reorder',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Testimonials'],
+    }),
 
     // Gallery Endpoints
     getGalleryImages: builder.query({
@@ -206,6 +230,14 @@ export const api = createApi({
             method: 'DELETE',
         }),
         invalidatesTags: ['Gallery'],
+    }),
+    reorderGalleryImages: builder.mutation({
+      query: (body) => ({
+        url: 'gallery/reorder',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Gallery'],
     }),
 
     // Workshops Endpoints (assuming static for now as per file, but adding mutations)
@@ -265,6 +297,14 @@ export const api = createApi({
         }),
         invalidatesTags: ['Faqs'],
     }),
+    reorderFaqs: builder.mutation({
+      query: (body) => ({
+        url: `faqs/reorder`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: ['Faqs'],
+    }),
 
   }),
 });
@@ -277,10 +317,12 @@ export const {
     useAddArtPieceMutation,
     useUpdateArtPieceMutation,
     useDeleteArtPieceMutation,
+    useReorderArtPiecesMutation,
     useGetCategoriesQuery,
     useAddCategoryMutation,
     useUpdateCategoryMutation,
     useDeleteCategoryMutation,
+    useReorderCategoriesMutation,
     useGetBookingsQuery,
     useAddBookingMutation,
     useUpdateBookingMutation,
@@ -292,10 +334,12 @@ export const {
     useAddTestimonialMutation,
     useUpdateTestimonialMutation,
     useDeleteTestimonialMutation,
+    useReorderTestimonialsMutation,
     useGetGalleryImagesQuery,
     useAddGalleryImageMutation,
     useUpdateGalleryImageMutation,
     useDeleteGalleryImageMutation,
+    useReorderGalleryImagesMutation,
     useGetWorkshopsQuery,
     useAddWorkshopMutation,
     useUpdateWorkshopMutation,
@@ -304,4 +348,5 @@ export const {
     useAddFaqMutation,
     useUpdateFaqMutation,
     useDeleteFaqMutation,
+    useReorderFaqsMutation,
 } = api;

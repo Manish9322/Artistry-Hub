@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -12,7 +11,9 @@ import {
   MessageSquare,
   ChevronLeft,
   ChevronRight,
+  GripVertical,
 } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -60,7 +61,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { useGetTestimonialsQuery, useAddTestimonialMutation, useUpdateTestimonialMutation, useDeleteTestimonialMutation } from '@/services/api';
+import { useGetTestimonialsQuery, useAddTestimonialMutation, useUpdateTestimonialMutation, useDeleteTestimonialMutation, useReorderTestimonialsMutation } from '@/services/api';
 import withAdminAuth from '../withAdminAuth';
 
 type Testimonial = {
@@ -70,6 +71,7 @@ type Testimonial = {
   rating: number;
   avatar?: string;
   hint?: string;
+  order: number;
 };
 
 function TestimonialsPage() {
@@ -78,6 +80,7 @@ function TestimonialsPage() {
     const [addTestimonial] = useAddTestimonialMutation();
     const [updateTestimonial] = useUpdateTestimonialMutation();
     const [deleteTestimonial] = useDeleteTestimonialMutation();
+    const [reorderTestimonials] = useReorderTestimonialsMutation();
 
     const [selectedTestimonial, setSelectedTestimonial] = React.useState<Testimonial | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -87,8 +90,19 @@ function TestimonialsPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
     
-    const totalPages = Math.ceil(testimonials.length / itemsPerPage);
-    const paginatedTestimonials = testimonials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const [orderedtestimonials, setOrderedTestimonials] = React.useState<Testimonial[]>([]);
+    const [hasOrderChanged, setHasOrderChanged] = React.useState(false);
+
+    const sortedTestimonials = React.useMemo(() => {
+        return [...testimonials].sort((a, b) => a.order - b.order);
+    }, [testimonials]);
+
+    React.useEffect(() => {
+        setOrderedTestimonials(sortedTestimonials);
+    }, [sortedTestimonials]);
+
+    const totalPages = Math.ceil(orderedtestimonials.length / itemsPerPage);
+    const paginatedTestimonials = orderedtestimonials.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -164,6 +178,31 @@ function TestimonialsPage() {
         link.click();
         document.body.removeChild(link);
     };
+    
+    const onDragEnd = (result: DropResult) => {
+        const { destination, source } = result;
+        if (!destination) return;
+        
+        const reordered = Array.from(orderedtestimonials);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        
+        setOrderedTestimonials(reordered);
+        setHasOrderChanged(true);
+    };
+
+    const handleSaveOrder = async () => {
+        const ids = orderedtestimonials.map(p => p._id);
+        try {
+            await reorderTestimonials({ ids }).unwrap();
+            toast({ title: "Success!", description: "Testimonial order has been saved." });
+            setHasOrderChanged(false);
+        } catch (error) {
+            console.error("Error saving order:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save the new order." });
+        }
+    };
+
 
   return (
     <>
@@ -174,6 +213,9 @@ function TestimonialsPage() {
              <p className="text-muted-foreground mt-1">Manage your client testimonials and reviews.</p>
           </div>
           <div className="flex items-center gap-2">
+            {hasOrderChanged && (
+                <Button onClick={handleSaveOrder} size="sm" className="h-8">Save Order</Button>
+            )}
             <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -220,64 +262,79 @@ function TestimonialsPage() {
           <CardHeader>
             <CardTitle>Testimonial Management</CardTitle>
             <CardDescription>
-              Manage the client testimonials displayed on your website.
+              Manage the client testimonials displayed on your website. Drag and drop to reorder.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Author</TableHead>
-                  <TableHead className="w-[50%] hidden md:table-cell">Comment</TableHead>
-                  <TableHead>Rating</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                    <TableRow><TableCell colSpan={4} className="text-center">Loading...</TableCell></TableRow>
-                ) : paginatedTestimonials.length > 0 ? (
-                paginatedTestimonials.map((testimonial: Testimonial) => (
-                  <TableRow key={testimonial._id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                          <Avatar className="hidden h-9 w-9 sm:flex">
-                              {testimonial.avatar && <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />}
-                              <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <span className="font-medium">{testimonial.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="max-w-md truncate hidden md:table-cell">{testimonial.comment}</TableCell>
-                    <TableCell>
-                        <div className="flex items-center gap-1">
-                            {testimonial.rating} <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                        </div>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEditClick(testimonial)}>Edit</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDeleteClick(testimonial)} className="text-destructive">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead>Author</TableHead>
+                    <TableHead className="w-[50%] hidden md:table-cell">Comment</TableHead>
+                    <TableHead>Rating</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
                   </TableRow>
-                ))) : (
-                    <TableRow><TableCell colSpan={4} className="text-center h-24">No testimonials found.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <Droppable droppableId="testimonials-list">
+                    {(provided) => (
+                    <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                        {isLoading ? (
+                            <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
+                        ) : paginatedTestimonials.length > 0 ? (
+                        paginatedTestimonials.map((testimonial: Testimonial, index: number) => (
+                        <Draggable key={testimonial._id} draggableId={testimonial._id} index={index}>
+                            {(provided) => (
+                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                                <TableCell {...provided.dragHandleProps} className="cursor-grab">
+                                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                </TableCell>
+                                <TableCell>
+                                <div className="flex items-center gap-3">
+                                    <Avatar className="hidden h-9 w-9 sm:flex">
+                                        {testimonial.avatar && <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint={testimonial.hint} />}
+                                        <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <span className="font-medium">{testimonial.name}</span>
+                                </div>
+                                </TableCell>
+                                <TableCell className="max-w-md truncate hidden md:table-cell">{testimonial.comment}</TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-1">
+                                        {testimonial.rating} <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                        <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={() => handleEditClick(testimonial)}>Edit</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleDeleteClick(testimonial)} className="text-destructive">Delete</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            )}
+                        </Draggable>
+                        ))) : (
+                            <TableRow><TableCell colSpan={5} className="text-center h-24">No testimonials found.</TableCell></TableRow>
+                        )}
+                        {provided.placeholder}
+                    </TableBody>
+                    )}
+                </Droppable>
+              </Table>
+            </DragDropContext>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">

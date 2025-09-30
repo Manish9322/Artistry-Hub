@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -11,7 +10,9 @@ import {
   BookCopy,
   ChevronLeft,
   ChevronRight,
+  GripVertical,
 } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -51,7 +52,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { useGetFaqsQuery, useAddFaqMutation, useUpdateFaqMutation, useDeleteFaqMutation } from '@/services/api';
+import { useGetFaqsQuery, useAddFaqMutation, useUpdateFaqMutation, useDeleteFaqMutation, useReorderFaqsMutation } from '@/services/api';
 import withAdminAuth from '../withAdminAuth';
 
 
@@ -60,6 +61,7 @@ type FAQ = {
   question: string;
   answer: string;
   category: string;
+  order: number;
 };
 
 function FaqPage() {
@@ -68,6 +70,7 @@ function FaqPage() {
     const [addFaq] = useAddFaqMutation();
     const [updateFaq] = useUpdateFaqMutation();
     const [deleteFaq] = useDeleteFaqMutation();
+    const [reorderFaqs] = useReorderFaqsMutation();
     
     const [selectedFaq, setSelectedFaq] = React.useState<FAQ | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -76,9 +79,20 @@ function FaqPage() {
 
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
+    
+    const [orderedFaqs, setOrderedFaqs] = React.useState<FAQ[]>([]);
+    const [hasOrderChanged, setHasOrderChanged] = React.useState(false);
 
-    const totalPages = Math.ceil(faqsData.length / itemsPerPage);
-    const paginatedFaqs = faqsData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const sortedFaqs = React.useMemo(() => {
+        return [...faqsData].sort((a, b) => a.order - b.order);
+    }, [faqsData]);
+
+    React.useEffect(() => {
+        setOrderedFaqs(sortedFaqs);
+    }, [sortedFaqs]);
+
+    const totalPages = Math.ceil(orderedFaqs.length / itemsPerPage);
+    const paginatedFaqs = orderedFaqs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -150,7 +164,32 @@ function FaqPage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-  };
+    };
+
+    const onDragEnd = (result: DropResult) => {
+        const { destination, source } = result;
+        if (!destination) return;
+        
+        const reordered = Array.from(orderedFaqs);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        
+        setOrderedFaqs(reordered);
+        setHasOrderChanged(true);
+    };
+
+    const handleSaveOrder = async () => {
+        const ids = orderedFaqs.map(p => p._id);
+        try {
+            await reorderFaqs({ ids }).unwrap();
+            toast({ title: "Success!", description: "FAQ order has been saved." });
+            setHasOrderChanged(false);
+        } catch (error) {
+            console.error("Error saving order:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save the new order." });
+        }
+    };
+
 
   return (
     <>
@@ -161,6 +200,9 @@ function FaqPage() {
              <p className="text-muted-foreground mt-1">Manage the frequently asked questions for your website.</p>
           </div>
           <div className="flex items-center gap-2">
+            {hasOrderChanged && (
+                <Button onClick={handleSaveOrder} size="sm" className="h-8">Save Order</Button>
+            )}
             <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -208,50 +250,65 @@ function FaqPage() {
           <CardHeader>
             <CardTitle>Frequently Asked Questions</CardTitle>
             <CardDescription>
-              Manage the FAQs displayed on your website.
+              Manage the FAQs displayed on your website. Drag and drop to reorder.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40%]">Question</TableHead>
-                  <TableHead className="hidden md:table-cell w-[50%]">Answer</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                    <TableRow><TableCell colSpan={3} className="text-center">Loading...</TableCell></TableRow>
-                ) : paginatedFaqs.length > 0 ? (
-                paginatedFaqs.map((faq: FAQ) => (
-                  <TableRow key={faq._id}>
-                    <TableCell className="font-medium">{faq.question}</TableCell>
-                    <TableCell className="hidden md:table-cell max-w-md truncate">{faq.answer}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEditClick(faq)}>Edit</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDeleteClick(faq)} className="text-destructive">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="w-[40%]">Question</TableHead>
+                    <TableHead className="hidden md:table-cell w-[50%]">Answer</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
                   </TableRow>
-                ))) : (
-                  <TableRow><TableCell colSpan={3} className="text-center h-24">No FAQs found.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <Droppable droppableId="faqs-list">
+                    {(provided) => (
+                    <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                        {isLoading ? (
+                            <TableRow><TableCell colSpan={4} className="text-center">Loading...</TableCell></TableRow>
+                        ) : paginatedFaqs.length > 0 ? (
+                        paginatedFaqs.map((faq: FAQ, index: number) => (
+                        <Draggable key={faq._id} draggableId={faq._id} index={index}>
+                            {(provided) => (
+                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                                <TableCell {...provided.dragHandleProps} className="cursor-grab">
+                                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                </TableCell>
+                                <TableCell className="font-medium">{faq.question}</TableCell>
+                                <TableCell className="hidden md:table-cell max-w-md truncate">{faq.answer}</TableCell>
+                                <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                        <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={() => handleEditClick(faq)}>Edit</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleDeleteClick(faq)} className="text-destructive">Delete</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            )}
+                        </Draggable>
+                        ))) : (
+                        <TableRow><TableCell colSpan={4} className="text-center h-24">No FAQs found.</TableCell></TableRow>
+                        )}
+                        {provided.placeholder}
+                    </TableBody>
+                    )}
+                </Droppable>
+              </Table>
+            </DragDropContext>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">

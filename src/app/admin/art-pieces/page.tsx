@@ -10,7 +10,9 @@ import {
   Paintbrush,
   ChevronLeft,
   ChevronRight,
+  GripVertical,
 } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,7 +57,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from "@/hooks/use-toast";
 import placeholderImages from '@/lib/placeholder-images.json';
-import { useGetArtPiecesQuery, useAddArtPieceMutation, useUpdateArtPieceMutation, useDeleteArtPieceMutation, useGetCategoriesQuery } from '@/services/api';
+import { useGetArtPiecesQuery, useAddArtPieceMutation, useUpdateArtPieceMutation, useDeleteArtPieceMutation, useGetCategoriesQuery, useReorderArtPiecesMutation } from '@/services/api';
 import {
   Select,
   SelectContent,
@@ -81,6 +83,7 @@ type ArtPiece = {
   images: string[];
   hint: string;
   editorsPick?: boolean;
+  order: number;
 };
 
 const isValidUrl = (string: string): boolean => {
@@ -101,6 +104,7 @@ function ArtPiecesPage() {
     const [addArtPiece] = useAddArtPieceMutation();
     const [updateArtPiece] = useUpdateArtPieceMutation();
     const [deleteArtPiece] = useDeleteArtPieceMutation();
+    const [reorderArtPieces] = useReorderArtPiecesMutation();
     
     const [selectedArtPiece, setSelectedArtPiece] = React.useState<ArtPiece | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -111,10 +115,21 @@ function ArtPiecesPage() {
     const [statusFilter, setStatusFilter] = React.useState<string>('All');
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
+    
+    const [orderedPieces, setOrderedPieces] = React.useState<ArtPiece[]>([]);
+    const [hasOrderChanged, setHasOrderChanged] = React.useState(false);
+
+    const sortedArtPieces = React.useMemo(() => {
+        return [...artPieces].sort((a, b) => a.order - b.order);
+    }, [artPieces]);
+
+    React.useEffect(() => {
+        setOrderedPieces(sortedArtPieces);
+    }, [sortedArtPieces]);
 
     const filteredArtPieces = React.useMemo(() => {
-        return artPieces.filter((piece: ArtPiece) => statusFilter === 'All' || piece.status === statusFilter);
-    }, [artPieces, statusFilter]);
+        return orderedPieces.filter((piece: ArtPiece) => statusFilter === 'All' || piece.status === statusFilter);
+    }, [orderedPieces, statusFilter]);
 
     const totalPages = Math.ceil(filteredArtPieces.length / itemsPerPage);
     const paginatedArtPieces = filteredArtPieces.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -206,6 +221,30 @@ function ArtPiecesPage() {
         document.body.removeChild(link);
     };
 
+    const onDragEnd = (result: DropResult) => {
+        const { destination, source } = result;
+        if (!destination) return;
+        
+        const reordered = Array.from(orderedPieces);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        
+        setOrderedPieces(reordered);
+        setHasOrderChanged(true);
+    };
+
+    const handleSaveOrder = async () => {
+        const ids = orderedPieces.map(p => p._id);
+        try {
+            await reorderArtPieces({ ids }).unwrap();
+            toast({ title: "Success!", description: "Art piece order has been saved." });
+            setHasOrderChanged(false);
+        } catch (error) {
+            console.error("Error saving order:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save the new order." });
+        }
+    };
+
 
   return (
     <>
@@ -216,6 +255,9 @@ function ArtPiecesPage() {
              <p className="text-muted-foreground mt-1">Manage your studio's art pieces and designs.</p>
           </div>
           <div className="flex items-center gap-2">
+            {hasOrderChanged && (
+                <Button onClick={handleSaveOrder} size="sm" className="h-8">Save Order</Button>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -258,74 +300,89 @@ function ArtPiecesPage() {
           <CardHeader>
             <CardTitle>Art Pieces</CardTitle>
             <CardDescription>
-              Manage your art pieces and view their sales performance.
+              Manage your art pieces and view their sales performance. Drag and drop to reorder.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="hidden w-[100px] sm:table-cell">
-                    <span className="sr-only">Image</span>
-                  </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="hidden md:table-cell">Price</TableHead>
-                  <TableHead className="hidden lg:table-cell">Creation Time</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                    <TableRow><TableCell colSpan={6} className="text-center">Loading...</TableCell></TableRow>
-                ) : paginatedArtPieces.length > 0 ? (
-                paginatedArtPieces.map((artPiece: ArtPiece) => (
-                  <TableRow key={artPiece._id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <Image
-                        alt={artPiece.name}
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={getSafeImage(artPiece.images)}
-                        width="64"
-                        data-ai-hint={artPiece.hint}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{artPiece.name}</TableCell>
-                    <TableCell>
-                       <Badge variant={artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline'}>
-                         {artPiece.status}
-                       </Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">${artPiece.price}</TableCell>
-                    <TableCell className="hidden lg:table-cell">
-                      {artPiece.creationTime} mins
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleViewClick(artPiece)}>View</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))) : (
-                    <TableRow><TableCell colSpan={6} className="text-center h-24">No art pieces found.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+            <DragDropContext onDragEnd={onDragEnd}>
+                <Table>
+                <TableHeader>
+                    <TableRow>
+                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="hidden w-[100px] sm:table-cell">
+                        <span className="sr-only">Image</span>
+                    </TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="hidden md:table-cell">Price</TableHead>
+                    <TableHead className="hidden lg:table-cell">Creation Time</TableHead>
+                    <TableHead>
+                        <span className="sr-only">Actions</span>
+                    </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <Droppable droppableId="art-pieces">
+                    {(provided) => (
+                    <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                        {isLoading ? (
+                            <TableRow><TableCell colSpan={7} className="text-center">Loading...</TableCell></TableRow>
+                        ) : paginatedArtPieces.length > 0 ? (
+                        paginatedArtPieces.map((artPiece: ArtPiece, index: number) => (
+                        <Draggable key={artPiece._id} draggableId={artPiece._id} index={index}>
+                            {(provided) => (
+                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                                <TableCell {...provided.dragHandleProps} className="cursor-grab">
+                                    <GripVertical className="h-5 w-5 text-muted-foreground" />
+                                </TableCell>
+                                <TableCell className="hidden sm:table-cell">
+                                <Image
+                                    alt={artPiece.name}
+                                    className="aspect-square rounded-md object-cover"
+                                    height="64"
+                                    src={getSafeImage(artPiece.images)}
+                                    width="64"
+                                    data-ai-hint={artPiece.hint}
+                                />
+                                </TableCell>
+                                <TableCell className="font-medium">{artPiece.name}</TableCell>
+                                <TableCell>
+                                <Badge variant={artPiece.status === 'Active' ? 'default' : artPiece.status === 'Draft' ? 'secondary' : 'outline'}>
+                                    {artPiece.status}
+                                </Badge>
+                                </TableCell>
+                                <TableCell className="hidden md:table-cell">${artPiece.price}</TableCell>
+                                <TableCell className="hidden lg:table-cell">
+                                {artPiece.creationTime} mins
+                                </TableCell>
+                                <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                        <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={() => handleViewClick(artPiece)}>View</DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleEditClick(artPiece)}>Edit</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleDeleteClick(artPiece)} className="text-destructive">Delete</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                            )}
+                        </Draggable>
+                        ))) : (
+                            <TableRow><TableCell colSpan={7} className="text-center h-24">No art pieces found.</TableCell></TableRow>
+                        )}
+                        {provided.placeholder}
+                    </TableBody>
+                    )}
+                </Droppable>
+                </Table>
+            </DragDropContext>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">

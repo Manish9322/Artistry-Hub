@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -16,7 +15,9 @@ import {
   ListFilter,
   ChevronLeft,
   ChevronRight,
+  GripVertical,
 } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -66,7 +67,7 @@ import {
 } from '@/components/ui/select';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { useToast } from '@/hooks/use-toast';
-import { useGetGalleryImagesQuery, useAddGalleryImageMutation, useUpdateGalleryImageMutation, useDeleteGalleryImageMutation } from '@/services/api';
+import { useGetGalleryImagesQuery, useAddGalleryImageMutation, useUpdateGalleryImageMutation, useDeleteGalleryImageMutation, useReorderGalleryImagesMutation } from '@/services/api';
 import withAdminAuth from '../withAdminAuth';
 
 type GalleryImage = {
@@ -76,6 +77,7 @@ type GalleryImage = {
   status: 'Published' | 'Draft' | 'Archived';
   image: string;
   hint?: string;
+  order: number;
 };
 
 const isValidUrl = (string: string | undefined): boolean => {
@@ -96,6 +98,7 @@ function GalleryPage() {
     const [addGalleryImage] = useAddGalleryImageMutation();
     const [updateGalleryImage] = useUpdateGalleryImageMutation();
     const [deleteGalleryImage] = useDeleteGalleryImageMutation();
+    const [reorderGalleryImages] = useReorderGalleryImagesMutation();
 
     const [selectedImage, setSelectedImage] = React.useState<GalleryImage | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -106,9 +109,20 @@ function GalleryPage() {
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
     
+    const [orderedImages, setOrderedImages] = React.useState<GalleryImage[]>([]);
+    const [hasOrderChanged, setHasOrderChanged] = React.useState(false);
+
+    const sortedImages = React.useMemo(() => {
+        return [...galleryImages].sort((a, b) => a.order - b.order);
+    }, [galleryImages]);
+
+    React.useEffect(() => {
+        setOrderedImages(sortedImages);
+    }, [sortedImages]);
+
     const filteredImages = React.useMemo(() => {
-        return galleryImages.filter((image: GalleryImage) => statusFilter === 'All' || image.status === statusFilter);
-    }, [galleryImages, statusFilter]);
+        return orderedImages.filter((image: GalleryImage) => statusFilter === 'All' || image.status === statusFilter);
+    }, [orderedImages, statusFilter]);
 
     const totalPages = Math.ceil(filteredImages.length / itemsPerPage);
     const paginatedImages = filteredImages.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -189,6 +203,31 @@ function GalleryPage() {
         link.click();
         document.body.removeChild(link);
     };
+    
+    const onDragEnd = (result: DropResult) => {
+        const { destination, source } = result;
+        if (!destination) return;
+        
+        const reordered = Array.from(orderedImages);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        
+        setOrderedImages(reordered);
+        setHasOrderChanged(true);
+    };
+
+    const handleSaveOrder = async () => {
+        const ids = orderedImages.map(p => p._id);
+        try {
+            await reorderGalleryImages({ ids }).unwrap();
+            toast({ title: "Success!", description: "Gallery image order has been saved." });
+            setHasOrderChanged(false);
+        } catch (error) {
+            console.error("Error saving order:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save the new order." });
+        }
+    };
+
 
   return (
     <>
@@ -199,6 +238,9 @@ function GalleryPage() {
              <p className="text-muted-foreground mt-1">Manage images and videos for your website's galleries.</p>
           </div>
           <div className="flex items-center gap-2">
+            {hasOrderChanged && (
+                <Button onClick={handleSaveOrder} size="sm" className="h-8">Save Order</Button>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -307,72 +349,87 @@ function GalleryPage() {
           <CardHeader>
             <CardTitle>Gallery Images</CardTitle>
             <CardDescription>
-              Manage images for the galleries on your website.
+              Manage images for the galleries on your website. Drag and drop to reorder.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="hidden w-[100px] sm:table-cell">
-                    <span className="sr-only">Image</span>
-                  </TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="hidden md:table-cell">Gallery</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                    <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
-                ) : paginatedImages.length > 0 ? (
-                paginatedImages.map((image: GalleryImage) => {
-                  const imageSrc = isValidUrl(image.image) ? image.image : placeholderImages.defaultSquare;
-                  return (
-                  <TableRow key={image._id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <Image
-                        alt={image.title}
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={imageSrc}
-                        width="64"
-                        data-ai-hint={image.hint}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{image.title}</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <Badge variant="secondary">{image.gallery}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={image.status === 'Published' ? 'default' : 'outline'}>{image.status}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button aria-haspopup="true" size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleEditClick(image)}>Edit</DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleDeleteClick(image)} className="text-destructive">Delete</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+             <DragDropContext onDragEnd={onDragEnd}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="hidden w-[100px] sm:table-cell">
+                      <span className="sr-only">Image</span>
+                    </TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead className="hidden md:table-cell">Gallery</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
                   </TableRow>
-                  );
-                })) : (
-                  <TableRow><TableCell colSpan={5} className="text-center h-24">No media found.</TableCell></TableRow>
-                )}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <Droppable droppableId="gallery-images-list">
+                  {(provided) => (
+                  <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                    {isLoading ? (
+                        <TableRow><TableCell colSpan={6} className="text-center">Loading...</TableCell></TableRow>
+                    ) : paginatedImages.length > 0 ? (
+                    paginatedImages.map((image: GalleryImage, index) => {
+                      const imageSrc = isValidUrl(image.image) ? image.image : placeholderImages.defaultSquare;
+                      return (
+                      <Draggable key={image._id} draggableId={image._id} index={index}>
+                        {(provided) => (
+                        <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                           <TableCell {...provided.dragHandleProps} className="cursor-grab">
+                                <GripVertical className="h-5 w-5 text-muted-foreground" />
+                           </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <Image
+                              alt={image.title}
+                              className="aspect-square rounded-md object-cover"
+                              height="64"
+                              src={imageSrc}
+                              width="64"
+                              data-ai-hint={image.hint}
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">{image.title}</TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <Badge variant="secondary">{image.gallery}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={image.status === 'Published' ? 'default' : 'outline'}>{image.status}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button aria-haspopup="true" size="icon" variant="ghost">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Toggle menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleEditClick(image)}>Edit</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleDeleteClick(image)} className="text-destructive">Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                        )}
+                      </Draggable>
+                      );
+                    })) : (
+                      <TableRow><TableCell colSpan={6} className="text-center h-24">No media found.</TableCell></TableRow>
+                    )}
+                     {provided.placeholder}
+                  </TableBody>
+                  )}
+                </Droppable>
+              </Table>
+            </DragDropContext>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">

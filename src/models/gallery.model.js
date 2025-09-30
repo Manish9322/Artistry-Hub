@@ -26,9 +26,21 @@ const GallerySchema = new mongoose.Schema({
     type: String,
     enum: ['Image', 'Video'],
     default: 'Image',
+  },
+  order: {
+    type: Number,
+    default: 0,
   }
 }, {
   timestamps: true,
+});
+
+GallerySchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const count = await this.constructor.countDocuments();
+    this.order = count;
+  }
+  next();
 });
 
 export default mongoose.models.Gallery || mongoose.model('Gallery', GallerySchema);

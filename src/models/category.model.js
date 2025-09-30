@@ -25,6 +25,10 @@ const CategorySchema = new mongoose.Schema({
     required: [true, 'Please provide a URL slug'],
     unique: true,
   },
+  order: {
+    type: Number,
+    default: 0,
+  },
   tags: {
     type: [String],
   },
@@ -116,5 +120,15 @@ const CategorySchema = new mongoose.Schema({
 }, {
   timestamps: true,
 });
+
+
+CategorySchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const count = await this.constructor.countDocuments();
+    this.order = count;
+  }
+  next();
+});
+
 
 export default mongoose.models.Category || mongoose.model('Category', CategorySchema);

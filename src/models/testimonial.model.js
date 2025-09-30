@@ -21,9 +21,21 @@ const TestimonialSchema = new mongoose.Schema({
   },
   hint: {
     type: String,
+  },
+  order: {
+    type: Number,
+    default: 0,
   }
 }, {
   timestamps: true,
+});
+
+TestimonialSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const count = await this.constructor.countDocuments();
+    this.order = count;
+  }
+  next();
 });
 
 export default mongoose.models.Testimonial || mongoose.model('Testimonial', TestimonialSchema);

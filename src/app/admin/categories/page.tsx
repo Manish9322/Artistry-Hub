@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import * as React from 'react';
@@ -13,7 +12,9 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  GripVertical,
 } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -58,7 +59,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { Separator } from '@/components/ui/separator';
-import { useGetCategoriesQuery, useAddCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation } from '@/services/api';
+import { useGetCategoriesQuery, useAddCategoryMutation, useUpdateCategoryMutation, useDeleteCategoryMutation, useReorderCategoriesMutation } from '@/services/api';
 import withAdminAuth from '../withAdminAuth';
 
 type Category = {
@@ -68,6 +69,7 @@ type Category = {
   image?: string;
   hint?: string;
   href: string;
+  order: number;
   tags?: string[];
   processSteps?: { icon: string; title: string; description: string; }[];
   commitment?: { icon: string; title: string; description: string; }[];
@@ -95,6 +97,7 @@ function CategoriesPage() {
     const [addCategory] = useAddCategoryMutation();
     const [updateCategory] = useUpdateCategoryMutation();
     const [deleteCategory] = useDeleteCategoryMutation();
+    const [reorderCategories] = useReorderCategoriesMutation();
 
     const [selectedCategory, setSelectedCategory] = React.useState<Category | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
@@ -103,9 +106,20 @@ function CategoriesPage() {
 
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 10;
+    
+    const [orderedCategories, setOrderedCategories] = React.useState<Category[]>([]);
+    const [hasOrderChanged, setHasOrderChanged] = React.useState(false);
 
-    const totalPages = Math.ceil(categories.length / itemsPerPage);
-    const paginatedCategories = categories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+    const sortedCategories = React.useMemo(() => {
+        return [...categories].sort((a, b) => a.order - b.order);
+    }, [categories]);
+
+    React.useEffect(() => {
+        setOrderedCategories(sortedCategories);
+    }, [sortedCategories]);
+
+    const totalPages = Math.ceil(orderedCategories.length / itemsPerPage);
+    const paginatedCategories = orderedCategories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
     
     const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -176,6 +190,30 @@ function CategoriesPage() {
         link.click();
         document.body.removeChild(link);
     };
+
+    const onDragEnd = (result: DropResult) => {
+        const { destination, source } = result;
+        if (!destination) return;
+        
+        const reordered = Array.from(orderedCategories);
+        const [removed] = reordered.splice(source.index, 1);
+        reordered.splice(destination.index, 0, removed);
+        
+        setOrderedCategories(reordered);
+        setHasOrderChanged(true);
+    };
+
+    const handleSaveOrder = async () => {
+        const ids = orderedCategories.map(p => p._id);
+        try {
+            await reorderCategories({ ids }).unwrap();
+            toast({ title: "Success!", description: "Category order has been saved." });
+            setHasOrderChanged(false);
+        } catch (error) {
+            console.error("Error saving order:", error);
+            toast({ variant: "destructive", title: "Error", description: "Could not save the new order." });
+        }
+    };
     
     const AddEditModal = ({ open, onClose }: { open: boolean, onClose: () => void }) => {
         const isEdit = !!selectedCategory;
@@ -231,11 +269,10 @@ function CategoriesPage() {
                   </DialogHeader>
                   <form onSubmit={handleFormSubmit} className="flex-grow flex flex-col overflow-hidden">
                   <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-3">
                       <TabsTrigger value="general">General</TabsTrigger>
                       <TabsTrigger value="process">Process</TabsTrigger>
                       <TabsTrigger value="content">Content</TabsTrigger>
-                      <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
                     </TabsList>
                     <div className="flex-grow overflow-hidden mt-4">
                         <ScrollArea className="h-full pr-6">
@@ -260,10 +297,6 @@ function CategoriesPage() {
                                      <div className="grid grid-cols-4 items-center gap-4">
                                         <Label htmlFor="hint" className="text-right">AI Hint</Label>
                                         <Input id="hint" name="hint" placeholder="e.g. henna hand" defaultValue={formData.hint || ""} className="col-span-3" />
-                                    </div>
-                                     <div className="grid grid-cols-4 items-start gap-4">
-                                        <Label>Gallery Tags</Label>
-                                        <Textarea name="tags" placeholder="Comma-separated tags (e.g., All, Bridal, Festival)" defaultValue={formData.tags?.join(', ')} className="col-span-3" />
                                     </div>
                                 </div>
                             </TabsContent>
@@ -307,46 +340,6 @@ function CategoriesPage() {
                                 </div>
                             </TabsContent>
                             <TabsContent value="content">
-                                 <div className="space-y-6 py-4">
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-lg font-semibold">Bespoke Creations Gallery</h4>
-                                        <Button type="button" size="sm" onClick={() => addField('bespokeCreations', { image: '', hint: '' })}>
-                                            <Plus className="mr-2 h-4 w-4" /> Add Creation
-                                        </Button>
-                                    </div>
-                                    {(formData.bespokeCreations || []).map((item, index) => (
-                                        <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded-md relative">
-                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('bespokeCreations', index)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                            <Input name={`bespokeCreations[${index}][image]`} type="file" />
-                                            <Input name={`bespokeCreations[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
-                                        </div>
-                                    ))}
-                                    <Separator/>
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-lg font-semibold">Testimonials</h4>
-                                        <Button type="button" size="sm" onClick={() => addField('testimonials', { name: '', comment: '', image: '', hint: '' })}>
-                                            <Plus className="mr-2 h-4 w-4" /> Add Testimonial
-                                        </Button>
-                                    </div>
-                                    {(formData.testimonials || []).map((item, index) => (
-                                        <div key={index} className="space-y-3 p-4 border rounded-md relative">
-                                            <h5 className="font-medium">Testimonial {index + 1}</h5>
-                                            <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('testimonials', index)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                            <Input name={`testimonials[${index}][name]`} placeholder="Client Name" defaultValue={item.name} />
-                                            <Textarea name={`testimonials[${index}][comment]`} placeholder="Comment" defaultValue={item.comment} />
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <Input name={`testimonials[${index}][image]`} type="file" />
-                                                <Input name={`testimonials[${index}][hint]`} placeholder="AI Hint" defaultValue={item.hint} />
-                                            </div>
-                                        </div>
-                                    ))}
-                                 </div>
-                            </TabsContent>
-                            <TabsContent value="seo">
                                 <div className="space-y-6 py-4">
                                      <div className="flex justify-between items-center">
                                         <h4 className="text-lg font-semibold">Care Tips</h4>
@@ -429,6 +422,9 @@ function CategoriesPage() {
              <p className="text-muted-foreground mt-1">Organize and manage your art categories.</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            {hasOrderChanged && (
+                <Button onClick={handleSaveOrder} size="sm" className="h-8">Save Order</Button>
+            )}
             <Button size="sm" variant="outline" className="h-8 gap-1" onClick={handleExport}>
               <File className="h-3.5 w-3.5" />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
@@ -476,66 +472,81 @@ function CategoriesPage() {
           <CardHeader>
             <CardTitle>Art Categories</CardTitle>
             <CardDescription>
-              Manage the art categories displayed on your website.
+              Manage the art categories displayed on your website. Drag and drop to reorder.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="hidden w-[100px] sm:table-cell">
-                    <span className="sr-only">Image</span>
-                  </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Link</TableHead>
-                  <TableHead>
-                    <span className="sr-only">Actions</span>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                    <TableRow><TableCell colSpan={5} className="text-center">Loading...</TableCell></TableRow>
-                ) : paginatedCategories.length > 0 ? (
-                paginatedCategories.map((category: Category) => (
-                    <TableRow key={category._id}>
-                      <TableCell className="hidden sm:table-cell">
-                        <Image
-                          alt={category.name}
-                          className="aspect-square rounded-md object-cover"
-                          height="64"
-                          src={isValidUrl(category.image) ? category.image! : placeholderImages.defaultSquare}
-                          width="64"
-                          data-ai-hint={category.hint}
-                        />
-                      </TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell className="max-w-xs truncate">{category.description}</TableCell>
-                      <TableCell><a href={category.href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{category.href}</a></TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button aria-haspopup="true" size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem onClick={() => handleEditClick(category)}>Edit</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleDeleteClick(category)} className="text-destructive">Delete</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))) : (
-                    <TableRow><TableCell colSpan={5} className="text-center h-24">No categories found.</TableCell></TableRow>
-                  )
-                }
-              </TableBody>
-            </Table>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40px]"></TableHead>
+                    <TableHead className="hidden w-[100px] sm:table-cell">
+                      <span className="sr-only">Image</span>
+                    </TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Link</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Actions</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <Droppable droppableId="categories-list">
+                  {(provided) => (
+                    <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                      {isLoading ? (
+                          <TableRow><TableCell colSpan={6} className="text-center">Loading...</TableCell></TableRow>
+                      ) : paginatedCategories.length > 0 ? (
+                      paginatedCategories.map((category: Category, index: number) => (
+                        <Draggable key={category._id} draggableId={category._id} index={index}>
+                          {(provided) => (
+                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
+                               <TableCell {...provided.dragHandleProps} className="cursor-grab">
+                                  <GripVertical className="h-5 w-5 text-muted-foreground" />
+                               </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                <Image
+                                  alt={category.name}
+                                  className="aspect-square rounded-md object-cover"
+                                  height="64"
+                                  src={isValidUrl(category.image) ? category.image! : placeholderImages.defaultSquare}
+                                  width="64"
+                                  data-ai-hint={category.hint}
+                                />
+                              </TableCell>
+                              <TableCell className="font-medium">{category.name}</TableCell>
+                              <TableCell className="max-w-xs truncate">{category.description}</TableCell>
+                              <TableCell><a href={category.href} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">{category.href}</a></TableCell>
+                              <TableCell>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                                      <MoreHorizontal className="h-4 w-4" />
+                                      <span className="sr-only">Toggle menu</span>
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={() => handleEditClick(category)}>Edit</DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleDeleteClick(category)} className="text-destructive">Delete</DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </Draggable>
+                        ))) : (
+                          <TableRow><TableCell colSpan={6} className="text-center h-24">No categories found.</TableCell></TableRow>
+                        )
+                      }
+                       {provided.placeholder}
+                    </TableBody>
+                  )}
+                </Droppable>
+              </Table>
+            </DragDropContext>
           </CardContent>
           <CardFooter>
             <div className="text-xs text-muted-foreground">

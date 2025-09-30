@@ -34,9 +34,21 @@ const ArtPieceSchema = new mongoose.Schema({
   editorsPick: {
     type: Boolean,
     default: false,
+  },
+  order: {
+    type: Number,
+    default: 0,
   }
 }, {
   timestamps: true,
+});
+
+ArtPieceSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const count = await this.constructor.countDocuments();
+    this.order = count;
+  }
+  next();
 });
 
 export default mongoose.models.ArtPiece || mongoose.model('ArtPiece', ArtPieceSchema);
