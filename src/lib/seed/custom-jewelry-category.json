@@ -1,0 +1,218 @@
+
+{
+  "name": "Custom Plastic Jewelry",
+  "description": "Unleash your unique style with our custom-made plastic jewelry. From bold statement pieces to delicate charms, each item is handcrafted to be as individual as you are.",
+  "image": "https://picsum.photos/seed/jewelry-main/1200/400",
+  "hint": "colorful handmade jewelry",
+  "href": "/custom-plastic-jewelry",
+  "tags": [
+    "All",
+    "Necklaces",
+    "Earrings",
+    "Bracelets",
+    "Rings",
+    "Statement"
+  ],
+  "processSteps": [
+    {
+      "icon": "Lightbulb",
+      "title": "Design & Conceptualize",
+      "description": "Share your inspiration, color palettes, and ideas with us. We'll sketch out a unique design that captures your vision and personality, ensuring it's a one-of-a-kind piece."
+    },
+    {
+      "icon": "Scissors",
+      "title": "Crafting & Creation",
+      "description": "Our artisans meticulously shape, mold, and finish your jewelry using high-quality, durable plastic materials. Every cut and curve is handled with precision and care."
+    },
+    {
+      "icon": "Sparkles",
+      "title": "Finishing & Delivery",
+      "description": "We add the final touches, from polishing to assembling, before packaging your custom piece beautifully. Your unique creation is then ready to be shipped and worn."
+    }
+  ],
+  "commitment": [
+    {
+      "icon": "Award",
+      "title": "Unmatched Originality",
+      "description": "Every piece is a unique creation, designed to ensure you're wearing something that is truly one-of-a-kind."
+    },
+    {
+      "icon": "Handshake",
+      "title": "Collaborative Process",
+      "description": "We work hand-in-hand with you at every step to make sure your vision is perfectly translated into a wearable piece of art."
+    },
+    {
+      "icon": "Heart",
+      "title": "Quality Craftsmanship",
+      "description": "Using premium, lightweight, and durable materials, our artisans pour their expertise into crafting jewelry that lasts."
+    },
+    {
+      "icon": "Zap",
+      "title": "Bold & Vibrant",
+      "description": "We are not afraid of color or unconventional shapes. Our goal is to create statement pieces that are playful, modern, and expressive."
+    },
+    {
+      "icon": "Leaf",
+      "title": "Eco-Conscious Options",
+      "description": "We are exploring and integrating recycled and eco-friendly plastic options into our process to create beautiful, sustainable art."
+    }
+  ],
+  "bespokeCreations": [
+    {
+      "image": "https://picsum.photos/seed/bespoke-jewel1/400/500",
+      "hint": "abstract statement earrings"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-jewel2/400/500",
+      "hint": "geometric colorful necklace"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-jewel3/400/500",
+      "hint": "chunky plastic rings"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-jewel4/400/500",
+      "hint": "layered charm bracelet"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Alex Chen",
+      "comment": "I commissioned a necklace for my graduation and it was the star of the show! The design process was so fun and collaborative. I have a piece that's 100% me.",
+      "image": "https://picsum.photos/seed/alex-testimonial/100/100",
+      "hint": "person smiling graduation"
+    },
+    {
+      "name": "Benny Carter",
+      "comment": "The earrings are so lightweight and comfortable, but they make such a huge statement. I get compliments every single time I wear them. The quality is fantastic.",
+      "image": "https://picsum.photos/seed/benny-testimonial/100/100",
+      "hint": "man wearing earrings"
+    },
+    {
+      "name": "Casey Dolan",
+      "comment": "I am obsessed with my custom bracelet. The colors are so vibrant and it's just so playful and unique. It’s my new favorite accessory. Thank you, Artistry Hub!",
+      "image": "https://picsum.photos/seed/casey-testimonial/100/100",
+      "hint": "person showing bracelet"
+    },
+    {
+      "name": "Dana Scully",
+      "comment": "The team helped me create a gift for my sister's birthday and she absolutely adored it. It was so personal and thoughtfully made. Excellent service and craftsmanship.",
+      "image": "https://picsum.photos/seed/dana-testimonial/100/100",
+      "hint": "woman holding gift"
+    },
+    {
+      "name": "Eli Vance",
+      "comment": "My custom rings are amazing. They're chunky, fun, and the colors are exactly what I asked for. A really unique product and a great experience.",
+      "image": "https://picsum.photos/seed/eli-testimonial/100/100",
+      "hint": "hand with rings"
+    },
+    {
+      "name": "Fiona Glenanne",
+      "comment": "I was looking for something bold and different, and Artistry Hub delivered! My statement necklace is a work of art. It's surprisingly durable too.",
+      "image": "https://picsum.photos/seed/fiona-testimonial/100/100",
+      "hint": "woman fashion portrait"
+    },
+    {
+      "name": "George Costanza",
+      "comment": "I'm not usually a jewelry person, but I got a custom pin that I wear on my jacket. It's a great conversation starter. Very cool process.",
+      "image": "https://picsum.photos/seed/george-testimonial/100/100",
+      "hint": "man with jacket pin"
+    },
+    {
+      "name": "Harper Lee",
+      "comment": "The attention to detail is just incredible. My earrings have these tiny, intricate patterns that I didn't even notice at first. So much care went into them.",
+      "image": "https://picsum.photos/seed/harper-testimonial/100/100",
+      "hint": "woman looking thoughtfully"
+    },
+    {
+      "name": "Ian Malcolm",
+      "comment": "Life, uh, finds a way to be stylish. And this custom brooch is certainly a chaotic, yet beautiful, addition to my collection. Well done.",
+      "image": "https://picsum.photos/seed/ian-testimonial/100/100",
+      "hint": "man in black shirt"
+    },
+    {
+      "name": "Jackie Brown",
+      "comment": "Sleek, stylish, and one-of-a-kind. These earrings have become my signature. The whole process was smooth and professional. Highly recommended.",
+      "image": "https://picsum.photos/seed/jackie-testimonial/100/100",
+      "hint": "woman retro style"
+    }
+  ],
+  "blogPosts": [
+    {
+      "title": "The Rise of Resin: Why Plastic Jewelry is Making a Comeback",
+      "description": "Dive into the trend of modern plastic and resin jewelry. Discover why artists and fashionistas are embracing this versatile and vibrant medium.",
+      "image": "https://picsum.photos/seed/jewel-blog1/600/400",
+      "hint": "colorful resin pieces"
+    },
+    {
+      "title": "From Sketch to Sparkle: The Journey of a Custom Piece",
+      "description": "Go behind the scenes and see how a unique piece of jewelry is brought to life, from the initial client idea to the final polished product.",
+      "image": "https://picsum.photos/seed/jewel-blog2/600/400",
+      "hint": "artist sketching jewelry"
+    },
+    {
+      "title": "Styling Statement Jewelry: Tips from an Expert",
+      "description": "Learn how to build an outfit around a bold statement necklace or a pair of eye-catching earrings to elevate your look.",
+      "image": "https://picsum.photos/seed/jewel-blog3/600/400",
+      "hint": "fashion flat lay"
+    },
+    {
+      "title": "Color Theory in Jewelry: How to Pick Hues That Complement You",
+      "description": "Discover which colors will make your features pop and how to use color theory to commission the perfect custom jewelry.",
+      "image": "https://picsum.photos/seed/jewel-blog4/600/400",
+      "hint": "color wheel chart"
+    },
+    {
+      "title": "The Art of Layering: Mixing and Matching Your Jewelry",
+      "description": "Master the skill of layering necklaces, stacking bracelets, and combining rings for a curated and personalized style.",
+      "image": "https://picsum.photos/seed/jewel-blog5/600/400",
+      "hint": "layered necklaces model"
+    }
+  ],
+  "careTips": [
+    {
+      "icon": "Droplets",
+      "title": "Avoid Harsh Chemicals",
+      "description": "Keep your jewelry away from perfumes, lotions, and cleaning agents, which can dull the surface or cause discoloration over time."
+    },
+    {
+      "icon": "Sun",
+      "title": "Store Separately",
+      "description": "Store each piece in a soft cloth or a separate compartment to prevent scratching from other, harder jewelry items."
+    },
+    {
+      "icon": "Wind",
+      "title": "Gentle Cleaning",
+      "description": "Clean with a soft, damp cloth and mild soap. Avoid abrasive materials that could scratch the plastic surface."
+    },
+    {
+      "icon": "Sparkles",
+      "title": "Handle With Care",
+      "description": "While durable, plastic jewelry can break under excessive force. Avoid dropping your pieces on hard surfaces."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "How long does it take to make a custom piece?",
+      "answer": "The creation time for a custom piece typically ranges from 1 to 3 weeks, depending on the complexity of the design and our current order queue. We will provide a more accurate timeline during your consultation."
+    },
+    {
+      "question": "What kind of plastic do you use?",
+      "answer": "We use a variety of high-quality, durable plastics, including acrylic, resin, and polymer clay. We prioritize materials that are lightweight, vibrant in color, and long-lasting."
+    },
+    {
+      "question": "Can you replicate a design I found online?",
+      "answer": "While we cannot create an exact copy of another artist's work, we would love to see your inspiration! We can use it as a starting point to design a unique piece that captures the elements you love."
+    },
+    {
+      "question": "Are the jewelry findings (hooks, chains) hypoallergenic?",
+      "answer": "Yes, we use hypoallergenic materials like stainless steel or sterling silver for all parts that come into direct contact with the skin to prevent irritation."
+    },
+    {
+      "question": "What is your return policy for custom jewelry?",
+      "answer": "Because each piece is made to order and personalized just for you, we cannot accept returns on custom jewelry. However, we work closely with you during the design phase to ensure you are completely happy before we begin crafting."
+    }
+  ]
+}
+
+    

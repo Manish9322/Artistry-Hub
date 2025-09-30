@@ -1,0 +1,218 @@
+
+{
+  "name": "Nail Art",
+  "description": "Express yourself with our creative and chic Nail Art services. From elegant French tips to bold, bespoke designs, our nail technicians turn your nails into tiny masterpieces.",
+  "image": "https://picsum.photos/seed/nailart-main/1200/400",
+  "hint": "colorful nail art",
+  "href": "/nail-art",
+  "tags": [
+    "All",
+    "Minimalist",
+    "Geometric",
+    "Floral",
+    "Abstract",
+    "Bridal"
+  ],
+  "processSteps": [
+    {
+      "icon": "Hand",
+      "title": "Nail Prep & Care",
+      "description": "Your session begins with professional nail care. We shape, buff, and prepare your nails, ensuring a healthy and perfect canvas for the artwork."
+    },
+    {
+      "icon": "Paintbrush",
+      "title": "Detailed Artistry",
+      "description": "Choose from our portfolio or bring your own inspiration. Our skilled technicians use high-quality polishes and fine tools to meticulously paint your chosen design."
+    },
+    {
+      "icon": "Sparkles",
+      "title": "Top Coat & Finish",
+      "description": "We seal your new nail art with a durable, high-gloss top coat. This protects the design, prevents chipping, and ensures your masterpiece lasts as long as possible."
+    }
+  ],
+  "commitment": [
+    {
+      "icon": "Award",
+      "title": "Precision & Detail",
+      "description": "Our nail artists are celebrated for their steady hands and attention to the smallest details, ensuring a flawless finish."
+    },
+    {
+      "icon": "Handshake",
+      "title": "Your Style, Realized",
+      "description": "We listen to your ideas and preferences to create nail art that truly reflects your personality and complements your style."
+    },
+    {
+      "icon": "Heart",
+      "title": "Hygiene & Safety",
+      "description": "Your health is our priority. We use sterilized tools and high-quality, non-toxic products for every client."
+    },
+    {
+      "icon": "Zap",
+      "title": "Trendsetting Designs",
+      "description": "Our artists are always up-to-date with the latest trends, techniques, and colors to offer you the most fashionable nail art."
+    },
+    {
+      "icon": "Sparkles",
+      "title": "Long-Lasting Wear",
+      "description": "We use professional-grade polishes and application techniques to maximize the life of your nail art, keeping it beautiful for weeks."
+    }
+  ],
+  "bespokeCreations": [
+    {
+      "image": "https://picsum.photos/seed/bespoke-nail1/400/500",
+      "hint": "abstract line nail art"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-nail2/400/500",
+      "hint": "delicate floral nails"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-nail3/400/500",
+      "hint": "holographic chrome nails"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-nail4/400/500",
+      "hint": "bridal lace nail art"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Taylor Swift",
+      "comment": "I came in with a vague idea and left with the coolest nails I've ever had. The artist was a true visionary! Absolutely obsessed with the geometric design.",
+      "image": "https://picsum.photos/seed/taylor-testimonial/100/100",
+      "hint": "pop star candid"
+    },
+    {
+      "name": "Brandon Flowers",
+      "comment": "Got some subtle black line-work done for a show. Looked sharp. The place is clean and the staff is professional. Good vibes.",
+      "image": "https://picsum.photos/seed/brandon-testimonial/100/100",
+      "hint": "rock star portrait"
+    },
+    {
+      "name": "Chloe Kim",
+      "comment": "The floral nails for my vacation were perfect! They lasted through sun, sand, and sea. The detail on the tiny petals was insane. Thank you!",
+      "image": "https://picsum.photos/seed/chloe-k-testimonial/100/100",
+      "hint": "athlete on vacation"
+    },
+    {
+      "name": "Jordan Peele",
+      "comment": "My wife loved her surprise nail appointment. She said the artist was fantastic and the abstract design was 'a masterpiece'. Happy wife, happy life. Thanks!",
+      "image": "https://picsum.photos/seed/jordan-testimonial/100/100",
+      "hint": "film director smiling"
+    },
+    {
+      "name": "Meghan Markle",
+      "comment": "I opted for a very chic and minimalist design for a charity event. It was elegant, understated, and perfectly executed. A wonderful and relaxing experience.",
+      "image": "https://picsum.photos/seed/meghan-testimonial/100/100",
+      "hint": "woman in elegant dress"
+    },
+    {
+      "name": "Ryan Reynolds",
+      "comment": "My daughter dragged me here. I'm not the target audience. But she left with glittery, sparkly nails and a huge smile, so they're doing something right. 5 stars.",
+      "image": "https://picsum.photos/seed/ryan-testimonial/100/100",
+      "hint": "man laughing"
+    },
+    {
+      "name": "Zendaya Coleman",
+      "comment": "The creativity here is next-level. I've had my nails done for red carpets all over the world, and this studio is top-tier. True artists.",
+      "image": "https://picsum.photos/seed/zendaya-testimonial/100/100",
+      "hint": "fashion icon portrait"
+    },
+    {
+      "name": "Awkwafina",
+      "comment": "Got some funky, mismatched nails and I love them so much. The artist totally got my vibe. It's like my personality is on my fingertips. So cool.",
+      "image": "https://picsum.photos/seed/awkwafina-testimonial/100/100",
+      "hint": "comedian smiling"
+    },
+    {
+      "name": "Harry Styles",
+      "comment": "A brilliant spot. Great attention to detail. My nails have never looked better. Treat people with kindness and get your nails done here.",
+      "image": "https://picsum.photos/seed/harry-testimonial/100/100",
+      "hint": "man with painted nails"
+    },
+    {
+      "name": "Issa Rae",
+      "comment": "The best gel manicure and art I've had in ages. No chips, and the design is still perfect weeks later. My new go-to spot for sure.",
+      "image": "https://picsum.photos/seed/issa-testimonial/100/100",
+      "hint": "woman in colorful outfit"
+    }
+  ],
+  "blogPosts": [
+    {
+      "title": "Nail Care 101: How to Keep Your Manicure Lasting Longer",
+      "description": "Tired of chipped nails? Our pros share their top secrets for extending the life of your beautiful nail art at home.",
+      "image": "https://picsum.photos/seed/nail-blog1/600/400",
+      "hint": "manicure hand care"
+    },
+    {
+      "title": "The Hottest Nail Art Trends for This Season",
+      "description": "From 'glazed donut' chrome to 'aura' nails, we're breaking down the must-try nail art trends you'll be seeing everywhere.",
+      "image": "https://picsum.photos/seed/nail-blog2/600/400",
+      "hint": "trendy nail art"
+    },
+    {
+      "title": "Choosing the Right Nail Shape for Your Hands",
+      "description": "Almond, square, coffin, or stiletto? Learn which nail shape best complements your hands and lifestyle.",
+      "image": "https://picsum.photos/seed/nail-blog3/600/400",
+      "hint": "different nail shapes"
+    },
+    {
+      "title": "A Guide to Nail Health: Tips for Stronger, Healthier Nails",
+      "description": "Beautiful nail art starts with a healthy base. Discover our tips for nourishing your nails from the inside out.",
+      "image": "https://picsum.photos/seed/nail-blog4/600/400",
+      "hint": "cuticle oil application"
+    },
+    {
+      "title": "Minimalist vs. Maximalist: Finding Your Nail Art Personality",
+      "description": "Are you team 'less is more' or 'go big or go home'? Explore different styles to find the nail art that speaks to you.",
+      "image": "https://picsum.photos/seed/nail-blog5/600/400",
+      "hint": "simple vs complex nails"
+    }
+  ],
+  "careTips": [
+    {
+      "icon": "Hand",
+      "title": "Wear Gloves for Chores",
+      "description": "Protect your nail art from harsh cleaning chemicals and prolonged water exposure by wearing rubber gloves."
+    },
+    {
+      "icon": "Sparkles",
+      "title": "Apply Cuticle Oil Daily",
+      "description": "Keep your cuticles and the skin around your nails hydrated. This promotes healthy growth and prevents hangnails."
+    },
+    {
+      "icon": "Wind",
+      "title": "Be Gentle",
+      "description": "Use the pads of your fingers, not your nails, to open cans or scrape things. Your nails are jewels, not tools!"
+    },
+    {
+      "icon": "Brush",
+      "title": "Schedule Regular Fills",
+      "description": "For gel or acrylic art, book regular appointments every 2-3 weeks to maintain the look and health of your nails."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "How long will my nail art last?",
+      "answer": "With proper care, a regular polish manicure can last up to a week, while a gel manicure can last 2-3 weeks without chipping."
+    },
+    {
+      "question": "I have short nails. Can I still get nail art?",
+      "answer": "Absolutely! There are many beautiful designs that look fantastic on short nails, from simple geometric patterns to elegant half-moons. We can help you choose the perfect one."
+    },
+    {
+      "question": "How do you ensure hygiene?",
+      "answer": "We adhere to the highest standards of sanitation. All metal tools are medically sterilized in an autoclave, and we use disposable files and buffers for each client."
+    },
+    {
+      "question": "Can you do a design I found on Pinterest?",
+      "answer": "Yes! We love when clients bring in inspiration. Show us your picture, and our artists will do their best to replicate it or create a unique version just for you."
+    },
+    {
+      "question": "How long does a nail art appointment take?",
+      "answer": "A standard nail art session on top of a manicure typically adds 30 to 60 minutes, depending on the complexity of the design. We'll give you a time estimate when you book."
+    }
+  ]
+}
+
+    

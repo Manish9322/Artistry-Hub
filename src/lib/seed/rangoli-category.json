@@ -1,0 +1,218 @@
+
+{
+  "name": "Rangoli",
+  "description": "Celebrate tradition with our exquisite Rangoli designs. Using vibrant colors and intricate patterns, our artists create stunning floor art for festivals, weddings, and special events.",
+  "image": "https://picsum.photos/seed/rangoli-main/1200/400",
+  "hint": "colorful rangoli design",
+  "href": "/rangoli",
+  "tags": [
+    "All",
+    "Festival",
+    "Wedding",
+    "Floral",
+    "Geometric",
+    "Modern"
+  ],
+  "processSteps": [
+    {
+      "icon": "MapPin",
+      "title": "Site Assessment",
+      "description": "We visit your location to assess the space, lighting, and surface. This helps us recommend the perfect size, design, and color palette that will have the most impact."
+    },
+    {
+      "icon": "Brush",
+      "title": "Live Art Creation",
+      "description": "Our artists arrive on the day of the event to create the Rangoli live. Using colored powders, flower petals, or rice, they skillfully craft the design on-site for guests to admire."
+    },
+    {
+      "icon": "PartyPopper",
+      "title": "Event Enhancement",
+      "description": "The finished Rangoli serves as a beautiful and auspicious centerpiece for your event, welcoming guests and adding a touch of traditional elegance and vibrant color."
+    }
+  ],
+  "commitment": [
+    {
+      "icon": "Award",
+      "title": "Stunning Visuals",
+      "description": "We guarantee a Rangoli that is not only beautiful but also a captivating focal point for your event."
+    },
+    {
+      "icon": "Handshake",
+      "title": "Stress-Free Experience",
+      "description": "Our professional team handles everything from design to cleanup, allowing you to enjoy your event without worry."
+    },
+    {
+      "icon": "Heart",
+      "title": "Respect for Tradition",
+      "description": "Our designs are rooted in the rich cultural heritage of Rangoli, bringing authenticity and auspiciousness to your occasion."
+    },
+    {
+      "icon": "Sparkles",
+      "title": "Clean & Tidy",
+      "description": "We take great care to keep our workspace neat and ensure a thorough cleanup after the event, leaving your space spotless."
+    },
+    {
+      "icon": "Zap",
+      "title": "Lasting Impression",
+      "description": "Our unique and vibrant Rangoli designs are crafted to be memorable, leaving a lasting impression on all your guests."
+    }
+  ],
+  "bespokeCreations": [
+    {
+      "image": "https://picsum.photos/seed/bespoke-rangoli1/400/500",
+      "hint": "peacock rangoli design"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-rangoli2/400/500",
+      "hint": "floating flower rangoli"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-rangoli3/400/500",
+      "hint": "ganesha rangoli art"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-rangoli4/400/500",
+      "hint": "large wedding rangoli"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "The Gupta Family",
+      "comment": "The Diwali Rangoli was the highlight of our celebration. The artists were so talented and professional. It made our home feel incredibly festive and welcoming.",
+      "image": "https://picsum.photos/seed/gupta-testimonial/100/100",
+      "hint": "family celebration diwali"
+    },
+    {
+      "name": "Raj & Simran",
+      "comment": "We had a large floral Rangoli for our wedding entrance. It was absolutely breathtaking and our guests couldn't stop taking pictures with it. Thank you for making our day so colorful!",
+      "image": "https://picsum.photos/seed/raj-testimonial/100/100",
+      "hint": "indian wedding couple"
+    },
+    {
+      "name": "Corporate Events Inc.",
+      "comment": "We hired Artistry Hub for our annual corporate gala. The Rangoli with our company logo was a huge hit. It was a unique and culturally rich touch that everyone appreciated.",
+      "image": "https://picsum.photos/seed/corp-testimonial/100/100",
+      "hint": "corporate event logo"
+    },
+    {
+      "name": "Priya Patel",
+      "comment": "The artist created a beautiful, intricate design for my housewarming ceremony. It was more stunning than I could have imagined. Professional and punctual service.",
+      "image": "https://picsum.photos/seed/priya-p-testimonial/100/100",
+      "hint": "woman in new home"
+    },
+    {
+      "name": "Anusha Reddy",
+      "comment": "I ordered a floating water Rangoli for a small pooja at home. It was so elegant and serene. The artists handled it with such care. Highly recommend for any occasion.",
+      "image": "https://picsum.photos/seed/anusha-testimonial/100/100",
+      "hint": "woman praying pooja"
+    },
+    {
+      "name": "David Chen",
+      "comment": "We wanted to add a multicultural element to our new year party and the Rangoli was perfect. The artists were fantastic and explained the significance to our curious guests.",
+      "image": "https://picsum.photos/seed/david-testimonial/100/100",
+      "hint": "man at party"
+    },
+    {
+      "name": "The Singhs",
+      "comment": "The peacock rangoli for my daughter's engagement was a masterpiece. The colors were so vibrant. Artistry Hub's team is truly gifted.",
+      "image": "https://picsum.photos/seed/singh-testimonial/100/100",
+      "hint": "indian family portrait"
+    },
+    {
+      "name": "Lakshmi Iyer",
+      "comment": "As someone who has tried to make Rangoli myself, I can truly appreciate the skill and patience it takes. The geometric design you made was flawless. Just perfect.",
+      "image": "https://picsum.photos/seed/lakshmi-testimonial/100/100",
+      "hint": "older indian woman"
+    },
+    {
+      "name": "Ahmed Al-Farsi",
+      "comment": "A wonderful addition to our cultural festival at the university. The students were fascinated watching the artists at work. It was both beautiful and educational.",
+      "image": "https://picsum.photos/seed/ahmed-testimonial/100/100",
+      "hint": "university professor smiling"
+    },
+    {
+      "name": "Sophie Williams",
+      "comment": "I had no idea what to expect, but the result was spectacular. It transformed our event space completely. A must-have for anyone looking for that 'wow' factor.",
+      "image": "https://picsum.photos/seed/sophie-testimonial/100/100",
+      "hint": "event planner portrait"
+    }
+  ],
+  "blogPosts": [
+    {
+      "title": "The Meaning of Colors in Rangoli Art",
+      "description": "Ever wondered why certain colors are used in Rangoli? Learn about the symbolism of red, yellow, green, and more in this vibrant art form.",
+      "image": "https://picsum.photos/seed/rangoli-blog1/600/400",
+      "hint": "colorful powder pigments"
+    },
+    {
+      "title": "DIY Rangoli: A Beginner's Guide to Your First Design",
+      "description": "Want to try your hand at Rangoli? Our experts share simple tips and tricks to create a beautiful design at home.",
+      "image": "https://picsum.photos/seed/rangoli-blog2/600/400",
+      "hint": "hands creating rangoli"
+    },
+    {
+      "title": "Beyond Powders: Exploring Rangoli with Flowers, Grains, and Water",
+      "description": "Discover the diverse materials that can be used to create stunning Rangoli, from delicate flower petals to floating diyas.",
+      "image": "https://picsum.photos/seed/rangoli-blog3/600/400",
+      "hint": "flower petal rangoli"
+    },
+    {
+      "title": "Rangoli Across India: A Look at Regional Styles",
+      "description": "From the 'Kolam' of the south to the 'Alpana' of the east, explore the diverse and beautiful regional variations of Rangoli.",
+      "image": "https://picsum.photos/seed/rangoli-blog4/600/400",
+      "hint": "map of india"
+    },
+    {
+      "title": "The Geometry of Good Fortune: Mathematical Patterns in Rangoli",
+      "description": "Delve into the fascinating world of geometric Rangoli and how these symmetrical patterns are believed to bring positive energy.",
+      "image": "https://picsum.photos/seed/rangoli-blog5/600/400",
+      "hint": "geometric pattern sketch"
+    }
+  ],
+  "careTips": [
+    {
+      "icon": "Wind",
+      "title": "Choose a Protected Spot",
+      "description": "Place your Rangoli in an area with low foot traffic and minimal wind to keep the design intact for longer."
+    },
+    {
+      "icon": "Droplets",
+      "title": "Keep It Dry",
+      "description": "Traditional Rangoli powders are sensitive to moisture. Protect the design from water, spills, and high humidity."
+    },
+    {
+      "icon": "Brush",
+      "title": "Gentle Cleanup",
+      "description": "When it's time to clean up, gently sweep or vacuum the powders. Avoid mopping directly over the design to prevent smearing."
+    },
+    {
+      "icon": "Camera",
+      "title": "Capture the Moment",
+      "description": "Rangoli is ephemeral art. Take plenty of photos from different angles to preserve its beauty long after the event is over."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "How long does it take to create a Rangoli?",
+      "answer": "The time required depends on the size and intricacy of the design. A medium-sized Rangoli can take anywhere from 1 to 3 hours to complete on-site."
+    },
+    {
+      "question": "How long will the Rangoli last?",
+      "answer": "An indoor Rangoli in a protected area can last for the duration of your event (1-3 days). Outdoor Rangolis are more susceptible to weather and may not last as long."
+    },
+    {
+      "question": "Are the materials safe for floors and the environment?",
+      "answer": "Yes, we use non-toxic, eco-friendly colored powders and natural materials like rice flour and flower petals that are safe for most surfaces and easy to clean."
+    },
+    {
+      "question": "Can you incorporate specific themes or logos?",
+      "answer": "Absolutely! We specialize in custom designs and can incorporate wedding motifs, company logos, or any specific theme into the Rangoli to personalize it for your event."
+    },
+    {
+      "question": "What happens to the materials after the event?",
+      "answer": "We handle the cleanup process. The materials are carefully swept up and disposed of in an environmentally friendly manner."
+    }
+  ]
+}
+
+    
