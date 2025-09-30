@@ -20,9 +20,13 @@ export async function POST(request) {
   await _db();
   try {
     const body = await request.json();
+    // The password will be hashed automatically by the pre-save hook in the model
     const newClient = await Client.create(body);
-    // In a real app, you would hash the password here before saving
-    return NextResponse.json(newClient, { status: 201 });
+    
+    // We don't want to send the password back, even if it's hashed
+    const { password, ...user } = newClient.toObject();
+
+    return NextResponse.json(user, { status: 201 });
   } catch (error) {
     if (error.code === 11000) { // Duplicate key error
         return NextResponse.json({ message: 'A client with this email already exists.' }, { status: 409 });

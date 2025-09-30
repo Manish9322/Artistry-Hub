@@ -1,7 +1,7 @@
-
 import { NextResponse } from 'next/server';
 import _db from '@/lib/db';
 import Client from '@/models/client.model.js';
+import jwt from 'jsonwebtoken';
 
 export async function POST(request) {
   await _db();
@@ -12,22 +12,23 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Email and password are required.' }, { status: 400 });
     }
 
-    const client = await Client.findOne({ email }).lean();
+    const client = await Client.findOne({ email }).select('+password');
 
     if (!client) {
       return NextResponse.json({ message: 'Invalid email or password.' }, { status: 401 });
     }
     
-    // In a real application, you would use bcrypt.compare() to check the password
-    if (client.password !== password) {
+    const isMatch = await client.comparePassword(password);
+
+    if (!isMatch) {
        return NextResponse.json({ message: 'Invalid email or password.' }, { status: 401 });
     }
     
-    // Do not send the password back to the client
-    const { password: _, ...user } = client;
+    const { password: _, ...user } = client.toObject();
 
-    // In a real app, this token would be a signed JWT
-    const token = `mock-jwt-for-${user._id}`;
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'your-default-secret', {
+      expiresIn: '1d',
+    });
 
     return NextResponse.json({
         message: "Login successful",
