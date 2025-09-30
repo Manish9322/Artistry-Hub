@@ -1,0 +1,126 @@
+{
+  "name": "Mehndi",
+  "description": "Discover the timeless elegance of Mehndi. From intricate bridal designs to contemporary patterns, our artists craft stunning henna art that tells a unique story on your skin.",
+  "image": "https://picsum.photos/seed/mehndi-main/1200/400",
+  "hint": "bridal mehndi henna",
+  "href": "/mehndi",
+  "tags": [
+    "All",
+    "Bridal",
+    "Traditional",
+    "Arabic",
+    "Indo-Western",
+    "Minimalist"
+  ],
+  "processSteps": [
+    {
+      "icon": "MessageSquare",
+      "title": "Consultation",
+      "description": "We begin with a detailed consultation to understand your vision, occasion, and style preferences. Whether it's for a wedding, festival, or personal expression, we tailor our designs to you."
+    },
+    {
+      "icon": "Paintbrush",
+      "title": "Artistic Application",
+      "description": "Our skilled artists use 100% natural, skin-safe henna paste to meticulously apply the design. Relax and enjoy the therapeutic process as your vision comes to life."
+    },
+    {
+      "icon": "ShieldCheck",
+      "title": "Aftercare Guidance",
+      "description": "Once the art is complete, we provide you with comprehensive aftercare instructions to ensure a deep, rich, and long-lasting stain that you can cherish."
+    }
+  ],
+  "commitment": [
+    {
+      "icon": "Award",
+      "title": "Artistic Excellence",
+      "description": "Our artists are masters of jejich craft, dedicated to delivering intricate and flawless designs every time."
+    },
+    {
+      "icon": "Handshake",
+      "title": "Personalized Service",
+      "description": "We collaborate closely with you to ensure your Mehndi design is a true reflection of your personality and story."
+    },
+    {
+      "icon": "Heart",
+      "title": "Quality & Safety",
+      "description": "We exclusively use organic, chemical-free henna to guarantee a beautiful, dark stain that is completely safe for your skin."
+    }
+  ],
+  "bespokeCreations": [
+    {
+      "image": "https://picsum.photos/seed/bespoke-mehndi1/400/500",
+      "hint": "custom bridal mehndi"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-mehndi2/400/500",
+      "hint": "peacock henna design"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-mehndi3/400/500",
+      "hint": "mandala mehndi art"
+    },
+    {
+      "image": "https://picsum.photos/seed/bespoke-mehndi4/400/500",
+      "hint": "henna feet design"
+    }
+  ],
+  "testimonials": [
+    {
+      "name": "Priya Sharma",
+      "comment": "The bridal mehndi was beyond my dreams! The detail was incredible, and the color came out so dark and beautiful. It made my wedding day even more special.",
+      "image": "https://picsum.photos/seed/priya-testimonial/100/100",
+      "hint": "indian bride smiling"
+    },
+    {
+      "name": "Aisha Khan",
+      "comment": "I booked for an Eid celebration and was so impressed. The artist was so creative with the Arabic design, and I received endless compliments. Highly recommend!",
+      "image": "https://picsum.photos/seed/aisha-testimonial/100/100",
+      "hint": "woman portrait smiling"
+    }
+  ],
+  "blogPosts": [
+    {
+      "title": "The Symbolism Behind Traditional Mehndi Motifs",
+      "description": "Explore the rich history and meaning behind common symbols like peacocks, paisleys, and mandalas used in traditional henna art.",
+      "image": "https://picsum.photos/seed/mehndi-blog1/600/400",
+      "hint": "henna design details"
+    },
+    {
+      "title": "5 Tips for a Darker, Longer-Lasting Henna Stain",
+      "description": "Learn the secrets from our expert artists on how to care for your mehndi to achieve that coveted deep, dark stain that lasts.",
+      "image": "https://picsum.photos/seed/mehndi-blog2/600/400",
+      "hint": "henna aftercare product"
+    }
+  ],
+  "careTips": [
+    {
+      "icon": "Droplets",
+      "title": "Avoid Water Initially",
+      "description": "For the first 12-24 hours, avoid contact with water as much as possible to allow the henna stain to fully develop."
+    },
+    {
+      "icon": "Sun",
+      "title": "Keep It Warm",
+      "description": "Heat helps the henna stain darken. Keep the area warm, but avoid direct heat sources that could cause sweating."
+    },
+    {
+      "icon": "Wind",
+      "title": "Scrape, Don't Wash",
+      "description": "Once the paste is dry and crumbly, gently scrape it off. Do not wash it off with water for the best results."
+    }
+  ],
+  "faqs": [
+    {
+      "question": "How long does the mehndi application take?",
+      "answer": "Application time varies depending on the complexity of the design. A simple design can take 30-45 minutes, while intricate bridal mehndi can take 4-6 hours."
+    },
+    {
+      "question": "Is your henna paste safe for sensitive skin?",
+      "answer": "Yes, we make our own henna paste using 100% organic henna powder, essential oils, and lemon juice. It is free from harmful chemicals like PPD."
+    },
+    {
+      "question": "How long will my mehndi stain last?",
+      "answer": "With proper aftercare, a mehndi stain can last anywhere from 1 to 3 weeks, gradually fading over time as your skin naturally exfoliates."
+    }
+  ]
+}
