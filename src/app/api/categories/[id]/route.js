@@ -7,7 +7,6 @@ import { saveImage } from '@/lib/utils/image-handler';
 // Helper function to parse form data
 async function parseFormData(formData) {
     const data = {
-        artPieces: [],
         processSteps: [],
         commitment: [],
         bespokeCreations: [],
@@ -51,18 +50,6 @@ async function parseFormData(formData) {
 
     // Convert comma-separated strings to arrays
     if (data.tags && typeof data.tags === 'string') data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
-    if(data.artPieces) {
-        data.artPieces.forEach(p => {
-            if (p.tags && typeof p.tags === 'string') {
-                p.tags = p.tags.split(',').map(t => t.trim()).filter(Boolean);
-            }
-            if (p.images && typeof p.images === 'string') {
-              p.images = p.images.split(',').map(i => i.trim()).filter(Boolean);
-            } else if (!p.images) {
-              p.images = [];
-            }
-        });
-    }
 
     return { data, fileFields };
 }
@@ -121,12 +108,7 @@ export async function PUT(request, { params }) {
                   if (newFiles) {
                       const promise = Promise.all(newFiles.map(file => saveImage(file)))
                           .then(urls => {
-                              if (arrayName === 'artPieces' && fieldName === 'images') {
-                                  // This logic assumes replacement or addition. For more complex logic, adjust as needed.
-                                  item.images = [...(item.images || []), ...urls].filter(img => !String(img).includes('blob:'));
-                              } else {
-                                  item[fieldName] = urls[0]; 
-                              }
+                            item[fieldName] = urls[0]; 
                           });
                       uploadPromises.push(promise);
                   } else if (existingItem) {
@@ -137,7 +119,6 @@ export async function PUT(request, { params }) {
           }
       };
       
-      processArrayImages('artPieces', 'images', existingCategory.artPieces);
       processArrayImages('bespokeCreations', 'image', existingCategory.bespokeCreations);
       processArrayImages('testimonials', 'image', existingCategory.testimonials);
       processArrayImages('blogPosts', 'image', existingCategory.blogPosts);

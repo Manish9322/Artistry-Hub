@@ -69,7 +69,6 @@ type Category = {
   hint?: string;
   href: string;
   tags?: string[];
-  artPieces?: { title: string; price: number; images: string[]; tags: string[]; hint: string; creationTime: string; }[];
   processSteps?: { icon: string; title: string; description: string; }[];
   commitment?: { icon: string; title: string; description: string; }[];
   bespokeCreations?: { image: string; hint: string; }[];
@@ -183,7 +182,7 @@ function CategoriesPage() {
         const [formData, setFormData] = React.useState<Partial<Category>>(
             isEdit ? { ...selectedCategory } : {
                 name: '', description: '', href: '', image: '', hint: '', tags: [],
-                artPieces: [], processSteps: [], commitment: [], bespokeCreations: [], testimonials: [], blogPosts: [], careTips: [], faqs: []
+                processSteps: [], commitment: [], bespokeCreations: [], testimonials: [], blogPosts: [], careTips: [], faqs: []
             }
         );
 
@@ -193,7 +192,7 @@ function CategoriesPage() {
             } else {
                  setFormData({
                     name: '', description: '', href: '', image: '', hint: '', tags: [],
-                    artPieces: [], processSteps: [], commitment: [], bespokeCreations: [], testimonials: [], blogPosts: [], careTips: [], faqs: []
+                    processSteps: [], commitment: [], bespokeCreations: [], testimonials: [], blogPosts: [], careTips: [], faqs: []
                 });
             }
         }, [selectedCategory, isEdit]);
@@ -232,9 +231,8 @@ function CategoriesPage() {
                   </DialogHeader>
                   <form onSubmit={handleFormSubmit} className="flex-grow flex flex-col overflow-hidden">
                   <Tabs defaultValue="general" className="flex-grow flex flex-col overflow-hidden">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-4">
                       <TabsTrigger value="general">General</TabsTrigger>
-                      <TabsTrigger value="gallery">Gallery</TabsTrigger>
                       <TabsTrigger value="process">Process</TabsTrigger>
                       <TabsTrigger value="content">Content</TabsTrigger>
                       <TabsTrigger value="seo">SEO/Meta</TabsTrigger>
@@ -263,39 +261,10 @@ function CategoriesPage() {
                                         <Label htmlFor="hint" className="text-right">AI Hint</Label>
                                         <Input id="hint" name="hint" placeholder="e.g. henna hand" defaultValue={formData.hint || ""} className="col-span-3" />
                                     </div>
-                                </div>
-                            </TabsContent>
-                            <TabsContent value="gallery">
-                                <div className="space-y-6 py-4">
-                                    <div>
+                                     <div className="grid grid-cols-4 items-start gap-4">
                                         <Label>Gallery Tags</Label>
-                                        <Textarea name="tags" placeholder="Comma-separated tags (e.g., All, Bridal, Festival)" defaultValue={formData.tags?.join(', ')} />
+                                        <Textarea name="tags" placeholder="Comma-separated tags (e.g., All, Bridal, Festival)" defaultValue={formData.tags?.join(', ')} className="col-span-3" />
                                     </div>
-                                    <Separator/>
-                                    <div className="flex justify-between items-center">
-                                        <h4 className="text-lg font-semibold">Art Pieces</h4>
-                                        <Button type="button" size="sm" onClick={() => addField('artPieces', { title: '', price: 0, images: [], tags: [], hint: '', creationTime: '' })}>
-                                            <Plus className="mr-2 h-4 w-4" /> Add Piece
-                                        </Button>
-                                    </div>
-                                    {(formData.artPieces || []).map((piece, index) => (
-                                        <div key={index} className="space-y-4 p-4 border rounded-md relative">
-                                            <h5 className="font-medium">Art Piece {index + 1}</h5>
-                                             <Button type="button" variant="destructive" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => removeField('artPieces', index)}>
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                             <div className="grid grid-cols-2 gap-4">
-                                                <Input name={`artPieces[${index}][title]`} placeholder="Title" defaultValue={piece.title} />
-                                                <Input name={`artPieces[${index}][price]`} type="number" placeholder="Price" defaultValue={piece.price} />
-                                             </div>
-                                             <Input name={`artPieces[${index}][images]`} type="file" multiple placeholder="Image URLs (comma-separated)" />
-                                             <Input name={`artPieces[${index}][tags]`} placeholder="Tags (comma-separated)" defaultValue={piece.tags?.join(', ')} />
-                                             <div className="grid grid-cols-2 gap-4">
-                                                <Input name={`artPieces[${index}][hint]`} placeholder="AI Hint" defaultValue={piece.hint} />
-                                                <Input name={`artPieces[${index}][creationTime]`} placeholder="Creation Time" defaultValue={piece.creationTime} />
-                                            </div>
-                                        </div>
-                                    ))}
                                 </div>
                             </TabsContent>
                             <TabsContent value="process">

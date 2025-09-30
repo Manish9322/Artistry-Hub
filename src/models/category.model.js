@@ -28,14 +28,6 @@ const CategorySchema = new mongoose.Schema({
   tags: {
     type: [String],
   },
-  artPieces: [{
-    title: String,
-    price: Number,
-    images: [String],
-    tags: [String],
-    hint: String,
-    creationTime: String,
-  }],
   processSteps: [{
     icon: String,
     title: String,

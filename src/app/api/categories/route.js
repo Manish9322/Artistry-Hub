@@ -8,7 +8,6 @@ import { saveImage } from '@/lib/utils/image-handler';
 // Helper function to parse form data
 async function parseFormData(formData) {
     const data = {
-        artPieces: [],
         processSteps: [],
         commitment: [],
         bespokeCreations: [],
@@ -52,13 +51,6 @@ async function parseFormData(formData) {
     
     // Convert comma-separated strings to arrays
     if (data.tags && typeof data.tags === 'string') data.tags = data.tags.split(',').map(t => t.trim()).filter(Boolean);
-    if (data.artPieces) {
-        data.artPieces.forEach(p => {
-            if (p.tags && typeof p.tags === 'string') {
-                p.tags = p.tags.split(',').map(t => t.trim()).filter(Boolean);
-            }
-        });
-    }
 
     return { data, fileFields };
 }
@@ -104,12 +96,7 @@ export async function POST(request) {
                       const promise = Promise.all(files.map(file => saveImage(file)))
                           .then(urls => {
                               if (!data[arrayName][numIndex]) data[arrayName][numIndex] = {};
-                              
-                              if (arrayName === 'artPieces' && fieldName === 'images') {
-                                  data[arrayName][numIndex][fieldName] = urls;
-                              } else {
-                                  data[arrayName][numIndex][fieldName] = urls[0];
-                              }
+                              data[arrayName][numIndex][fieldName] = urls[0];
                           });
                       uploadPromises.push(promise);
                   }
@@ -117,7 +104,6 @@ export async function POST(request) {
           }
       };
       
-      processArrayImages('artPieces', 'images');
       processArrayImages('bespokeCreations', 'image');
       processArrayImages('testimonials', 'image');
       processArrayImages('blogPosts', 'image');
