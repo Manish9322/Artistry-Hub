@@ -71,10 +71,58 @@ const CategorySchema = new mongoose.Schema({
     question: String,
     answer: String,
   }],
+  ourStory: {
+    badge: String,
+    title: String,
+    p1: String,
+    p2: String,
+    image1: String,
+    image1Hint: String,
+    image2: String,
+    image2Hint: String,
+  },
+  visionMission: {
+    vision: String,
+    mission: String,
+  },
+  coreValues: [{
+    icon: String,
+    title: String,
+    description: String,
+  }],
+  artisticPhilosophy: [{
+    icon: String,
+    title: String,
+    description: String,
+    image: String,
+    hint: String,
+  }],
+  accolades: [{
+    icon: String,
+    title: String,
+    issuer: String,
+    description: String,
+  }],
+  whyChooseUs: [{
+    icon: String,
+    title: String,
+    description: String,
+  }],
+  homeProcessSteps: [{
+      icon: String,
+      title: String,
+      description: String
+  }],
+  artInAction: [{
+      title: String,
+      description: String,
+      image: String,
+      hint: String,
+      buttonText: String,
+      buttonLink: String,
+  }]
 }, {
   timestamps: true,
 });
 
 export default mongoose.models.Category || mongoose.model('Category', CategorySchema);
-
-    

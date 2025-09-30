@@ -1,10 +1,18 @@
 
+
 "use client";
 
 import { Rocket, Target } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
-export function VisionMission() {
+type VisionMissionData = {
+  vision: string;
+  mission: string;
+};
+
+export function VisionMission({ data }: { data?: VisionMissionData }) {
+  if (!data) {
+    return null;
+  }
   return (
     <section className="py-16 sm:py-24 bg-background">
       <div className="container px-4 md:px-6">
@@ -19,7 +27,7 @@ export function VisionMission() {
               </h2>
             </div>
             <p className="text-muted-foreground md:text-lg">
-              To be the leading global platform for discovering and commissioning authentic, handcrafted artistic services that celebrate cultural heritage and personal expression.
+              {data.vision}
             </p>
           </div>
           
@@ -33,7 +41,7 @@ export function VisionMission() {
               </h2>
             </div>
             <p className="text-muted-foreground md:text-lg">
-              To empower artists by providing them with the tools and exposure to turn their passion into a profession, and to connect them with a community that values their craft.
+              {data.mission}
             </p>
           </div>
         </div>

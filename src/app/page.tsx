@@ -23,6 +23,9 @@ type Category = {
   image?: string;
   hint?: string;
   href: string;
+  whyChooseUs?: { icon: string, title: string, description: string }[];
+  homeProcessSteps?: { icon: string, title: string, description: string }[];
+  artInAction?: { title: string, description: string, image: string, hint: string, buttonText: string, buttonLink: string }[];
 };
 
 type ArtPiece = {
@@ -60,6 +63,10 @@ const isValidUrl = (string: string | undefined): boolean => {
     }
 };
 
+const iconMap: { [key: string]: React.ElementType } = {
+  Award, Handshake, Heart, MessageSquare, Lightbulb, Scissors, Search, Pencil, CheckCircle,
+};
+
 
 export default function Home() {
   const [dynamicHeadline, setDynamicHeadline] = useState(0);
@@ -69,48 +76,9 @@ export default function Home() {
   const { data: testimonials = [] } = useGetTestimonialsQuery();
   const { data: faqs = [] } = useGetFaqsQuery();
 
+  const homeData = categories.find((c: Category) => c.name === "Home") || {} as Category;
+  const { whyChooseUs = [], homeProcessSteps = [], artInAction = [] } = homeData;
   
-  const whyChooseUsItems = [
-    {
-      icon: Award,
-      title: "Experienced Artists",
-      description: "Our team consists of highly skilled and passionate artists with years of experience in traditional and contemporary art forms.",
-    },
-    {
-      icon: Handshake,
-      title: "Personalized Service",
-      description: "We work closely with you to understand your vision and create custom designs that are truly unique and personal.",
-    },
-    {
-      icon: Heart,
-      title: "Quality Materials",
-      description: "We use only the finest, skin-friendly materials to ensure beautiful, long-lasting results for all our art forms.",
-    },
-  ];
-
-  const processSteps = [
-    {
-      icon: MessageSquare,
-      title: "Consultation",
-      description: "We start with a one-on-one consultation to understand your vision, preferences, and the occasion for your artwork. Whether you have a specific idea or need inspiration, we're here to listen and guide you."
-    },
-    {
-      icon: Lightbulb,
-      title: "Design Creation",
-      description: "Our artists craft a unique design concept, incorporating your ideas with their creative expertise. We'll produce a preliminary sketch, allowing you to visualize the final piece and provide feedback before we proceed."
-    },
-    {
-      icon: Scissors,
-      title: "Execution & Refinement",
-      description: "With your approval, our artists bring the design to life with meticulous attention to detail. We welcome your input throughout the process, making refinements to ensure the artwork perfectly matches your expectations."
-    },
-    {
-      icon: Sparkles,
-      title: "Final Masterpiece",
-      description: "The result is a stunning, handcrafted piece of art that is uniquely yours. We ensure you are completely satisfied, providing you with a masterpiece ready to be cherished and admired for years to come."
-    }
-  ];
-
   const marqueeNews = [
     "New 'Bridal Collection' for Mehndi is now available!",
     "Join our 'Rangoli for Beginners' workshop next month.",
@@ -136,6 +104,11 @@ export default function Home() {
   const duplicatedArtPieces = artPieces.length > 0 ? [...artPieces, ...artPieces] : [];
   const duplicatedTestimonials = testimonials.length > 0 ? [...testimonials, ...testimonials] : [];
   const duplicatedNews = [...marqueeNews, ...marqueeNews];
+
+  const renderIcon = (iconName: string, defaultIcon: React.ElementType = Lightbulb) => {
+    const Icon = iconMap[iconName];
+    return Icon ? <Icon className="w-6 h-6" /> : React.createElement(defaultIcon, { className: "w-6 h-6" });
+  };
 
 
   return (
@@ -273,11 +246,11 @@ export default function Home() {
               </p>
             </div>
             <div className="grid gap-8">
-              {categories.map((category, index) => (
+              {categories.filter(c => c.name !== 'Home').map((category, index) => (
                 <Link href={category.href} key={category._id}>
                   <div className="group relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                      <Image
-                        src={isValidUrl(category.image) ? category.image! : "https://placehold.co/320x224.png"}
+                        src={isValidUrl(category.image) ? category.image! : "https://placehold.co/1200x400.png"}
                         alt={category.name}
                         fill
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
@@ -360,10 +333,10 @@ export default function Home() {
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              {whyChooseUsItems.map((item) => (
+              {whyChooseUs.map((item) => (
                 <div key={item.title} className="group text-center p-8 bg-background rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                   <div className="flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 text-primary mx-auto mb-6 transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
-                    <item.icon className="w-10 h-10" />
+                    {renderIcon(item.icon, Award)}
                   </div>
                   <h3 className="text-2xl font-bold font-headline mb-3">{item.title}</h3>
                   <p className="text-muted-foreground leading-relaxed">{item.description}</p>
@@ -421,7 +394,7 @@ export default function Home() {
               </p>
             </div>
             <div className="space-y-16">
-              {processSteps.map((step, index) => (
+              {homeProcessSteps.map((step, index) => (
                 <div key={step.title} className="flex flex-col md:flex-row items-center gap-8 md:gap-16">
                   <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-1' : 'md:order-2'}`}>
                     <Image
@@ -436,7 +409,7 @@ export default function Home() {
                   <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}>
                     <div className="flex items-center gap-4 mb-4">
                        <div className="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary">
-                         <step.icon className="w-6 h-6" />
+                         {renderIcon(step.icon)}
                        </div>
                        <Badge variant="outline" className="border-primary text-primary">Step {index + 1}</Badge>
                     </div>
@@ -463,22 +436,16 @@ export default function Home() {
               </p>
             </div>
             <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              <Card className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                <Image src="https://placehold.co/600x400.png" alt="Weddings & Celebrations" width={600} height={400} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-ai-hint="bridal mehndi" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
-                  <h3 className="text-3xl font-bold font-headline text-white">Weddings & Celebrations</h3>
-                  <p className="text-white/90 mt-2 mb-4">Add a touch of elegance and tradition to your special day with our exquisite bridal mehndi and decorative art.</p>
-                  <Button variant="secondary" asChild><Link href="/booking">Book a Consultation</Link></Button>
-                </div>
-              </Card>
-              <Card className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
-                <Image src="https://placehold.co/600x400.png" alt="Festivals & Events" width={600} height={400} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-ai-hint="diwali rangoli" />
-                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
-                  <h3 className="text-3xl font-bold font-headline text-white">Festivals & Events</h3>
-                  <p className="text-white/90 mt-2 mb-4">Light up your festivals with vibrant rangoli, festive nail art, and custom pieces that celebrate the occasion.</p>
-                  <Button variant="secondary" asChild><Link href="/booking">Plan Your Event</Link></Button>
-                </div>
-              </Card>
+              {artInAction.map(item => (
+                <Card key={item.title} className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300">
+                  <Image src={isValidUrl(item.image) ? item.image : "https://placehold.co/600x400.png"} alt={item.title} width={600} height={400} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-ai-hint={item.hint} />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent p-6 flex flex-col justify-end">
+                    <h3 className="text-3xl font-bold font-headline text-white">{item.title}</h3>
+                    <p className="text-white/90 mt-2 mb-4">{item.description}</p>
+                    <Button variant="secondary" asChild><Link href={item.buttonLink}>{item.buttonText}</Link></Button>
+                  </div>
+                </Card>
+              ))}
             </div>
           </div>
         </section>

@@ -53,36 +53,103 @@ import {
   ChartLegendContent,
 } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
+import { useGetBookingsQuery } from '@/services/api';
+import { useMemo } from 'react';
 
-const salesData = [
-  { name: 'Jan', sales: 4000 },
-  { name: 'Feb', sales: 3000 },
-  { name: 'Mar', sales: 5000 },
-  { name: 'Apr', sales: 4500 },
-  { name: 'May', sales: 6000 },
-  { name: 'Jun', sales: 5500 },
-];
+type Booking = {
+  _id: string;
+  customer: string;
+  service: string;
+  date: string;
+  status: 'Confirmed' | 'Completed' | 'Pending' | 'Canceled';
+  total: string;
+  artPieceId?: string;
+  email: string;
+  phone?: string;
+  notes?: string;
+  bookingTime: string;
+};
 
-const revenueData = [
-  { month: 'Jan', revenue: 2500, expenses: 1500 },
-  { month: 'Feb', revenue: 2800, expenses: 1700 },
-  { month: 'Mar', revenue: 3200, expenses: 1600 },
-  { month: 'Apr', revenue: 3000, expenses: 1800 },
-  { month: 'May', revenue: 3500, expenses: 2000 },
-  { month: 'Jun', revenue: 3800, expenses: 2100 },
-];
-
-const bookingsData = [
-    { day: 'Mon', Mehndi: 5, Rangoli: 3, 'Nail Art': 4 },
-    { day: 'Tue', Mehndi: 6, Rangoli: 2, 'Nail Art': 5 },
-    { day: 'Wed', Mehndi: 8, Rangoli: 4, 'Nail Art': 6 },
-    { day: 'Thu', Mehndi: 7, Rangoli: 5, 'Nail Art': 5 },
-    { day: 'Fri', Mehndi: 10, Rangoli: 6, 'Nail Art': 8 },
-    { day: 'Sat', Mehndi: 12, Rangoli: 8, 'Nail Art': 10 },
-    { day: 'Sun', Mehndi: 9, Rangoli: 7, 'Nail Art': 9 },
-];
 
 export default function Dashboard() {
+  const { data: bookings = [], isLoading } = useGetBookingsQuery();
+
+  const chartData = useMemo(() => {
+    if (!bookings || bookings.length === 0) {
+      return { salesData: [], revenueData: [], bookingsData: [] };
+    }
+
+    const monthlySales: { [key: string]: number } = {};
+    const monthlyRevenue: { [key: string]: { revenue: number, expenses: number } } = {};
+    const weeklyBookings: { [key: string]: { [key: string]: number } } = {};
+
+    bookings.forEach((booking: Booking) => {
+      const date = new Date(booking.date);
+      const month = date.toLocaleString('default', { month: 'short' });
+      const year = date.getFullYear();
+      const monthYear = `${month} ${year}`;
+      const day = date.toLocaleString('default', { weekday: 'short' });
+
+      // Aggregate sales
+      monthlySales[monthYear] = (monthlySales[monthYear] || 0) + 1;
+      
+      // Aggregate Revenue
+      const revenue = parseFloat(booking.total.replace('$', ''));
+      if (!monthlyRevenue[monthYear]) {
+        monthlyRevenue[monthYear] = { revenue: 0, expenses: 0 };
+      }
+      monthlyRevenue[monthYear].revenue += revenue;
+      // Dummy expenses for chart
+      monthlyRevenue[monthYear].expenses += revenue * 0.4;
+
+      // Aggregate weekly bookings by service
+      if (!weeklyBookings[day]) {
+          weeklyBookings[day] = {};
+      }
+      weeklyBookings[day][booking.service] = (weeklyBookings[day][booking.service] || 0) + 1;
+    });
+
+    const sortedMonths = Object.keys(monthlySales).sort((a, b) => {
+        const [aMonth, aYear] = a.split(' ');
+        const [bMonth, bYear] = b.split(' ');
+        return new Date(`${aMonth} 1, ${aYear}`).getTime() - new Date(`${bMonth} 1, ${bYear}`).getTime();
+    }).slice(-6);
+
+    const salesData = sortedMonths.map(month => ({ name: month.split(' ')[0], sales: monthlySales[month] }));
+    const revenueData = sortedMonths.map(month => ({ month: month.split(' ')[0], revenue: monthlyRevenue[month].revenue, expenses: monthlyRevenue[month].expenses }));
+
+    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const bookingsData = daysOfWeek.map(day => ({
+        day,
+        Mehndi: weeklyBookings[day]?.['Mehndi'] || 0,
+        Rangoli: weeklyBookings[day]?.['Rangoli'] || 0,
+        'Nail Art': weeklyBookings[day]?.['Nail Art'] || 0,
+    }));
+
+
+    return { salesData, revenueData, bookingsData };
+  }, [bookings]);
+
+  const recentBookings = useMemo(() => {
+    return bookings
+      .slice()
+      .sort((a: Booking, b: Booking) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
+  }, [bookings]);
+
+  const totalRevenue = useMemo(() => bookings.reduce((acc: number, b: Booking) => acc + parseFloat(b.total.replace('$', '')), 0), [bookings]);
+  const newBookingsCount = useMemo(() => bookings.filter((b: Booking) => {
+      const bookingDate = new Date(b.date);
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+      return bookingDate > lastMonth;
+  }).length, [bookings]);
+
+
+  if (isLoading) {
+      return <div>Loading dashboard...</div>
+  }
+
   return (
     <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
       <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
@@ -92,9 +159,9 @@ export default function Dashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              Based on all bookings
             </p>
           </CardContent>
         </Card>
@@ -106,9 +173,9 @@ export default function Dashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+23</div>
+            <div className="text-2xl font-bold">+{newBookingsCount}</div>
             <p className="text-xs text-muted-foreground">
-              +18.1% from last month
+              in the last month
             </p>
           </CardContent>
         </Card>
@@ -118,9 +185,9 @@ export default function Dashboard() {
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12,234</div>
+            <div className="text-2xl font-bold">+{bookings.length}</div>
             <p className="text-xs text-muted-foreground">
-              +19% from last month
+              Total number of bookings
             </p>
           </CardContent>
         </Card>
@@ -130,9 +197,9 @@ export default function Dashboard() {
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+573</div>
+            <div className="text-2xl font-bold">+{bookings.filter((b:Booking) => b.status === 'Confirmed').length}</div>
             <p className="text-xs text-muted-foreground">
-              +201 since last hour
+              Confirmed bookings
             </p>
           </CardContent>
         </Card>
@@ -146,7 +213,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pl-2">
             <ChartContainer config={{}} className="h-[300px] w-full">
-              <LineChart accessibilityLayer data={revenueData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+              <LineChart accessibilityLayer data={chartData.revenueData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
                 <YAxis tickLine={false} axisLine={false} tickMargin={8}/>
@@ -165,7 +232,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent className="pl-2">
              <ChartContainer config={{}} className="h-[300px] w-full">
-                  <BarChart accessibilityLayer data={bookingsData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                  <BarChart accessibilityLayer data={chartData.bookingsData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
                     <YAxis tickLine={false} axisLine={false} tickMargin={8}/>
@@ -191,7 +258,7 @@ export default function Dashboard() {
           <CardContent className="pl-2">
             <ChartContainer config={{}} className="h-[300px] w-full">
                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={salesData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
+                  <BarChart data={chartData.salesData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
                     <CartesianGrid vertical={false} />
                     <XAxis dataKey="name" tickLine={false} axisLine={false} tickMargin={8} />
                     <YAxis tickLine={false} axisLine={false} tickMargin={8} />
@@ -212,43 +279,30 @@ export default function Dashboard() {
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">
-              <Link href="#">
+              <Link href="/admin/bookings">
                 View All
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
           <CardContent className="grid gap-8">
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarImage src="https://placehold.co/100x100.png" alt="Avatar" data-ai-hint="woman portrait" />
-                <AvatarFallback>OM</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Olivia Martin
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  olivia.martin@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+$1,999.00</div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="hidden h-9 w-9 sm:flex">
-                <AvatarImage src="https://placehold.co/100x100.png" alt="Avatar" data-ai-hint="man portrait"/>
-                <AvatarFallback>JL</AvatarFallback>
-              </Avatar>
-              <div className="grid gap-1">
-                <p className="text-sm font-medium leading-none">
-                  Jackson Lee
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  jackson.lee@email.com
-                </p>
-              </div>
-              <div className="ml-auto font-medium">+39.00</div>
-            </div>
+            {recentBookings.map((booking: Booking) => (
+                <div key={booking._id} className="flex items-center gap-4">
+                <Avatar className="hidden h-9 w-9 sm:flex">
+                    <AvatarImage src="https://placehold.co/100x100.png" alt="Avatar" data-ai-hint="person portrait" />
+                    <AvatarFallback>{booking.customer.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="grid gap-1">
+                    <p className="text-sm font-medium leading-none">
+                    {booking.customer}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                    {booking.email}
+                    </p>
+                </div>
+                <div className="ml-auto font-medium">{booking.total}</div>
+                </div>
+            ))}
           </CardContent>
         </Card>
       </div>

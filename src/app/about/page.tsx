@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -15,20 +16,28 @@ import { StudioGlimpse } from "@/components/about/studio-glimpse";
 import { ClientsLens } from "@/components/about/clients-lens";
 import { CommunityCollaboration } from "@/components/about/community-collaboration";
 import { AppHeader } from "@/components/app-header";
-
+import { useGetCategoriesQuery } from "@/services/api";
 
 export default function AboutPage() {
+   const { data: categories = [], isLoading } = useGetCategoriesQuery();
+
+   if (isLoading) {
+    return <div>Loading...</div>
+   }
+
+  const aboutData = categories.find(c => c.name === "About Us");
+
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <AppHeader />
 
       <main className="flex-1">
         <AboutHero />
-        <OurStory />
-        <VisionMission />
-        <CoreValues />
-        <ArtisticPhilosophy />
-        <Accolades />
+        <OurStory data={aboutData?.ourStory} />
+        <VisionMission data={aboutData?.visionMission} />
+        <CoreValues data={aboutData?.coreValues} />
+        <ArtisticPhilosophy data={aboutData?.artisticPhilosophy} />
+        <Accolades data={aboutData?.accolades} />
         <StudioGlimpse />
         <ClientsLens />
         <CommunityCollaboration />
